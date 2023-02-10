@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Art Gallery</title>
+	<link rel="stylesheet" type="text/css" href="./style/main.css">
+</head>
+<body>
+	<div id="fullViewImageArea">
+		<div id="fullViewImage"></div>
+	</div>
+	<div id="fullViewSidebar">
+		<h1 id="fullViewTextName"></h1>
+		<hr>
+		<div id="fullViewTextAboutWrapper">
+			<p class="para" id="fullViewTextAbout"></p>
+		</div>
+		<hr id="postAboutHr">
+
+		<div id='fullViewSidebarButtonsWrapper'>
+			<div class="groupButton" onclick="myag_im_download();">
+				<p>Download</p>
+			</div>
+			<br>
+			<div class="groupButton" onclick="myag_im_share();">
+				<p id="shareText">Share</p>
+			</div>
+			<br>
+			<div class="groupButton" onclick="myag_im_back();">
+				<p>Back</p>
+			</div>
+			<br>
+		</div>
+	</div>
+	<script type="text/javascript" src="./code/myag_main.js"></script>
+	<script type="text/javascript" src="./code/myag_image.js"></script>
+</body>
+</html>

@@ -1,0 +1,550 @@
+/* EDIT THESE TO CHANGE THE LOOKS OF YOUR PAGE */
+
+body {
+	--col-backg:              #FFEBF3; /* page (behind main content) background color */
+	--col-highlight:          #48E3FF; /* highlights (borders, headings, etc) */
+	--col-body:               #FFFFFF; /* content body color */
+	--col-text:               #222222; /* main text color */
+	--col-text-light:         #CCCCCC; /* secondary text color */
+	--col-buttonbg:           #FFFFFF; /* group button background color */
+	--col-viewer:             #FFFFFF; /* image viewer pop-up borders/button text */
+	--col-viewer-text:        #FF88CB; /* image viewer bottom description text color */
+
+	--corner-radius:          0px;
+	--border-width:           3px;
+
+	--font-main:             'Courier New';
+	--font-big:              'Arial';
+	--font-main-size:         22px;
+	--font-big-size:          36px;
+	--font-btn-size:          25px; /* this font size used exclusively on group buttons */
+
+	--page-margin:            7.5%;   /* spacing between screen borders and page contents. 5-10% rec. */
+	--page-spacing:           32px; /* spacing between elements on page. 16-48px recommended*/
+	--page-spacing-x2:        64px; /*please put double the --text-spacing value here!*/
+
+	--userpic-size:           140px;
+	--userpic-radius:         0%; /* 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
+	--userpic-file:           url('../files/userpic.png'); /* just put a .png named "userpic" to "files" dir */
+	--userpic-border:         solid; /* options: solid, dashed, none*/
+	--username-align:         left; /*  options: left, middle or right */
+
+	--divider-width:          94%;
+	--divider-size:           3px;
+	--divider-style:          dotted; /* options: solid, dashed, dotted */;
+
+	--buttons-per-row:        5;
+	--button-height:          80px;
+
+	--artworks-per-row:       4;
+
+	--artworkViewerBarHeight: 64px;
+
+
+}
+
+/* DON'T EDIT ANY FURTHER IF YOU DON'T KNOW WHAT YOU'RE DOING */
+
+/*============================================================================*/
+ /*                            GENERAL/MAIN STYLES                            */
+/*============================================================================*/
+
+
+html, body {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+
+body {
+	background-color: var(--col-backg);
+	z-index: 1;
+	font-family: var(--font-main);
+	font-size: var(--font-main-size);
+	color: var(--col-text);
+}
+
+h1 {
+	text-align: center;
+	font-family: var(--font-big);
+	font-size: var(--font-big-size);
+	color: var(--col-highlight);
+	font-weight: bold;
+	display: block;
+	margin-top: var(--page-spacing);
+	margin-bottom: var(--page-spacing);
+}
+
+
+hr {
+	border: none;
+	border-bottom-width: var(--divider-size);
+	border-bottom-color: var(--col-highlight);
+	border-bottom-style: var(--divider-style);
+	width: var(--divider-width);
+	margin-left: calc((100% - var(--divider-width)) / 2 - 2px);
+	margin-right: calc((100% - var(--divider-width)) / 2 - 2px);
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: 0;
+}
+
+
+#mainWrapper {
+	position: relative;
+	border-width: var(--border-width);
+	border-color: var(--col-highlight);
+	border-style: solid;
+	border-radius: var(--corner-radius);
+	background-color:  var(--col-body);
+	box-shadow: 0px 0px 14px RGBA(0,0,0,0.1);
+
+	
+	
+	margin:  var(--page-margin);
+	width: calc(100% - var(--page-margin) - var(--page-margin));
+}
+
+
+
+.para {
+	width: calc(100% - var(--page-spacing-x2));
+	margin: var(--page-spacing);
+	text-align: justify;
+}
+
+
+/*============================================================================*/
+/*                             PAGE HEADER SECTION                            */
+/*============================================================================*/
+
+#header {
+	height: var(--userpic-size);
+	min-height: 140px;
+	margin: var(--page-spacing);
+	width: calc(100% - var(--page-spacing-x2));
+}
+
+#userpic {
+	background-color: var(--col-backg);
+	height: calc(var(--userpic-size) - var(--border-width) - var(--border-width));
+	width:  calc(var(--userpic-size) - var(--border-width) - var(--border-width));
+	
+	border-width: var(--border-width);
+	border-color: var(--col-highlight);
+	border-style: var(--userpic-border);
+	border-radius: var(--userpic-radius);
+	background-image: var(--userpic-file);
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	float: left;
+
+}
+
+#shortInfo {
+	height: 100%;
+	margin-left: var(--page-spacing);
+	width: calc(100% - var(--userpic-size) - var(--page-spacing));
+	float: left;
+
+}
+
+#username {
+	text-align: var(--username--align);
+	font-family: var(--font-big);
+	font-size: var(--font-big-size);
+	color: var(--col-highlight);
+	padding: 0;
+	margin: 0;
+	font-weight: bold;
+	display: block;
+}
+
+#userinfo {
+	text-align: justify;
+	color: var(--col-text-light);
+	padding: 0;
+	margin: 0;
+	margin-top: var(--page-spacing);
+	bottom: 0;
+	font-style: italic;
+
+}
+
+/*============================================================================*/
+/*                            GROUP BUTTONS SECTION                           */
+/*============================================================================*/
+
+#groupsWrapper {
+	margin: var(--page-spacing);
+	width: calc(100% - var(--page-spacing));
+	margin-bottom: 0;
+	margin-right: 0;
+
+}
+
+.groupButton {
+	box-shadow: 0px 0px 14px RGBA(0,0,0,0.1);
+	background-color: var(--col-buttonbg);
+	color: var(--col-highlight);
+	border-color: var(--col-highlight);
+	border-width: var(--border-width);
+	border-style: solid;
+	border-radius: var(--corner-radius);
+
+	width: calc(100% / var(--buttons-per-row) - var(--page-spacing) - var(--border-width) - var(--border-width));
+	height: var(--button-height);
+	position: relative;
+	display: inline-block;
+	margin: var(--page-spacing);
+	margin-left: 0;
+	margin-top: 0;
+	
+
+	transition: color 0.1s, background-color 0.1s, border-color 0.1s, box-shadow 0.1s;
+
+}
+
+.groupButton:hover {
+	box-shadow: 0px 0px 6px RGBA(0,0,0,0.2);
+	background-color: var(--col-highlight);
+	color: var(--col-buttonbg);
+	border-color: var(--col-buttonbg);
+}
+
+.groupButton:active {
+	filter: brightness(90%);
+}
+
+.groupButton p {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	text-align: center;
+	transform: translateY(-50%);
+	margin-top: calc(var(--button-height) / 2);
+	font-family: var(--font-big);
+	font-size:   var(--font-btn-size);
+	pointer-events: none;
+	user-select: none;
+
+	
+	
+}
+
+/*============================================================================*/
+/*                               ARTWORKS PANEL                               */
+/*============================================================================*/
+
+#artworksWrapper {
+	margin: var(--page-spacing);
+	width: calc(100% - var(--page-spacing));
+	margin-bottom: 0;
+	margin-right: 0;
+	vertical-align: middle;
+
+}
+
+.artwork {
+
+	
+	width: calc(100% / var(--artworks-per-row) - var(--page-spacing));
+	position: relative;
+	display: inline-block;
+	margin: var(--page-spacing);
+	margin-left: 0;
+	margin-top: 0;
+	box-shadow: 0px 0px 8px RGBA(0,0,0,0.1);
+	filter: brightness(100%);
+	transition: filter 0.1s;
+	
+}
+
+.artwork img {
+	
+	
+	display: block;
+}
+
+.artwork:hover {
+	filter: brightness(90%);
+}
+
+.artwork:active {
+	filter: brightness(80%);
+}
+
+.artwork img {
+	box-shadow: 0px 0px 6px RGBA(0,0,0,0.05);
+	position: relative;
+	width: 100%;
+	height: auto;
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	color: inherit;
+	text-decoration: underline;
+	filter: brightness(100%);
+	transition: filter 0.1s;
+}
+
+a:hover {
+	filter: brightness(70%);
+}
+
+/*============================================================================*/
+/*                               ARTWORK VIEWER                               */
+/*============================================================================*/
+
+#artworkViewerWrapper {
+	position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.3);
+    z-index: 10;
+    transition: opacity 0.3s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+#artworkViewer, #artworkViewerSidebar1, #artworkViewerSidebar2 {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	position: absolute;
+	
+	top: 0;
+	left: 0;
+}
+
+.artworkViewerSidebar {
+	height: 100%;
+	width: 25%;
+}
+
+#artworkViewerSidebar2 {
+
+	left: 75%;
+}
+
+
+.artworkViewerSidebar p {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	color: #fff;
+
+	font-family: 'Arial';
+	font-size: 250px;
+	font-weight: bolder;
+	text-align: center;
+
+	top: 50%;
+	transform: translateY(-50%);
+
+	opacity: 0.45;
+	transition: opacity 0.06s;
+
+	user-select: none;
+	pointer-events: all;
+}
+
+.artworkViewerSidebar:hover > p {
+	opacity: 0.7;
+}
+
+.artworkViewerSidebar:active > p {
+	opacity: 1;
+}
+
+#artworkViewer {
+	background-color: rgba(0,0,0,0.7);
+	width: calc(50% - 2px);
+	height: calc(100% - 34px);
+	margin: 16px;
+	margin-left: 0;
+	margin-right: 0;
+	left: 25%;
+	user-select: none;
+	border: 1px solid var(--col-viewer);
+	box-shadow: 0px 0px 44px RGBA(0,0,0,0.4);
+}
+
+#artworkViewer div:nth-child(1) {
+	position: absolute;
+	bottom: 0;
+	padding: 4px;
+	width: calc(100% - 8px);
+	height: calc(var(--artworkViewerBarHeight) - 8px);
+	background-color: var(--col-viewer);
+	font-family: var(--font-main);
+	font-size: var(--font-main-size);
+	color: var(--col-viewer-text);
+	overflow-y: hidden;
+	transition: height 0.4s;
+	text-align: justify;
+	user-select: text;
+}
+
+#artworkViewer div:nth-child(1):hover {
+	height: 50%;
+}
+
+#artworkViewer div:nth-child(2) {
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+
+	width: 96%;
+	height: calc(96% - 8px - var(--artworkViewerBarHeight));
+	margin: 2%;
+
+}
+
+
+
+#artworkViewerButtonWrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 130px;
+	height: 146px;
+	z-index: 200;
+}
+
+.artworkViewerButton {
+	position: absolute;
+	width: 120px;
+	height: 62px;
+	background-color: rgba(0,0,0,0.2);
+	border: 1px solid var(--col-viewer);
+	color: var(--col-viewer);
+	top: 8px;
+	left: 8px;
+	transition: background-color 0.1s;
+	z-index: 201;
+	user-select: none;
+}
+
+.artworkViewerButton:hover {
+	background-color: rgba(0,0,0,0.7);
+}
+
+.artworkViewerButton p {
+	position: absolute;
+	display: block;
+	width: 100%;
+	top: 31px;
+	transform: translateY(-50%);
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	font-family: var(--font-main);
+	font-size: var(--font-btn-size);
+}
+
+#artworkViewerButtonExit {
+	top: 82px;
+}
+
+/*============================================================================*/
+ /*                            FULL IMAGE VIEW                                */
+/*============================================================================*/
+
+#fullViewImageArea, #fullViewSidebar {
+	position: relative;
+	display: block;
+	height: 100%;
+	float: left;
+}
+
+#fullViewImageArea {
+	width: 70%;
+	background-image: url('../files/imagebg.png');
+	background-position: center;
+}
+
+#fullViewImage {
+	position: absolute;
+	width: 96%;
+	height: 96%;
+	margin: 2%;
+	
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+
+#fullViewSidebar {
+	width: 30%;
+	background-color: var(--col-body);
+}
+
+#fullViewSidebar h1 {
+	max-height: 20%;
+}
+
+#fullViewTextAboutWrapper {
+	width: 100%;
+	max-height: 50%;
+	overflow-y: scroll;
+	scrollbar-width: none;
+}
+
+#fullViewSidebarButtonsWrapper {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+}
+
+/* yes, i reused the group button class. whatcha gonna do to me */
+
+#fullViewSidebarButtonsWrapper .groupButton {
+	width: calc(80% - var(--border-width) - var(--border-width));
+	margin-left: 10%;
+	margin-right: 10%;
+	height: 50px;
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+#fullViewSidebarButtonsWrapper .groupButton p {
+	margin-top: 25px;
+}
+
+/*============================================================================*/
+/*                             OTHER/MISC SECTION                             */
+/*============================================================================*/
+
+#links {
+	width: 100%;
+	text-align: center;
+	color: var(--col-highlight);
+}
+
+#footer {
+	color: var(--col-text-light);
+	font-style: italic;
+	font-size: 16px;
+	width: 100%;
+	text-align: center;
+	margin-top: calc(var(--page-spacing) / 3);
+	margin-bottom: calc(var(--page-spacing) / 3);
+
+}

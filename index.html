@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- change this to what you want to display at the browser top -->
+	<title>My Art Gallery</title>
+	<link rel="stylesheet" type="text/css" href="./style/main.css">
+</head>
+<body>
+	<div id="artworkViewerWrapper"></div>
+	<div id="mainWrapper">
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<div id="header">
+			<div id="userpic" title="click to enter editor" onclick="myag_ind_newtabEditor();">
+			</div><div id="shortInfo">
+				<p id="username">YOURNAMEHERE</p>
+				<p id="userinfo">SHORTINFOABOUTYOUHERE</p>
+			</div>
+		</div>
+		<hr>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WELCOME TEXT ETC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<p class="para">
+			Extensive page info goes here. Write who you are, what you do, and so on, and so forth. Feel free to delete everything in this block (between the two large separators) if you don't need
+			this section!
+		</p>
+		<hr>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ GROUP BUTTONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<div id="groupsWrapper"></div>
+		<hr>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ All ARTWORKS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<div id="artworksWrapper"></div>
+		<hr>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FOOTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<p id="footer">made using MyArtGallery by Aubery 'ASTRO' Lis</p>
+	</div>
+	<script type="text/javascript" src="./code/myag_main.js"></script>
+	<script type="text/javascript" src="./code/myag_panel.js"></script>
+	<script type="text/javascript" src="./code/myag_index.js"></script>
+	<script type="text/javascript" src="./code/myag_viewer.js"></script>
+
+</body>
+</html>

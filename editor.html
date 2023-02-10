@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MYAG XML Editor</title>
+	<link rel="stylesheet" type="text/css" href="./style/editor.css">
+</head>
+<body>
+	<div id="mainWrapper">
+		<p class="para">You've reached the editor page for this website's gallery. The whole system runs using a file "data.xml" - a special "e<b>X</b>tendable <b>M</b>arkup <b>L</b>anguage" type file that contains information on groups, artworks, etc. It is parsed by gallery pages to display relevant artworks and info. This page provides <b>no hidden data</b> and you <b>cannot directly upload or remove artworks</b> through it, but it helps you edit the XML file and then redirects you to the Neocities file edit window to easily paste in the new XML. Please note: you have to be logged in to Neocities in order to easily overwrite your old XML. If you're not the owner of the site, please, leave this page - you cannot influence the site or gather any otherwise hidden data here.</p>
+		<p class="para"><span class="clickable" onclick="myag_ed_gfNew();">+ new group field</span></p>
+		<div id="gfWrapper"></div>
+		<p class="para"><span class="clickable" onclick="myag_ed_apNew();">+ new artwork field</span></p>
+		<div id='apWrapper'></div>
+	</div>
+	<div id="doneButton" onclick="myag_ed_done();">
+		<p>Done!</p>
+	</div>	
+	<script type="text/javascript" src="./code/myag_main.js"></script>
+	<script type="text/javascript" src="./code/plugin_vkbeautify.js"></script>
+	<script type="text/javascript" src="./code/myag_editor.js"></script>
+</body>
+</html>
