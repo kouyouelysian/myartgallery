@@ -1,8 +1,15 @@
 //==========================================================================//
+//============================= EDITABLE SETTINGS ==========================//
+//==========================================================================//
+
+SETTING_loadTopDown = true; // true = items upper in the Editor view get
+                             // displayed first. false - vice versa.
+
+//==========================================================================//
 //================================ GLOBAL VARS =============================//
 //==========================================================================//
 
-GLOBAL_debug = true;
+GLOBAL_debug = true ;
 GLOBAL_workingFile = "./files/data.xml";
 GLOBAL_loadedData = undefined;
 GLOBAL_currentlyLoadedArtworks = undefined;
@@ -34,6 +41,78 @@ class Artwork {
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
+
+/*
+puts to the current address line a "?param=value" if there's no other get
+params or "&param=value" if there are
+inputs: param, value - any stringable values
+outputs: none
+*/
+function myag_setGetParam(param, value)
+{
+
+  var loc = location.href;
+  var href = "";
+  var prev = myag_getGetParam(param);
+  if (prev === null)
+  {
+
+    if (loc.indexOf("?") === -1)
+      loc += "?";
+    else
+      loc += "&";
+    href = loc + String(param) + "=" + String(value);
+    
+  }
+  else
+  {
+    toDelete = param+"="+prev; // full check because there may be 2 get params
+    toAdd = param+"="+String(value); // with the same value
+    href = loc.replace(toDelete,toAdd);
+    db('painis');
+  }
+
+  window.history.replaceState(null, null, href); 
+  
+}
+
+/*
+checks the url for what's in a GET parameter, if empty returns null
+inputs: arg (string) - name of the GET param
+outputs: if exists - returns parameter value, null otherwise
+*/
+function myag_getGetParam(arg)
+{
+  // thanks Franklin Yu 
+  // https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
+  let params = new URLSearchParams(location.search);
+  return params.get(arg);
+}
+
+/*
+deletes a GET parameter if it exists, if not exists returns false
+inputs: arg (string) - name of the GET param
+outputs: True if OK, false if not
+*/
+function myag_deleteGetParam(arg)
+{
+  var loc = location.href;
+  var param = myag_getGetParam(arg);
+  var toSearch = arg+'='+param;
+  if (loc.indexOf(toSearch) != -1)
+  {
+    var newLoc = loc.replace('&'+toSearch,"");
+    if (newLoc == loc) // if it was the first parameter
+        newLoc = loc.replace('?'+toSearch,"");
+    window.history.replaceState(null, null, newLoc); 
+    
+    return true;
+  }
+
+  return false;
+
+
+}
 
 
 /*
@@ -250,8 +329,7 @@ async function myag_getGroupByName(targetName)
 
 /*
 My super secret (and (forreal) absolutely harmless) function to check
-if the user has gone through my scary javascript! feel free to delete, although
-this literally doesn't do anything except throwing an alert on caller's screen.
+if the user has gone through my scary javascript! delete if spotted.
 inputs: none
 output: none
 */
@@ -279,7 +357,10 @@ async function myag_getArtworkGroup(groupname)
     var a = new Artwork(undefined, undefined, [], undefined);
     var xmla = xmlArtworks[t];
     var props = xmla.childNodes;
-    a.name     = props[0].childNodes[0].nodeValue;
+    try
+      {a.name = props[0].childNodes[0].nodeValue;}
+    catch
+      {a.name = ""}
     a.filename = props[1].childNodes[0].nodeValue;
     try 
       {a.about = props[2].childNodes[0].nodeValue;}
@@ -319,8 +400,15 @@ async function myag_getArtworkAll()
     var a = new Artwork(undefined, undefined, [], undefined);
     var xmla = xmlArtworks[t];
     var props = xmla.childNodes;
-    a.name     = props[0].childNodes[0].nodeValue;
+
     a.filename = props[1].childNodes[0].nodeValue;
+
+    try
+      {a.name = props[0].childNodes[0].nodeValue;}
+    catch
+      {a.name = ""}
+    
+    
     try 
       {a.about = props[2].childNodes[0].nodeValue;}
     catch
@@ -332,7 +420,11 @@ async function myag_getArtworkAll()
     artworks.push(a);
 
   }
-  return artworks;
+
+  if (SETTING_loadTopDown)
+    return artworks.reverse();
+  else
+    return artworks;
 }
 
 /*
@@ -352,4 +444,7 @@ async function myag_getArtworkById(targetId)
     }
   }
 }
+
+
+
 

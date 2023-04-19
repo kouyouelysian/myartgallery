@@ -47,6 +47,15 @@ body {
 	border-bottom: none;
 }
 
+.options {
+	font-style: italic;
+	margin-right: 32px;
+	float: right;
+}
+
+.options span {
+	margin-left: 16px;
+}
 
 .clickable {
 	color: #fab;
@@ -78,24 +87,23 @@ body {
 }
 
 .apParams p {
-	padding: 0;
-	margin: 0;
 	height: 32px;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 
-.apParams p:first-child {
+.apParams p:first-child { /*should target the id string line*/
 	color: #ccc;
 	font-style: italic;
 	width: 70%;
 	display: inline-block;
+	padding: 0;
+	margin: 0;
 }
 
-.apParams p:nth-child(2) {
-	font-style: italic;
-	width: calc(30% - 16px);
-	display: inline-block;
-	text-align: right;
-}
+
+
+
 
 .apParams input, .apParams textarea {
 	width: 95%;
@@ -152,15 +160,7 @@ body {
 .gf p:first-child {
 	color: #ccc;
 	font-style: italic;
-	width: 80%;
 	display: inline-block;
-}
-
-.gf p:nth-child(2), .gf p:nth-child(3) {
-	font-style: italic;
-	width: calc(10% - 8px);
-	display: inline-block;
-	text-align: right;
 }
 
 

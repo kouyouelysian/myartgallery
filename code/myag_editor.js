@@ -55,17 +55,23 @@ function myag_ed_generateGfDiv(gname)
 	p1.id = 'name#'+ gname;
 	gf.appendChild(p1);
 
-	var p11 = document.createElement('p');
-	p11.innerHTML = "rename";
-	p11.classList.add('clickable');
-	p11.setAttribute('onclick', 'myag_ed_gfRename("'+gname+'")');
-	gf.appendChild(p11);
+	var gOpts = document.createElement('p');
+	gOpts.classList.add('options');
 
-	var p12 = document.createElement('p');
-	p12.innerHTML = "delete";
-	p12.classList.add('clickable');
-	p12.setAttribute('onclick', 'myag_ed_gfDelete("'+gname+'")');
-	gf.appendChild(p12);
+
+	var groupRename = document.createElement('span');
+	groupRename.innerHTML = "rename";
+	groupRename.classList.add('clickable');
+	groupRename.setAttribute('onclick', 'myag_ed_gfRename("'+gname+'")');
+	gOpts.appendChild(groupRename);
+
+	var groupDelete = document.createElement('span');
+	groupDelete.innerHTML = "delete";
+	groupDelete.classList.add('clickable');
+	groupDelete.setAttribute('onclick', 'myag_ed_gfDelete("'+gname+'")');
+	gOpts.appendChild(groupDelete);
+
+	gf.appendChild(gOpts);
 
 	var ta = document.createElement('textarea');
 	ta.setAttribute('rows', 3);
@@ -290,11 +296,29 @@ function myag_ed_generateApDiv(awid)
 	p1.innerHTML = "ID "+ awid;
 	partParams.appendChild(p1);
 
-	var p11 = document.createElement('p');
-	p11.innerHTML = "delete";
-	p11.classList.add('clickable');
-	p11.setAttribute('onclick', 'myag_ed_apDelete("'+awid+'")');
-	partParams.appendChild(p11);
+
+	var apOptions = document.createElement('p');
+	apOptions.classList.add('options');
+
+	var apOptionDelete = document.createElement('span');
+	apOptionDelete.innerHTML = "delete";
+	apOptionDelete.classList.add('clickable');
+	apOptionDelete.setAttribute('onclick', 'myag_ed_apDelete("'+awid+'")');
+	apOptions.appendChild(apOptionDelete);
+
+	var apOptionUp = document.createElement('span');
+	apOptionUp.innerHTML = "up";
+	apOptionUp.classList.add('clickable');
+	apOptionUp.setAttribute('onclick', 'myag_ed_apMoveUp("'+awid+'")');
+	apOptions.appendChild(apOptionUp);
+
+	var apOptionDown = document.createElement('span');
+	apOptionDown.innerHTML = "down";
+	apOptionDown.classList.add('clickable');
+	apOptionDown.setAttribute('onclick', 'myag_ed_apMoveDown("'+awid+'")');
+	apOptions.appendChild(apOptionDown);
+
+	partParams.appendChild(apOptions);
 
 	var p2 = document.createElement('p');
 	p2.innerHTML = "name:";
@@ -412,6 +436,105 @@ function myag_ed_apDelete(awid)
 }
 
 /*
+moves the artwork up in the list
+inputs: artwork id
+outputs: true on ok, false on error
+*/
+function myag_ed_apMoveUp(awid)
+{
+	var index = -1;
+	for (var i=0; i<GLOBAL_artworkAwids.length; i++)
+	{
+		if  (GLOBAL_artworkAwids[i]==awid)
+			index = i;
+	}
+	if (index == -1)
+	{
+		db('myag_ed_apMoveUp: nonexistent awid');
+		return false
+	}
+	else if (index == GLOBAL_artworkAwids.length-1)
+	{
+		db('myag_ed_apMoveUp: cannot move the topmost image up');
+		return false
+	}
+
+	if (myag_ed_ed_apSwap(index, index+1))
+	{
+		//document.getElementById("ap-"+awid).scrollIntoView(true);
+		return true;
+	}
+
+	db('myag_ed_apMoveUp: failed to execute swap');
+}
+
+/*
+moves the artwork down in the list
+inputs: artwork id
+outputs: none
+*/
+function myag_ed_apMoveDown(awid)
+{
+	var index = -1;
+	for (var i=0; i<GLOBAL_artworkAwids.length; i++)
+	{
+		if  (GLOBAL_artworkAwids[i]==awid)
+			index = i;
+	}
+	if (index == -1)
+	{
+		db('myag_ed_apMoveDown: nonexistent awid');
+		return false
+	}
+	else if (index == 0)
+	{
+		db('myag_ed_apMoveDown: cannot move the lowest image down');
+		return false
+	}
+
+	if (myag_ed_ed_apSwap(index-1, index))
+	{
+		//document.getElementById("ap-"+awid).scrollIntoView(true);
+		return true;
+	}
+
+	db('myag_ed_apMoveDown: failed to execute swap');
+}
+
+/*
+swaps two artwork fields (divs and GLOBAL_ entries)
+inputs: a, b (integers)
+outputs: true on ok, false on error
+*/
+function myag_ed_ed_apSwap(a,b)
+{
+	if ((a<0) || (b<0) || (a>=GLOBAL_artworkAwids.length) || (b>=GLOBAL_artworkAwids.length))
+	{
+		db('One of indices out of artwork number bounds: '+String(a)+' or '+String(b));
+		return false;
+	}
+
+	var temp = GLOBAL_artworkAwids[a]; // swap awid entries
+	GLOBAL_artworkAwids[a] = GLOBAL_artworkAwids[b];
+	GLOBAL_artworkAwids[b] = temp;
+
+	temp = GLOBAL_artworks[a]; // swap artwork objects
+	GLOBAL_artworks[a] = GLOBAL_artworkAwids[b];
+	GLOBAL_artworks[b] = temp;
+
+	var target = document.getElementById('apWrapper');
+	var d1 = target.childNodes[GLOBAL_artworkAwids.length-1-a];
+	var d2 = target.childNodes[GLOBAL_artworkAwids.length-1-b];
+	
+	target.insertBefore(d1, d2);
+
+	return true;
+}
+
+
+
+
+/*
 add a new empty artwork details field 
 inputs: none
 outputs: none
@@ -437,7 +560,7 @@ function checkEmptyInputVal(arg)
 	var t = document.getElementById(arg).value;
 	if ((t == undefined) || (t == null) || (!typeof(t) == 'string') || (t.length == 0))
 	{
-		alert("Looks like a mandatory field (name, filename) is empty! The page will now attempt scrolling to it. Please fix.");
+		alert("Looks like a mandatory field (filename) is empty! The page will now attempt scrolling to it. Please fix.");
 		document.getElementById(arg).scrollIntoView(true);
 		return false;
 	}
@@ -481,8 +604,8 @@ function myag_ed_constructNewXml()
 		var a = xml.createElement("artwork");
 
 		var an = xml.createElement("name");
-		if (!checkEmptyInputVal("name-"+awid))
-			return false;
+		// if (!checkEmptyInputVal("name-"+awid)) // reallow this to enforce naming images
+		// 	return false;
 		an.appendChild(xml.createTextNode(document.getElementById("name-"+awid).value));
 
 		var afn = xml.createElement("filename");

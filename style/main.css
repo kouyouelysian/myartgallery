@@ -1,46 +1,50 @@
+
 /* EDIT THESE TO CHANGE THE LOOKS OF YOUR PAGE */
 
 body {
-	--col-backg:              #FFEBF3; /* page (behind main content) background color */
-	--col-highlight:          #48E3FF; /* highlights (borders, headings, etc) */
+	--col-backg:              #99ffcc; /* page (behind main content) background color */
+	--col-highlight:          #ff3399; /* highlights (borders, headings, etc) */
 	--col-body:               #FFFFFF; /* content body color */
 	--col-text:               #222222; /* main text color */
 	--col-text-light:         #CCCCCC; /* secondary text color */
 	--col-buttonbg:           #FFFFFF; /* group button background color */
 	--col-viewer:             #FFFFFF; /* image viewer pop-up borders/button text */
 	--col-viewer-text:        #FF88CB; /* image viewer bottom description text color */
+	--col-viewer-background:  rgba(0,0,0,0.15); /* background color for indiv. image view overlay - can be "none" */
 
-	--corner-radius:          0px;
-	--border-width:           3px;
+	--corner-radius:          8px;    /* radius of corners of all main elements on the page. can be 0 (sharp) */
+	--border-width:           3px;    /* thiccness of borders for all main elements on the page */
 
-	--font-main:             'Courier New';
-	--font-big:              'Arial';
+	--font-main:             'Courier New'; /* font for usual text */
 	--font-main-size:         22px;
+	--font-big:              'Arial'; /* font for titles etc */
 	--font-big-size:          36px;
-	--font-btn-size:          25px; /* this font size used exclusively on group buttons */
+	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
+	--main-text-align:        left;  /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
 
 	--page-margin:            7.5%;   /* spacing between screen borders and page contents. 5-10% rec. */
-	--page-spacing:           32px; /* spacing between elements on page. 16-48px recommended*/
-	--page-spacing-x2:        64px; /*please put double the --text-spacing value here!*/
+	--page-spacing:           32px;   /* spacing between elements on page. 16-48px recommended*/
 
 	--userpic-size:           140px;
-	--userpic-radius:         0%; /* 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
-	--userpic-file:           url('../files/userpic.png'); /* just put a .png named "userpic" to "files" dir */
-	--userpic-border:         solid; /* options: solid, dashed, none*/
-	--username-align:         left; /*  options: left, middle or right */
+	--userpic-radius:         50%;     /* 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
+	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
+	--userpic-border:         solid;  /* options: solid, dashed, none*/
+	--username-align:         left;   /*  options: left, middle or right */
 
-	--divider-width:          94%;
-	--divider-size:           3px;
-	--divider-style:          dotted; /* options: solid, dashed, dotted */;
+	--divider-width:          94%;    /* width of the horizontal divider line that separates sections */
+	--divider-size:           3px;    /* thiccness of that line */
+	--divider-style:          dotted; /* divider line options: solid, dashed, dotted */;
 
-	--buttons-per-row:        5;
-	--button-height:          80px;
+	--buttons-per-row:        5;      /* number of group buttons per row, suggested 4-6 */
+	--button-height:          80px;   /* height of one group button */
 
-	--artworks-per-row:       4;
+	--artworks-per-row:       4;      /* how many artworks to display per row. integer. suggested 3-6 */
+	--artworks-align:         middle; /* if the artworks are of different height, they will "magnet" to: top, middle or bottom */
 
-	--artworkViewerBarHeight: 64px;
+	--artwork-box-shadow:     none;  /* e.g. 0px 0px 8px RGBA(0,0,0,0.1). 'none' advised if you are using images with transparencies and unusual outter contours */
+	--artwork-drop-shadow:    none;  /* e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). RAM-hungry: use as alternative for the outlier case above  */
 
-
+	--overlay-opacity:        0.5;   /* 0..1, set the opacity of the semitransparent overlay that appears when you click on the artwork for details/bigger view  */
 }
 
 /* DON'T EDIT ANY FURTHER IF YOU DON'T KNOW WHAT YOU'RE DOING */
@@ -115,9 +119,9 @@ hr {
 
 
 .para {
-	width: calc(100% - var(--page-spacing-x2));
+	width: calc(100% - var(--page-spacing) - var(--page-spacing));
 	margin: var(--page-spacing);
-	text-align: justify;
+	text-align: var(--main-text-align);
 }
 
 
@@ -129,7 +133,7 @@ hr {
 	height: var(--userpic-size);
 	min-height: 140px;
 	margin: var(--page-spacing);
-	width: calc(100% - var(--page-spacing-x2));
+	width: calc(100%  - var(--page-spacing) - var(--page-spacing));
 }
 
 #userpic {
@@ -154,7 +158,6 @@ hr {
 	margin-left: var(--page-spacing);
 	width: calc(100% - var(--userpic-size) - var(--page-spacing));
 	float: left;
-
 }
 
 #username {
@@ -169,11 +172,10 @@ hr {
 }
 
 #userinfo {
-	text-align: justify;
-	color: var(--col-text-light);
+	text-align: var(--main-text-align);
+	color: var(--col-text);
 	padding: 0;
 	margin: 0;
-	margin-top: var(--page-spacing);
 	bottom: 0;
 	font-style: italic;
 
@@ -255,23 +257,32 @@ hr {
 
 .artwork {
 
-	
 	width: calc(100% / var(--artworks-per-row) - var(--page-spacing));
+	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));
+	height: 0;
 	position: relative;
 	display: inline-block;
 	margin: var(--page-spacing);
 	margin-left: 0;
 	margin-top: 0;
-	box-shadow: 0px 0px 8px RGBA(0,0,0,0.1);
+
+	box-shadow: var(--artwork-box-shadow);
+
 	filter: brightness(100%);
 	transition: filter 0.1s;
+	vertical-align: middle;
 	
 }
 
 .artwork img {
+	width: 100%;
+	height: 100%;
+	position: absolute;	
+	top: 0;
+	left: 0;
+	object-fit: contain;
+	filter: var(--artwork-drop-shadow);
 	
-	
-	display: block;
 }
 
 .artwork:hover {
@@ -282,14 +293,7 @@ hr {
 	filter: brightness(80%);
 }
 
-.artwork img {
-	box-shadow: 0px 0px 6px RGBA(0,0,0,0.05);
-	position: relative;
-	width: 100%;
-	height: auto;
-	padding: 0;
-	margin: 0;
-}
+
 
 a {
 	color: inherit;
@@ -312,7 +316,7 @@ a:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0,0,0,var(--overlay-opacity));
     z-index: 10;
     transition: opacity 0.3s;
     background-size: cover;
@@ -332,14 +336,17 @@ a:hover {
 	left: 0;
 }
 
+
+
 .artworkViewerSidebar {
 	height: 100%;
-	width: 25%;
+	width:  30%;
+	z-index: 20;
 }
 
 #artworkViewerSidebar2 {
 
-	left: 75%;
+	left: 70%;
 }
 
 
@@ -358,110 +365,96 @@ a:hover {
 	top: 50%;
 	transform: translateY(-50%);
 
-	opacity: 0.45;
-	transition: opacity 0.06s;
+	opacity: 0;
+	transition: opacity 0.1s, filter 0.1s;
 
 	user-select: none;
 	pointer-events: all;
+	filter: drop-shadow(0px 0px 14px RGBA(0,0,0,0));
 }
 
 .artworkViewerSidebar:hover > p {
 	opacity: 0.7;
+	filter: drop-shadow(0px 0px 14px RGBA(0,0,0,0.5));
+
 }
 
 .artworkViewerSidebar:active > p {
 	opacity: 1;
+	filter: drop-shadow(0px 0px 7px RGBA(0,0,0,0.5));
 }
 
 #artworkViewer {
-	background-color: rgba(0,0,0,0.7);
-	width: calc(50% - 2px);
-	height: calc(100% - 34px);
-	margin: 16px;
-	margin-left: 0;
-	margin-right: 0;
-	left: 25%;
+	width: 35%; 
+	height: 70vh;
+	margin-top: 15vh;
+	left: 32.5%;
 	user-select: none;
-	border: 1px solid var(--col-viewer);
-	box-shadow: 0px 0px 44px RGBA(0,0,0,0.4);
-}
-
-#artworkViewer div:nth-child(1) {
-	position: absolute;
-	bottom: 0;
-	padding: 4px;
-	width: calc(100% - 8px);
-	height: calc(var(--artworkViewerBarHeight) - 8px);
-	background-color: var(--col-viewer);
-	font-family: var(--font-main);
-	font-size: var(--font-main-size);
-	color: var(--col-viewer-text);
-	overflow-y: hidden;
-	transition: height 0.4s;
-	text-align: justify;
-	user-select: text;
-}
-
-#artworkViewer div:nth-child(1):hover {
-	height: 50%;
-}
-
-#artworkViewer div:nth-child(2) {
-	background-repeat: no-repeat;
 	background-position: center;
+	background-repeat: no-repeat;
 	background-size: contain;
-
-	width: 96%;
-	height: calc(96% - 8px - var(--artworkViewerBarHeight));
-	margin: 2%;
-
-}
-
-
-
-#artworkViewerButtonWrapper {
+	z-index: 15;
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 130px;
-	height: 146px;
-	z-index: 200;
+
+	background-color: var(--col-viewer-background);
+
 }
 
-.artworkViewerButton {
+#artworkViewerAbout {
 	position: absolute;
-	width: 120px;
-	height: 62px;
-	background-color: rgba(0,0,0,0.2);
-	border: 1px solid var(--col-viewer);
-	color: var(--col-viewer);
-	top: 8px;
-	left: 8px;
-	transition: background-color 0.1s;
-	z-index: 201;
-	user-select: none;
+	background-color: var(--col-body);
+	color; var(--col-text);
+	border-width: var(--border-width);
+	border-color: var(--col-highlight);
+	border-style: solid;
+	border-radius: var(--corner-radius);
+	padding: var(--page-spacing);
+
+
+	max-height: calc(70vh - var(--page-spacing) - var(--page-spacing) - var(--border-width) - var(--border-width));
+	overflow-y: scroll;
+	width: calc(26% - var(--page-spacing) - var(--page-spacing) - var(--border-width) - var(--border-width));
+	left: 3%;
+	top: 15vh;
+
+	text-align: var(--main-text-align);
+
+ 	-ms-overflow-style: none;  
+  	scrollbar-width: none;
 }
 
-.artworkViewerButton:hover {
-	background-color: rgba(0,0,0,0.7);
+#artworkViewerAbout::-webkit-scrollbar {
+  display: none;
 }
 
-.artworkViewerButton p {
+#artworkViewerFull {
 	position: absolute;
-	display: block;
-	width: 100%;
-	top: 31px;
-	transform: translateY(-50%);
-	padding: 0;
-	margin: 0;
+	padding: 8px;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 100%;
 	text-align: center;
-	font-family: var(--font-main);
-	font-size: var(--font-btn-size);
+	margin: 0;
+	background-color: rgba(0,0,0,0.15);
+	text-decoration: underline;
+	color: var(--col-highlight);
+	transition: color 0.2s, background-color 0.2s;
+	margin-top: var(--page-spacing);
+	border-radius: var(--corner-radius);
 }
 
-#artworkViewerButtonExit {
-	top: 82px;
+#artworkViewerFull:hover {
+	background-color: var(--col-body);
+	color: var(--col-text);
 }
+
+.artworkViewerAboutName {
+  font-weight: bold;
+  font-style: italic;
+  color: var(--col-highlight);
+
+}
+
 
 /*============================================================================*/
  /*                            FULL IMAGE VIEW                                */
@@ -535,7 +528,7 @@ a:hover {
 #links {
 	width: 100%;
 	text-align: center;
-	color: var(--col-highlight);
+	color: var(--col-text);
 }
 
 #footer {

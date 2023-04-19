@@ -5,12 +5,20 @@
 //        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
 
 //==========================================================================//
+//============================= EDITABLE SETTINGS ==========================//
+//==========================================================================//
+
+SETTING_fullButton = true; // display fullsize view buttoin
+SETTING_about      = true; // display about section
+
+//==========================================================================//
 //================================ GLOBAL VARS =============================//
 //==========================================================================//
 
 GLOBAL_viewerWrapperObject = undefined;
 GLOBAL_viewerState         = false;
 GLOBAL_viewerToggleTimeout = undefined;
+
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
@@ -28,66 +36,51 @@ function myag_av_createArtworkViewer()
 		return null;
 	}
 
+	target.setAttribute("onclick", "myag_av_hideViewer();")
+
 	var p1 = document.createElement('p');
 	var p3 = document.createElement('p');
 	p1.innerHTML = "<";
 	p3.innerHTML = ">";
 
-	var d1 = document.createElement('div');
-	var d2 = document.createElement('div');
-	var d3 = document.createElement('div');
+	var sidebarLeft = document.createElement('div');
+	var viewField = document.createElement('div');
+	var sidebarRight = document.createElement('div');
 
-	d1.id = 'artworkViewerSidebar1';
-	d1.classList.add('artworkViewerSidebar');
-	d1.setAttribute('onclick', 'myag_av_jump(false);');
-	d2.id = 'artworkViewer';
-	d3.id = 'artworkViewerSidebar2';
-	d3.classList.add('artworkViewerSidebar');
-	d3.setAttribute('onclick', 'myag_av_jump(true);');
+	sidebarLeft.id = 'artworkViewerSidebar1';
+	sidebarLeft.classList.add('artworkViewerSidebar');
+	sidebarLeft.setAttribute('onclick', 'myag_av_jump(false);');
+	viewField.id = 'artworkViewer';
+	sidebarRight.id = 'artworkViewerSidebar2';
+	sidebarRight.classList.add('artworkViewerSidebar');
+	sidebarRight.setAttribute('onclick', 'myag_av_jump(true);');
 
-	d1.appendChild(p1);
-	d3.appendChild(p3);
+	sidebarLeft.appendChild(p1);
+	sidebarRight.appendChild(p3);
 
-	// bottombar for d2 (main viewer window)
-	var bbar = document.createElement('div');
-	bbar.id = "artworkViewerBottomBar";
-	d2.appendChild(bbar);
-	var img = document.createElement('div');
-	img.id = "artworkViewerImg";
-	img.setAttribute('alt', 'click to view in full');
-	d2.appendChild(img);
+	viewField.appendChild(sidebarLeft);
+	viewField.appendChild(sidebarRight);
 
-	var pExit = document.createElement('p');
-	pExit.innerHTML = "Exit";
-	var pFull = document.createElement('p');
-	pFull.innerHTML = "Full";
+	about = document.createElement('div');
+	about.id = "artworkViewerAbout";
+	about.style.display = "none"; // make it initially invisible so that there is no flickering on first load
+	about.setAttribute("onclick", "event.stopPropagation()")
 
-	var bExit = document.createElement('div');
-	bExit.setAttribute('onclick', 'myag_av_hideViewer();');
-	bExit.classList.add('artworkViewerButton');
-	bExit.id = "artworkViewerButtonExit";
-	bExit.appendChild(pExit);
-	var bFull = document.createElement('div');
-	bFull.setAttribute('onclick', 'myag_av_openFullView();')
-	bFull.classList.add('artworkViewerButton');
-	bFull.id = "artworkViewerButtonFull";
-	bFull.appendChild(pFull);
+	if (SETTING_fullButton)
+	{
+		full = document.createElement('p');
+		full.id = "artworkViewerFull";
+		full.innerHTML = "fullsize view";
+		full.setAttribute("onclick", "myag_av_openFullView()");
+		viewField.appendChild(full)
+	}
 
-	var bw = document.createElement('div'); // prevents changing picture by
-	bw.id = "artworkViewerButtonWrapper"   // pressing between the buttons :D
-	bw.appendChild(bFull);
-	bw.appendChild(bExit);
-
-	target.appendChild(d1);
-	target.appendChild(d2);
-	target.appendChild(d3);
-	target.appendChild(bw);
-
+	viewField.setAttribute("onclick", "event.stopPropagation()")
 	
-
+	target.appendChild(viewField);
+	target.appendChild(about);
 
 	return target;
-
 }
 
 
@@ -97,28 +90,42 @@ function myag_av_putToViewer(aw_id)
 			
 		
 
-		var img = document.getElementById('artworkViewerImg');
+		var img = document.getElementById('artworkViewer');
 		img.style.backgroundImage = "url('./artworks/"+aw.filename+"')";
 		GLOBAL_viewerWrapperObject.setAttribute('awid', aw.awid);
 
-		var bar = document.getElementById('artworkViewerBottomBar');
-		bar.innerHTML = aw.about;
+		myag_setGetParam('id', aw.awid); // put get param to URL so users can share an image directly
 
-			
-		db(aw.about);
-		db(aw.about.length);
-		db("REEEEE");
-		if (aw.about.length != 0)
+		var a = document.getElementById('artworkViewerAbout');
+
+		if (SETTING_about)
 		{
-			db('show!');
-			bar.style.display = "block";
-			img.style.height = "calc(96% - 8px - var(--artworkViewerBarHeight))";
+			html = "";
+
+			if (aw.name != "")
+			{
+				html += "<span class='artworkViewerAboutName'>"+aw.name+"</span><br><br>"
+			}
+
+			html += aw.about;
+
+			a.innerHTML = html;
+
+				
+			if (aw.about.length != 0)
+			{
+				a.style.display = "block";
+
+			}
+			else
+			{
+				a.style.display = "none";
+			}	
 		}
 		else
 		{
-			bar.style.display = "none";
-			img.style.height = "calc(96% - 8px)";
-		}	
+			a.style.display = "none";
+		}
 
 		GLOBAL_viewerState = true;
 
@@ -190,6 +197,7 @@ function myag_av_hideViewer()
 		  
 			GLOBAL_viewerWrapperObject.style.display = "none";
 		}, 300) // aaand another one
+		myag_deleteGetParam('id'); // delete the artwork GET field
 		GLOBAL_viewerState = false;
 	}
 }
@@ -218,9 +226,14 @@ function myag_av_startup(){
 	GLOBAL_viewerWrapperObject = myag_av_createArtworkViewer();	
 	GLOBAL_viewerWrapperObject.style.opacity = 0;
 	GLOBAL_viewerWrapperObject.style.display = "none";
-	GLOBAL_viewerWrapperObject.setAttribute('awid', null); // store curent artwork's id
+	GLOBAL_viewerWrapperObject.setAttribute('awid', null); // stores curent artwork's id
 														   // as an html tag attribute.
 														   // yes i am a good programmer :D
+	var awid = myag_getGetParam('id');
+	if (awid != null)
+	{
+		myag_av_showViewer(awid);
+	}
 }
 
 

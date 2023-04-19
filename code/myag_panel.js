@@ -5,6 +5,11 @@
 //        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
 
 //==========================================================================//
+//============================= EDITABLE SETTINGS ==========================//
+//==========================================================================//
+
+
+//==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
@@ -39,7 +44,7 @@ processes an array of Artwork class instances and appends them to the target div
 inputs: as (array of Artwork instances), target (string, target div id)
 output: none
 */
-function myag_ip_appendArworks(as, target="artworksWrapper")
+function myag_ip_appendArworks(as, reverse=false, target="artworksWrapper")
 {
 	GLOBAL_currentlyLoadedArtworks = as; // store loaded selection into the global var
 
@@ -50,9 +55,22 @@ function myag_ip_appendArworks(as, target="artworksWrapper")
 		return null;
 	}
 
-	for (var c = 0; c < as.length; c++)
+	if (reverse)
 	{
-		var aw = myag_ip_generateImgDiv(as[c]);
-		t.appendChild(aw);
+		for (var c = as.length - 1; c >= 0 ; c--)
+		
+		{
+			var aw = myag_ip_generateImgDiv(as[c]);
+			t.appendChild(aw);
+		}
 	}
+	else
+	{
+		for (var c = 0; c < as.length; c++)	
+		{
+			var aw = myag_ip_generateImgDiv(as[c]);
+			t.appendChild(aw);
+		}
+	}
+	
 }

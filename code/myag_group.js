@@ -14,19 +14,7 @@ GLOBAL_group_groupname = undefined;
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-/*
-checks the url for what's in the "g" GET parameter, if empty returns null
-inputs: none
-outputs: 'g' GET field contents
-*/
-function myag_gr_readGetFromUrl()
-{
-	// thanks Franklin Yu 
-	// https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
-	let params = new URLSearchParams(location.search);
-	groupname = params.get('g');
-	return groupname;
-}
+
 
 /*
 sets the group description paragraph to the description of the group 'groupname' from the xml file
@@ -61,7 +49,7 @@ outputs: none
 */
 function myag_gr_startup()
 {
-	GLOBAL_group_groupname = myag_gr_readGetFromUrl();
+	GLOBAL_group_groupname = myag_getGetParam('g');
 	if (GLOBAL_group_groupname === null)
 		window.location = "./index.html"; // go to index if no g param
 
