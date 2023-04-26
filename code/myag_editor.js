@@ -2,18 +2,7 @@
 //================ SPECIFIC STUFF FOR XML EDITOR PAGE ======================//
 //==========================================================================//
 
-// EDIT THESE
-
-// set this to the link which appears in the page address line
-// when you edit the 'data.xml' document!
-USER_neocitiesXmlFileEditLink = "pastelinkhere";
-
-
-// set this to the link which appears in the page address line
-// when you are in the neocities folder view, in "artworks" folder!
-USER_neocitiesArtworksFolderLink = "pastelinkhere";
-
-// STOP EDITING
+//        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -644,30 +633,48 @@ function myag_ed_constructNewXml()
 }
 
 /*
-called on clicking the 'done' button
+called on clicking the buttons
 opens up needed tabs and shit
 inputs: none
 output: none
 */
-function myag_ed_done()
+
+function myag_ed_openWebXmlEditor()
 {
 	var xml = myag_ed_constructNewXml();
 
 	// jump out if there was an error with xml
 	if (!xml)
 		return;
-
-	// thank you w3
-	// https://www.w3docs.com/snippets/javascript/how-to-copy-the-text-to-the-clipboard-with-javascript.html
-    navigator.clipboard.writeText(xml).then(() => {
-    
-    	window.open(USER_neocitiesXmlFileEditLink, target="_blank");
-    	window.location = USER_neocitiesArtworksFolderLink;
+	navigator.clipboard.writeText(xml).then(() => {
+    	window.open(SETTING_neocitiesXmlFileEditLink, target="_blank");
 
 	})
 	.catch(err => {
 		alert('Could not copy, please copy the link manually! ', err);
 	});
+}
+
+function myag_ed_copyXml()
+{
+	var xml = myag_ed_constructNewXml();
+
+	// jump out if there was an error with xml
+	if (!xml)
+		return;
+	navigator.clipboard.writeText(xml).then(() => {
+    
+    	alert('raw XML copied');
+
+	})
+	.catch(err => {
+		alert('Could not copy, please copy the link manually! ', err);
+	});
+}
+
+function myag_ed_openWebFileUpload()
+{
+	window.open(SETTING_neocitiesArtworksFolderLink, target="_blank");
 }
 
 /*

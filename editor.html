@@ -12,9 +12,18 @@
 		<p class="para"><span class="clickable" onclick="myag_ed_apNew();">+ new artwork field</span></p>
 		<div id='apWrapper'></div>
 	</div>
-	<div id="doneButton" onclick="myag_ed_done();">
-		<p>Done!</p>
+	<div id="bottomButtonWrapper">
+		<div class="bottomButton" onclick="myag_ed_openWebXmlEditor();">
+			<p>Upldate XML</p>
+		</div>
+		<div class="bottomButton" onclick="myag_ed_openWebFileUpload();">
+			<p>Upload files</p>
+		</div>	
+		<div class="bottomButton" onclick="myag_ed_copyXml();">
+			<p>Raw XML</p>
+		</div>
 	</div>	
+	<script type="text/javascript" src="./code/vars.js"></script>
 	<script type="text/javascript" src="./code/myag_main.js"></script>
 	<script type="text/javascript" src="./code/plugin_vkbeautify.js"></script>
 	<script type="text/javascript" src="./code/myag_editor.js"></script>

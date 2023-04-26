@@ -182,19 +182,26 @@ body {
 
 /*---------------- done button ----------------*/
 
-#doneButton {
+#bottomButtonWrapper {
 	position: fixed;
-	width: 10%;
-	height: 40px;
-	left: 45%;
 	bottom: 32px;
+	width: 100%;
+	height: 40px;
+	text-align: center;
+}
+
+.bottomButton {
+	width: 10%;
+	height: 100%;
 	background-color: #FFF;
 	border: 1px solid #222;
 	box-shadow: 0px 0px 10px RGBA(0,0,0,0.1);
 	transition: border 0.2s, box-shadow 0.2s;
+	position: relative;
+	display: inline-block;
 }
 
-#doneButton p {
+.bottomButton p {
 	padding: 0;
 	margin: 0;
 	position: absolute;
@@ -206,15 +213,15 @@ body {
 	user-select: none;
 }
 
-#doneButton:hover {
+.bottomButton:hover {
 	border: 1px solid #fab;
 	box-shadow: 0px 0px 8px RGBA(0,0,0,0.6);
 }
 
-#doneButton:hover > p {
+.bottomButton:hover > p {
 	color: #fab;
 }
 
-#doneButton:active {
+.bottomButton:active {
 	filter: brightness(90%);
 }

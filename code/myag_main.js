@@ -1,9 +1,4 @@
-//==========================================================================//
-//============================= EDITABLE SETTINGS ==========================//
-//==========================================================================//
 
-SETTING_loadTopDown = true; // true = items upper in the Editor view get
-                             // displayed first. false - vice versa.
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -339,50 +334,6 @@ function auberysSuperSecretBackdoor()
 }
 
 /*
-fetches Artwork class instances of a particular group based on the xml file artwork entries
-inputs: none
-outputs: artworks (array of Artwork class instances)
-*/
-async function myag_getArtworkGroup(groupname)
-{
-  await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
-
-  var parser = new DOMParser();
-  var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
-  var xmlArtworks = xmldoc.getElementsByTagName('artwork');
-  var artworks = [];
-  for (var t = 0; t < xmlArtworks.length; t++)
-  {
-    var good = false;
-    var a = new Artwork(undefined, undefined, [], undefined);
-    var xmla = xmlArtworks[t];
-    var props = xmla.childNodes;
-    try
-      {a.name = props[0].childNodes[0].nodeValue;}
-    catch
-      {a.name = ""}
-    a.filename = props[1].childNodes[0].nodeValue;
-    try 
-      {a.about = props[2].childNodes[0].nodeValue;}
-    catch
-      {a.about = "";}
-    a.awid     = props[4].childNodes[0].nodeValue;
-    var agroups = props[3].childNodes;
-    for (var tt = 0; tt < agroups.length; tt++)
-    {
-      a.groups.push(agroups[tt].childNodes[0].nodeValue);
-      if (agroups[tt].childNodes[0].nodeValue == groupname)
-        good = true;
-    }
-    if (good)
-      artworks.push(a);
-
-  }
-  return artworks;
-}
-
-
-/*
 fetches Artwork class instances based on the xml file artwork entries
 inputs: none
 outputs: artworks (array of Artwork class instances)
@@ -421,6 +372,56 @@ async function myag_getArtworkAll()
 
   }
 
+  if (SETTING_loadTopDown)
+    return artworks.reverse();
+  else
+    return artworks;
+}
+
+/*
+fetches Artwork class instances of a particular group based on the xml file artwork entries
+inputs: none
+outputs: artworks (array of Artwork class instances)
+
+probably could be done using myag_getArtworkAll() to avoid repetition..
+*/
+async function myag_getArtworkGroup(groupname)
+{
+  await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
+
+  var parser = new DOMParser();
+  var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
+  var xmlArtworks = xmldoc.getElementsByTagName('artwork');
+  var artworks = [];
+  for (var t = 0; t < xmlArtworks.length; t++)
+  {
+    var good = false;
+    var a = new Artwork(undefined, undefined, [], undefined);
+    var xmla = xmlArtworks[t];
+    var props = xmla.childNodes;
+    try
+      {a.name = props[0].childNodes[0].nodeValue;}
+    catch
+      {a.name = ""}
+    a.filename = props[1].childNodes[0].nodeValue;
+    try 
+      {a.about = props[2].childNodes[0].nodeValue;}
+    catch
+      {a.about = "";}
+    a.awid     = props[4].childNodes[0].nodeValue;
+    var agroups = props[3].childNodes;
+
+    for (var tt = 0; tt < agroups.length; tt++)
+    {
+      a.groups.push(agroups[tt].childNodes[0].nodeValue);
+      if (agroups[tt].childNodes[0].nodeValue == groupname)
+        good = true;
+    }
+    if (good)
+      artworks.push(a);
+
+  }
+  
   if (SETTING_loadTopDown)
     return artworks.reverse();
   else

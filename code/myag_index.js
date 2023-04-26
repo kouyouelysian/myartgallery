@@ -5,12 +5,6 @@
 //        HOOK UP MYAG_MAIN.JS AND MYAG_IMGPANEL.JS BEFORE USING THIS!!!!!
 
 //==========================================================================//
-//============================= EDITABLE SETTINGS ==========================//
-//==========================================================================//
-
-SETTING_newFirst = false; // display fullsize view buttoin
-
-//==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
@@ -66,10 +60,7 @@ function myag_ind_startup(pagename)
 	myag_ind_makeGroupButtons();
 
 	myag_getArtworkAll().then(function(artworks) {
-		if (SETTING_newFirst)
-			myag_ip_appendArworks(artworks.reverse());
-		else
-			myag_ip_appendArworks(artworks);		
+		myag_ip_appendArworks(artworks);		
 	});
 
 }

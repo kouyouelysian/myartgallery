@@ -1,0 +1,47 @@
+/* EDIT THESE TO CHANGE THE LOOKS OF YOUR PAGE */
+
+body {
+	--col-backg:              #99ffcc; /* page (behind main content) background color */
+	--col-highlight:          #ff3399; /* highlights (borders, headings, etc) */
+	--col-body:               #FFFFFF; /* content body color */
+	--col-text:               #222222; /* main text color */
+	--col-text-light:         #CCCCCC; /* secondary text color */
+	--col-buttonbg:           #FFFFFF; /* group button background color */
+	--col-viewer:             #FFFFFF; /* image viewer pop-up borders/button text */
+	--col-viewer-text:        #FF88CB; /* image viewer bottom description text color */
+	--col-viewer-background:  rgba(0,0,0,0.15); /* background color for indiv. image view overlay - can be "none" */
+
+	--corner-radius:          8px;    /* radius of corners of all main elements on the page. can be 0 (sharp) */
+	--border-width:           3px;    /* thiccness of borders for all main elements on the page */
+
+	--font-main:             'Courier New'; /* font for usual text */
+	--font-main-size:         22px;
+	--font-big:              'Arial'; /* font for titles etc */
+	--font-big-size:          36px;
+	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
+	--main-text-align:        left;  /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
+
+	--page-margin:            7.5%;   /* spacing between screen borders and page contents. 5-10% rec. */
+	--page-spacing:           32px;   /* spacing between elements on page. 16-48px recommended*/
+
+	--userpic-size:           140px;
+	--userpic-radius:         50%;     /* 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
+	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
+	--userpic-border:         solid;  /* options: solid, dashed, none*/
+	--username-align:         left;   /*  options: left, middle or right */
+
+	--divider-width:          94%;    /* width of the horizontal divider line that separates sections */
+	--divider-size:           3px;    /* thiccness of that line */
+	--divider-style:          dotted; /* divider line options: solid, dashed, dotted */;
+
+	--buttons-per-row:        5;      /* number of group buttons per row, suggested 4-6 */
+	--button-height:          80px;   /* height of one group button */
+
+	--artworks-per-row:       4;      /* how many artworks to display per row. integer. suggested 3-6 */
+	--artworks-align:         middle; /* if the artworks are of different height, they will "magnet" to: top, middle or bottom */
+
+	--artwork-box-shadow:     none;  /* e.g. 0px 0px 8px RGBA(0,0,0,0.1). 'none' advised if you are using images with transparencies and unusual outter contours */
+	--artwork-drop-shadow:    none;  /* e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). RAM-hungry: use as alternative for the outlier case above  */
+
+	--overlay-opacity:        0.5;   /* 0..1, set the opacity of the semitransparent overlay that appears when you click on the artwork for details/bigger view  */
+}
