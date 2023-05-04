@@ -83,15 +83,16 @@ hr {
 
 #header {
 	height: var(--userpic-size);
-	min-height: 140px;
 	margin: var(--page-spacing);
 	width: calc(100%  - var(--page-spacing) - var(--page-spacing));
 }
 
 #userpic {
 	background-color: var(--col-backg);
-	height: calc(var(--userpic-size) - var(--border-width) - var(--border-width));
+	padding-bottom: calc(var(--userpic-size) - var(--border-width) - var(--border-width));
 	width:  calc(var(--userpic-size) - var(--border-width) - var(--border-width));
+	height: 0;
+	position: relative;
 	
 	border-width: var(--border-width);
 	border-color: var(--col-highlight);
@@ -101,15 +102,17 @@ hr {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
-	float: left;
 
 }
 
 #shortInfo {
+	position: absolute;
 	height: 100%;
-	margin-left: var(--page-spacing);
-	width: calc(100% - var(--userpic-size) - var(--page-spacing));
-	float: left;
+	margin-left: calc(var(--userpic-size) + var(--page-spacing));
+	width: calc(100% - var(--userpic-size) - var(--page-spacing) - var(--page-spacing) - var(--page-spacing));
+	top: var(--page-spacing);
+	left: var(--page-spacing);
+
 }
 
 #username {
@@ -130,7 +133,6 @@ hr {
 	margin: 0;
 	bottom: 0;
 	font-style: italic;
-
 }
 
 /*============================================================================*/

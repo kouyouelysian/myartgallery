@@ -4,11 +4,6 @@
 
 
 
-
-
-
-
-
 /* MANDATORY TO EDIT - WON'T WORK NICELY WITHOUT IT */
 
 // set this to the link which appears in the page address line
@@ -18,11 +13,6 @@ SETTING_neocitiesXmlFileEditLink = "pastelinkhere";
 // set this to the link which appears in the page address line
 // when you are in the neocities folder view, in "artworks" folder!
 SETTING_neocitiesArtworksFolderLink = "pastelinkhere";
-
-
-
-
-
 
 
 

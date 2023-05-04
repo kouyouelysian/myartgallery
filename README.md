@@ -10,27 +10,24 @@ DO NOT GROUP-LOAD FOLDERS! neocities has a bug with it.
 Uploading all the files at once is OK though!
 
 ## 2. open some pages in new tabs
-in neocities dashboard view (with the folders and all) where you just uploaded the stuff,
-open the "artworks" folder and "files" folder, each in its own new tab
-(right click + open in new tab for most browsers)
-keep these open, go back to the first tab with dashboard view
+in neocities dashboard view (with the folders and all) where you just uploaded the stuff, you have to open two folder in new tabs (right click + open in new tab for most browsers): 'files' and 'artworks'. On the 'files' tab, click on 'data.xml' - an editor will pop up. you don't have to edit anything; just keep it open. Don't do anything with the 'artworks' folder tab. Keeping these open, go back to the initial tab with the dashboard view.
 
-## 3. edit code/vars.js
-this is the hardest thing you have to do here - this will enable the gallery editor
-to redirect you automatically. navigate to "code" folder, then press "edit" at the
-line showing "myag_editor.js". at the very top of the page there are two lines
-where you have to paste your links with further guidance. the two lines should
-look something like this at the end:
+## 3. edit user/settings.js
+this is the hardest thing you have to do here - this will enable the gallery editor to redirect you automatically. navigate to the "settings" folder, then press "edit" at the line showing "settings.js". there are two lines where you have to paste links:
+
+SETTING_neocitiesXmlFileEditLink = "pastelinkhere";
+SETTING_neocitiesArtworksFolderLink = "pastelinkhere";
+
+The **pastelinkhere**s have to be replaced with actual links. The first one, SETTING_neocitiesXmlFileEditLink, should get the link to the data.xml file editor tab. Just copy the link from the tab that you opened before, and paste it to the setting.js line. The second one, SETTING_neocitiesArtworksFolderLink, is the same story but with the artworks folder. The two lines should look something like this at the end:
 
 SETTING_neocitiesXmlFileEditLink = "https://neocities.org/site_files/files/data.xml";
-
 SETTING_neocitiesArtworksFolderLink = "https://neocities.org/dashboard?dir=Fartworks";
 
-save the file and return to the dashboard view by pressing 'dashboard' at top left corner.
+Save the file (ctrl/cmd + S or click "save") and return to the dashboard view by pressing 'dashboard' at top left corner. Now the editor that helps you edit the image names, infos and groups, will be able to easily redirect you to the artwork upload page and XML update page upon clicking a button.
 
 ## 4. customize!
 the fun part where you customize the website looks.
-open the file "vars.css" in the "style" folder, and then your website index page in a new tab.
+open the file "style.css" in the "user" folder, and then your website index page in a new tab.
 in the very top of main.css are some assignable variables that you can change, with some
 guidance next to them. feel free to erase the default values and replace them with your
 own ones - just be sure to follow the same format that i used if you're not familiar with css!
