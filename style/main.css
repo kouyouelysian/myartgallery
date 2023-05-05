@@ -107,7 +107,6 @@ hr {
 
 #shortInfo {
 	position: absolute;
-	height: 100%;
 	margin-left: calc(var(--userpic-size) + var(--page-spacing));
 	width: calc(100% - var(--userpic-size) - var(--page-spacing) - var(--page-spacing) - var(--page-spacing));
 	top: var(--page-spacing);
