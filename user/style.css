@@ -13,7 +13,6 @@ body {
 	--col-viewer-text:        #FF88CB; /* image viewer bottom description text color */
 	--col-viewer-background:  rgba(0,0,0,0.15); /* background color for indiv. image view overlay - can be "none" */
 
-
 	/* radius of corners of all main elements on the page. can be 0 (sharp right angles) */
 	--corner-radius:          8px;    
 
@@ -28,15 +27,15 @@ body {
 	--font-big:              'Arial'; /* font for titles etc */
 	--font-big-size:          36px;
 	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
-	--main-text-align:        left;  /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
+	--main-text-align:        left;   /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
 
 	/* general page spacing settings */
 	--page-margin:            7.5%;   /* spacing between screen borders and main wrapper in %. 5-10% rec. */
 	--page-spacing:           32px;   /* master spacing between all the elements on page. 16-48px rec. */
 
 	/* user section settings */
-	--userpic-size:           150px;   /* px (static) or % (dynamically resized along with the page) */
-	--userpic-radius:         50%;     /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
+	--userpic-size:           150px;  /* px (static) or % (dynamically resized along with the page) */
+	--userpic-radius:         50%;    /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
 	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
 	--userpic-border:         solid;  /* options: solid, dashed, none*/
 	--username-align:         left;   /*  options: left, middle or right */
@@ -47,15 +46,16 @@ body {
 	--divider-style:          dotted; /* line styling options: solid, dashed, dotted */;
 
 	/* group buttons options */
-	--buttons-per-row:        5; /* number of group buttons per row, suggested 4-6 */      
-	--button-height:          80px; /* height of one group button */
+	--buttons-per-row:        5;      /* number of group buttons per row, suggested 4-6 */      
+	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
-	--artworks-per-row:       4; 	/* how many artworks to display per row. integer. suggested 3-6 */
-	--artworks-align:         middle; 	/* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
-	--artwork-box-shadow:     none; /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
-	--artwork-drop-shadow:    none;  /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
+	--artworks-per-row:       4; 	  /* how many artworks to display per row. integer. suggested 3-6 */
+	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
+	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
+	--artwork-drop-shadow:    none;   /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
 
 	/* on-click big image view options */
-	--overlay-opacity:        0.5; /* pacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */
+	--overlay-opacity:        0.5;    /* opacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */
+
 }

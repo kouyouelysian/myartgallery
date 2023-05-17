@@ -60,7 +60,8 @@ function myag_ind_startup(pagename)
 	myag_ind_makeGroupButtons();
 
 	myag_getArtworkAll().then(function(artworks) {
-		myag_ip_appendArworks(artworks);		
+		GLOBAL_loadedArtworks = artworks;
+		myag_ip_initArtworks(artworks, type=SETTING_pagingIndex);	
 	});
 
 }

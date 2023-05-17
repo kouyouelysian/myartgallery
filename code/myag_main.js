@@ -1,4 +1,9 @@
+//==========================================================================//
+//================ MYARTGALLERY MAIN FUNCTIONS/CLASSES =====================//
+//==========================================================================//
 
+// most scripts refer to globals/functions/classes from here.
+// hook this up before using anything more specific!
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -7,7 +12,12 @@
 GLOBAL_debug = true ;
 GLOBAL_workingFile = "./files/data.xml";
 GLOBAL_loadedData = undefined;
-GLOBAL_currentlyLoadedArtworks = undefined;
+GLOBAL_loadedArtworks = undefined;
+GLOBAL_currentlyLoadedArtworks = [];
+GLOBAL_currentPage = 0;
+GLOBAL_pagesTotal = null;
+GLOBAL_usedPaginationType = "none";
+GLOBAL_artworksPerPage = null;
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
@@ -445,7 +455,6 @@ async function myag_getArtworkById(targetId)
     }
   }
 }
-
 
 
 

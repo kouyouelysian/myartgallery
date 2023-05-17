@@ -59,7 +59,8 @@ function myag_gr_startup()
 	});
 
 	myag_getArtworkGroup(GLOBAL_group_groupname).then(function(artworks) {
-		myag_ip_appendArworks(artworks);	
+		GLOBAL_loadedArtworks = artworks;
+		myag_ip_initArtworks(artworks, type=SETTING_pagingGroup);
 	});
 
 	myag_setTextElements(GLOBAL_group_groupname);

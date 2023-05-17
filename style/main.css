@@ -1,8 +1,6 @@
 
-
-
 /*============================================================================*/
- /*                            GENERAL/MAIN STYLES                            */
+/*                             GENERAL/MAIN STYLES                            */
 /*============================================================================*/
 
 
@@ -257,6 +255,38 @@ a {
 
 a:hover {
 	filter: brightness(70%);
+}
+
+
+#paginationPages {
+	width: 100%;
+	user-select: none;
+	text-align: center;
+}
+
+.paginationPageLink, .paginationArrow {
+	display: inline-block;
+	margin-left: 4px;
+	margin-right: 4px;
+	color: var(--col-highlight);
+	text-decoration: none;
+	transition: text-decoration 0.3s;
+	cursor: pointer;
+}
+
+.paginationPageLink:hover, .paginationArrow:hover {
+	text-decoration: underline;
+}
+
+.paginationPageSelected {
+	color: var(--col-text);
+	text-decoration: underline;
+}
+
+
+#paginationMoreTrigger {
+	height: 0;
+	width: 100%;
 }
 
 /*============================================================================*/
