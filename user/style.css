@@ -1,5 +1,7 @@
 /* EDIT THESE TO CHANGE THE LOOKS OF YOUR PAGE */
 
+/* for 'px' or '%' united variables, if you're using 0, please, write 0% or 0px! otherwise stuff might suddenly eat pants */
+
 body {
 
 	/* color settings. accept hex values e.g. #AAB, #008080, or HTML basic colours e.g. 'red' */
@@ -13,10 +15,10 @@ body {
 	--col-viewer-text:        #FF88CB; /* image viewer bottom description text color */
 	--col-viewer-background:  rgba(0,0,0,0.15); /* background color for indiv. image view overlay - can be "none" */
 
-	/* radius of corners of all main elements on the page. can be 0 (sharp right angles) */
+	/* radius of corners of all main elements on the page. 0...N pixels (e.g. 3px, 0px=sharp corners) */
 	--corner-radius:          8px;    
 
-	/* thiccness of borders for all main elements on the page. 0 or N pixels (e.g. 3px) */
+	/* thiccness of borders for all main elements on the page. 0...N pixels (e.g. 3px) */
 	--border-width:           3px;    
 
 	/* font settings. accept default fonts like 'Arial', 'Calibri' or stuff. To use a custom font,
