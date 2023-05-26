@@ -40,3 +40,9 @@ SETTING_pagingGroup     = "none";
 
 // rows of artworks per page, integer. effective if pagination is used.
 SETTING_rowsPerPage     = 1; 
+
+// if "pages" is the pagination method, "true" means next page will get loaded
+// when the user clicks through images in the big overlay. "false" means when
+// the user reaches the last image on the page, they will wrap around to the
+// first one.
+SETTING_nextPageOnWrap  = true;

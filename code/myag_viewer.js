@@ -2,7 +2,7 @@
 //==================== ARTWORK VIEWER THING HANDLER ========================//
 //==========================================================================//
 
-//        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
+//        HOOK UP MYAG_MAIN.JS AND MYAG_PANEL.JS BEFORE USING THIS!!!!!
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -158,13 +158,34 @@ function myag_av_jump(dir)
 			{
 				t += 1;
 				if (t == GLOBAL_currentlyLoadedArtworks.length)
-				t = 0;  //wrap around
+				{
+					t = 0;  //wrap around
+					if (SETTING_nextPageOnWrap && SETTING_pagingIndex == "pages")
+					{
+						GLOBAL_currentPage += 1;
+						if (GLOBAL_currentPage == GLOBAL_pagesTotal)
+							GLOBAL_currentPage = 0;
+						myag_ip_goto(GLOBAL_currentPage);
+					}
+				}
+				
 			}
 			else  // bwd
 			{
 				t -= 1;
 				if (t == -1)
-				t = GLOBAL_currentlyLoadedArtworks.length-1; //wrap around
+				{
+					t = GLOBAL_currentlyLoadedArtworks.length-1; //wrap around
+					if (SETTING_nextPageOnWrap && SETTING_pagingIndex == "pages")
+					{
+						GLOBAL_currentPage -= 1;
+						if (GLOBAL_currentPage == -1)
+							GLOBAL_currentPage = GLOBAL_pagesTotal - 1;
+						myag_ip_goto(GLOBAL_currentPage);
+						t = GLOBAL_currentlyLoadedArtworks.length-1; // redo
+					}
+				}
+				
 			}
 			aw = GLOBAL_currentlyLoadedArtworks[t];
 			break;
