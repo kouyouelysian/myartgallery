@@ -49,7 +49,7 @@ Save the file (ctrl/cmd + S or click the red "save" button) and return to the da
 ### 4. customize!
 The fun part is that you customize the website look! All the "easy" customization files are located in the "user" folder. You will not have to edit anything else to change things up. Open the file "style.css" in the "user" folder. There are some assignable variables that you can change, with guidance next to them. Feel free to rewrite the default values with custom ones - just be sure to follow the same format that i used and noted in the guide comments if you're not familiar with css! You can open your gallery's index and refresh it to see the results of your customizations. If it doesn't go through, try [force-refreshing](https://www.howtogeek.com/672607/how-to-hard-refresh-your-web-browser-to-bypass-your-cache/) the page.
 
-You can load your user picture to the "files" folder. No size constraints but i suggest resizing to 400x400px. put the filename to the --userpic-file in vars.css - otherwise it will keep pointing to the question mark image!  
+You can load your user picture to the "files" folder. No size constraints but i suggest resizing to 400x400px. put the filename to the --userpic-file in user/style.css - otherwise it will keep pointing to the question mark image!  
 
 All the pages generate text automatically, except for the landing (index) page. the index page has info that is presented when someone first reaches your webpage! edit "index.html" and put your info instead of the stock text. Done, you're marvelous!
 
