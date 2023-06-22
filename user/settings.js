@@ -12,12 +12,12 @@ SETTING_neocitiesXmlFileEditLink    = "pastelinkhere";
 // when you are in the neocities folder view, in "artworks" folder!
 SETTING_neocitiesArtworksFolderLink = "pastelinkhere";
 
-
-
 //========OPTIONAL TO EDIT - WORKS AS INTENDED W/ DEFAULTS========//
 
-// display artworks top-down as they appear in the textual editor view
-SETTING_loadTopDown     = true;
+// name for your page - displayed in the tab text.
+// Edit the string to your liking, e.g "Aubery's Gallery", with
+// double quotes! don't put other double quotes in the name. 
+SETTING_title           = "MyArtGallery";
 
 // display fullsize view button in overlay image viewer
 SETTING_fullButton      = true; 
@@ -46,3 +46,4 @@ SETTING_rowsPerPage     = 1;
 // the user reaches the last image on the page, they will wrap around to the
 // first one.
 SETTING_nextPageOnWrap  = true;
+

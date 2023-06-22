@@ -5,7 +5,7 @@
 body {
 
 	/* color settings. accept hex values e.g. #AAB, #008080, or HTML basic colours e.g. 'red' */
-	--col-backg:              #99ffcc; /* page (behind main content) background color */
+	--col-backg:              #77ffff; /* page (behind main content) background color */
 	--col-highlight:          #ff3399; /* highlights (borders, headings, etc) */
 	--col-body:               #FFFFFF; /* content body color */
 	--col-text:               #222222; /* main text color */
@@ -48,14 +48,13 @@ body {
 	--divider-style:          dotted; /* line styling options: solid, dashed, dotted */;
 
 	/* group buttons options */
-	--buttons-per-row:        5;      /* number of group buttons per row, suggested 4-6 */      
+	--buttons-per-row:        4;      /* number of group buttons per row, suggested 4-6 */      
 	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
 	--artworks-per-row:       4; 	  /* how many artworks to display per row. integer. suggested 3-6 */
 	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
-	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
-	--artwork-drop-shadow:    none;   /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
+	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); do not use if you have a bunch of strange outter shape transparency images */	
 
 	/* on-click big image view options */
 	--overlay-opacity:        0.5;    /* opacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */

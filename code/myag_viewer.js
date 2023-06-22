@@ -119,7 +119,7 @@ function myag_av_putToViewer(aw_id)
 			a.style.display = "none";
 		}
 
-		GLOBAL_viewerState = true;
+		
 
 	});	
 }
@@ -138,7 +138,9 @@ function myag_av_showViewer(aw_id)
 		  GLOBAL_viewerWrapperObject.style.opacity = 1;	
 		}, 50) // yes, a js clutch, what did you expect :D
 
-		myag_av_putToViewer(aw_id);
+		GLOBAL_viewerState = true;
+		if (aw_id != null)
+			myag_av_putToViewer(aw_id);
 			
 	}
 }

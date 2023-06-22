@@ -1,31 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>MYAG XML Editor</title>
+	<!-- change this to what you want to display at the browser top -->
+	<title>My Art Gallery</title>
+	
+	<link rel="stylesheet" type="text/css" href="./style/main.css">
+	<link rel="stylesheet" type="text/css" href="./user/overrides.css">
 	<link rel="stylesheet" type="text/css" href="./style/editor.css">
 </head>
 <body>
+	<div id="artworkViewerWrapper"></div>
 	<div id="mainWrapper">
-		<p class="para">You've reached the editor page for this website's gallery. The whole system runs using a file "data.xml" - a special "e<b>X</b>tendable <b>M</b>arkup <b>L</b>anguage" type file that contains information on groups, artworks, etc. It is parsed by gallery pages to display relevant artworks and info. This page provides <b>no hidden data</b> and you <b>cannot directly upload or remove artworks</b> through it, but it helps you edit the XML file and then redirects you to the Neocities file edit window to easily paste in the new XML. Please note: you have to be logged in to Neocities in order to easily overwrite your old XML. If you're not the owner of the site, please, leave this page - you cannot influence the site or gather any otherwise hidden data here.</p>
-		<p class="para"><span class="clickable" onclick="myag_ed_gfNew();">+ new group field</span></p>
-		<div id="gfWrapper"></div>
-		<p class="para"><span class="clickable" onclick="myag_ed_apNew();">+ new artwork field</span></p>
-		<div id='apWrapper'></div>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<!--<div id="header">
+			
+			<div id="shortInfo">
+				<p id="username">MyAG Gallery Editor Page</p>
+				<p id="userinfo">Use this page to add, edit and remove artworks and groups. Simply click on the artwork image or group button to open the editing menu. Once done, click "update XML" at the bottom of the page and simply delete all the existing text and paste in the one that just got auto-loaded into your copypaste clipboard. Then, click on "upload images" and upload the files that you prepared the information for! If you're not the owner of this MyAG instance, please, leave this page; it serves no use to you, and you will not be able to modify anything.</p>
+			</div>
+			
+
+		</div>-->
+		<h1>MyAG Gallery Editor Page</h1>
+		<p class="para">Use this page to add, edit and remove artworks and groups. Simply click on the artwork image or group button to open the editing menu. Once done, click "update XML" at the bottom of the page and simply delete all the existing text and paste in the one that just got auto-loaded into your copypaste clipboard. Then, click on "upload images" and upload the files that you prepared the information for! If you're not the owner of this MyAG instance, please, leave this page; it serves no use to you, and you will not be able to modify anything.<br><br><span style="color: red">By the way</span>, did you know that you can (and should) check if your settings.js file is up to date using the included <a href="./settingsChecker.html" target="_blank">settings file checker</a>? Now you do!</p>
+
+		<hr>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ GROUP BUTTONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<div id="groupsWrapper"></div>
+		<hr>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL ARTWORKS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<div id="artworksWrapper"></div>
+		<hr>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FOOTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<p id="footer">made using MyArtGallery by <a href="https://astrossoundhell.neocities.org/" target="_blank">Aubery 'ASTRO' Lis</a></p>
 	</div>
+
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STICKY BUTTONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
 	<div id="bottomButtonWrapper">
-		<div class="bottomButton" onclick="myag_ed_openWebXmlEditor();">
-			<p>Upldate XML</p>
-		</div>
-		<div class="bottomButton" onclick="myag_ed_openWebFileUpload();">
-			<p>Upload files</p>
-		</div>	
-		<div class="bottomButton" onclick="myag_ed_copyXml();">
-			<p>Raw XML</p>
-		</div>
 	</div>	
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!--scripts start-->
 	<script type="text/javascript" src="./user/settings.js"></script>
+	<script type="text/javascript">
+		// force other pagination settings
+		SETTING_pagingIndex = "append";
+	</script>
 	<script type="text/javascript" src="./code/myag_main.js"></script>
+	<script type="text/javascript" src="./code/myag_panel.js"></script>
+	<script type="text/javascript" src="./code/myag_index.js"></script>
 	<script type="text/javascript" src="./code/plugin_vkbeautify.js"></script>
+	<script type="text/javascript" src="./code/myag_viewer.js"></script>
 	<script type="text/javascript" src="./code/myag_editor.js"></script>
+	<!--scripts end-->
 </body>
 </html>

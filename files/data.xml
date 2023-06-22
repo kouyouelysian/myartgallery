@@ -5,16 +5,56 @@
                <name>squares</name>
                <about>Test group - square shaped images only (these are different files!)</about>
           </group>
+          <group>
+               <name>odd tests</name>
+               <about/>
+          </group>
+          <group>
+               <name>even tests</name>
+               <about/>
+          </group>
+          <group>
+               <name>💖weird symbols☆</name>
+               <about>testout of uncanonical symbols in the group name. works like a charm👌👌👌</about>
+          </group>
      </groups>
      <artworks>
           <artwork>
-               <name></name>
-               <filename>test6.png</filename>
-               <about></about>
+               <name>Test Image 1</name>
+               <filename>test1.png</filename>
+               <about>Tests displaying square-shaped images</about>
                <ingroups>
                     <ingroup>squares</ingroup>
+                    <ingroup>odd tests</ingroup>
                </ingroups>
-               <awid>1681895246396_ed20e</awid>
+               <awid>1681895247228_g6gox</awid>
+          </artwork>
+          <artwork>
+               <name>Test Image 2</name>
+               <filename>test2.png</filename>
+               <about>Tests displaying wide rectangular images</about>
+               <ingroups>
+                    <ingroup>even tests</ingroup>
+               </ingroups>
+               <awid>1681895247084_xgvt2</awid>
+          </artwork>
+          <artwork>
+               <name>Test Image 3</name>
+               <filename>test3.png</filename>
+               <about>Tests displaying tall rectangular images</about>
+               <ingroups>
+                    <ingroup>odd tests</ingroup>
+               </ingroups>
+               <awid>1681895246948_kq5rv</awid>
+          </artwork>
+          <artwork>
+               <name>Test Image 4</name>
+               <filename>test4.png</filename>
+               <about>Tests correct transparency</about>
+               <ingroups>
+                    <ingroup>even tests</ingroup>
+               </ingroups>
+               <awid>1681895246708_y3k7p</awid>
           </artwork>
           <artwork>
                <name>Test Image 5 long name long name long name long name long name</name>
@@ -22,38 +62,19 @@
                <about>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</about>
                <ingroups>
                     <ingroup>squares</ingroup>
+                    <ingroup>odd tests</ingroup>
                </ingroups>
                <awid>1681895246564_kvk0e</awid>
           </artwork>
           <artwork>
-               <name>Test Image 4</name>
-               <filename>test4.png</filename>
-               <about>Tests correct transparency</about>
-               <ingroups/>
-               <awid>1681895246708_y3k7p</awid>
-          </artwork>
-          <artwork>
-               <name>Test Image 3</name>
-               <filename>test3.png</filename>
-               <about>Tests displaying tall rectangular images</about>
-               <ingroups/>
-               <awid>1681895246948_kq5rv</awid>
-          </artwork>
-          <artwork>
-               <name>Test Image 2</name>
-               <filename>test2.png</filename>
-               <about>Tests displaying wide rectangular images</about>
-               <ingroups/>
-               <awid>1681895247084_xgvt2</awid>
-          </artwork>
-          <artwork>
-               <name>Test Image 1</name>
-               <filename>test1.png</filename>
-               <about>Tests displaying square-shaped images</about>
+               <name/>
+               <filename>test6.png</filename>
+               <about/>
                <ingroups>
                     <ingroup>squares</ingroup>
+                    <ingroup>even tests</ingroup>
                </ingroups>
-               <awid>1681895247228_g6gox</awid>
+               <awid>1681895246396_ed20e</awid>
           </artwork>
      </artworks>
 </data>

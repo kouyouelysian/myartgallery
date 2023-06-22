@@ -1,221 +1,153 @@
-/* stylesheet for the editor. to customize your site looks, edit main.css, not this! */
+/* STYLE VARIABLE OVERRIDES FOR THE EDITOR PAGE. DO NOT EDIT */
 
+body {
 
-/*---------------- general ----------------*/
+	/* color settings. accept hex values e.g. #AAB, #008080, or HTML basic colours e.g. 'red' */
+	--col-backg:              #eee; /* page (behind main content) background color */
+	--col-highlight:          #222; /* highlights (borders, headings, etc) */
+	--col-body:               #fff; /* content body color */
+	--col-text:               #222; /* main text color */
+	--col-text-light:         #666; /* secondary text color */
+	--col-buttonbg:           #fab; /* group button background color */
+	--col-viewer:             #fff; /* image viewer pop-up borders/button text */
+	--col-viewer-text:        #222; /* image viewer bottom description text color */
+	--col-viewer-background:  #fff; /* background color for indiv. image view overlay - can be "none" */
 
-body, html {
+	--col-counterpick: #9fc;
+
+	/* radius of corners of all main elements on the page. 0...N pixels (e.g. 3px, 0px=sharp corners) */
+	--corner-radius:          0px;    
+
+	/* thiccness of borders for all main elements on the page. 0...N pixels (e.g. 3px) */
+	--border-width:           0px;    
+
+	/* font settings. accept default fonts like 'Arial', 'Calibri' or stuff. To use a custom font,
+	put an @font-face rule at the very first line of this file and point it to your custom font.
+	if you're not sure how to do that --> https://www.w3schools.com/cssref/css3_pr_font-face_rule.php */
+	--font-main:             'Courier New'; /* font for usual text */
+	--font-main-size:         22px;
+	--font-big:              'Arial'; /* font for titles etc */
+	--font-big-size:          36px;
+	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
+	--main-text-align:        left;   /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
+
+	/* general page spacing settings */
+	--page-margin:            5%;   /* spacing between screen borders and main wrapper in %. 5-10% rec. */
+	--page-spacing:           32px;   /* master spacing between all the elements on page. 16-48px rec. */
+
+	/* user section settings */
+	--userpic-size:           150px;  /* px (static) or % (dynamically resized along with the page) */
+	--userpic-radius:         50%;    /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
+	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
+	--userpic-border:         solid;  /* options: solid, dashed, none*/
+	--username-align:         left;   /*  options: left, middle or right */
+
+	/* section divider horizontal line settings */
+	--divider-width:          calc(100% - var(--page-spacing) - var(--page-spacing)); /* width, % or calc(% - px). default setting fits itself to page spacing */
+	--divider-size:           3px;    /* thiccness of the divider line, px */
+	--divider-style:          dotted; /* line styling options: solid, dashed, dotted */;
+
+	/* group buttons options */
+	--buttons-per-row:        6;      /* number of group buttons per row, suggested 4-6 */      
+	--button-height:          80px;   /* height of one group button */
+
+	/* artworks grid options */
+	--artworks-per-row:       6; 	  /* how many artworks to display per row. integer. suggested 3-6 */
+	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
+	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
+	--artwork-drop-shadow:    none;   /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
+
+	/* on-click big image view options */
+	--overlay-opacity:        0.5;    /* opacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */
+
+}
+
+/*
+Below are some hack-in overrides for the "usual" stuff from the actual index page styles,
+as well as some additional bits and bobs for the editor to work. Don't change unless you
+want your editor page to suddenly turn into a piece of crap.. it's barely holding together
+as is, as far as i can see :'D
+*/
+
+#mainWrapper {
+	margin-bottom: calc(var(--page-margin) * 2);
+}
+
+#header {
+	height: auto;
+}
+
+#shortInfo {
+	margin-left: 0;
+	position: unset;
+	width: calc(100% - var(--page-spacing) - var(--page-spacing));
+}
+
+#username {
+	margin-bottom: calc(var(--page-spacing) / 2);
+}
+
+#artworkViewer {
+	height: auto;
+	margin-top: 0;
+	top: 50%;
+	transform: translateY(-50%);	
+}
+
+#formWrapper {
+	width: calc(100% - var(--page-spacing) - var(--page-spacing));
+	height: : calc(100% - var(--page-spacing) - var(--page-spacing));
 	position: relative;
 	top: 0;
 	left: 0;
-	right: 0;
-	bottom: 0;
-
-	margin: 0;
-	padding: 0;
-
-	width: 100%;
-	height: 100%;
-
-	font-family: "Verdana";
-	font-size: 22px;
-	color: #222;
+	padding: var(--page-spacing);
 }
-
-body {
-	background-color: #F8F8F8;
-}
-
-#mainWrapper {
-	margin-top: calc(5% - 1px);
-	margin-left: calc(5% - 1px);
-	width: calc(90% - 2px);
-	border: 1px solid #222;
-	background-color: #fff;
-	margin-bottom: calc(5% - 1px);
-}
-
-.para, .ap{
-	width:  calc(100% - 40px);
-	margin: 0;
-	padding: 20px;
-	border-bottom: 1px solid #222;
-	text-align: justify;
-
-}
-
-.para:last-child, .ap:last-child {
-	border-bottom: none;
-}
-
-.options {
-	font-style: italic;
-	margin-right: 32px;
-	float: right;
-}
-
-.options span {
-	margin-left: 16px;
-}
-
-.clickable {
-	color: #fab;
-	text-decoration: underline;
-}
-
-.clickable:hover {
-	color: #c02;
-}
-
-
-/*---------------- artwork parameters (ap) ----------------*/
-
-.ap {
-	height: 300px;
-}
-
-.apPart {
-	position: relative;
-	display: inline-block;
-	height: 100%;
-	vertical-align: top;
-}
-
-.apParams {
-
-	width: calc(50% - 1px);
-	border-right: 1px solid #222;
-}
-
-.apParams p {
-	height: 32px;
-	margin-top: 0;
-	margin-bottom: 0;
-}
-
-.apParams p:first-child { /*should target the id string line*/
-	color: #ccc;
-	font-style: italic;
-	width: 70%;
-	display: inline-block;
-	padding: 0;
-	margin: 0;
-}
-
-
-
-
-
-.apParams input, .apParams textarea {
-	width: 95%;
-	font-family: 'Courier New';
-	font-size: 20px;
-
-}
-
-.apParams input {
-	height: 32px;
-}
-
-.apParams textarea {
-	overflow-y: scroll;
-}
-
-.apGroups {
-
-	padding-left: 16px;
-	padding-right: 16px;
-	width: calc(20% - 33px);
-	border-right: 1px solid #222;
-	font-size: 16px;
-}
-
-.apPreview {
-
-	margin: 16px;
-	width: calc(30% - 33px);
-	height: calc(100% - 32px);
-
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
-}
-
-
-
-/*---------------- group field (gf) ----------------*/
-
-
-.gf {
-	padding: 16px;
-	display: block;
-	border-bottom: 1px solid #222;
-}
-
-.gf p {
-	padding: 0;
-	margin: 0;
-	height: 32px;
-}
-
-.gf p:first-child {
-	color: #ccc;
-	font-style: italic;
-	display: inline-block;
-}
-
-
-.gf input, .gf textarea {
-	width: calc(100% - 8px);
-	font-family: 'Courier New';
-	font-size: 20px;
-
-}
-
-.gf input {
-	height: 32px;
-}
-
-.gf textarea {
-	overflow-y: scroll;
-}
-
-
-/*---------------- done button ----------------*/
 
 #bottomButtonWrapper {
 	position: fixed;
 	bottom: 32px;
-	width: 100%;
-	height: 40px;
+	width: 50%;
+	left: 25%;
+	height: 60px;
 	text-align: center;
+	display: table;
+	box-shadow: 0px 0px 10px RGBA(0,0,0,0.3);
 }
 
 .bottomButton {
-	width: 10%;
 	height: 100%;
-	background-color: #FFF;
-	border: 1px solid #222;
-	box-shadow: 0px 0px 10px RGBA(0,0,0,0.1);
-	transition: border 0.2s, box-shadow 0.2s;
+	background-color: var(--col-buttonbg);
+	color: var(--col-text);
+	font-family: var(--font-big);
+	font-size: var(--font-btn-size);
+	border: var(--border-width) solid var(--col-highlight);
+	transition: color 0.1s, background-color 0.1s, box-shadow 0.1s;
 	position: relative;
-	display: inline-block;
+	display: table-cell;
+	padding: 8px;
+	border: 4px solid var(--col-body);
+	border-right: 0;
+}
+
+.bottomButton:last-child {
+	border-right: 4px solid var(--col-body);
 }
 
 .bottomButton p {
 	padding: 0;
 	margin: 0;
 	position: absolute;
-	width: 100%;
+	width: calc(100% - 16px);
 	text-align: center;
 	top: 50%;
 	transform: translateY(-50%);
-	transition: color 0.2s;
+	color: inherit;
 	user-select: none;
 }
 
 .bottomButton:hover {
-	border: 1px solid #fab;
-	box-shadow: 0px 0px 8px RGBA(0,0,0,0.6);
+	color: var(--col-buttonbg);
+	background-color: var(--col-text);
 }
 
 .bottomButton:hover > p {
@@ -224,4 +156,324 @@ body {
 
 .bottomButton:active {
 	filter: brightness(90%);
+}
+
+#buttonCreateNewGroup {
+	background-color: var(--col-counterpick);
+	color: var(--col-text);
+}
+
+#buttonCreateNewGroup:hover {
+	background-color: var(--col-buttonbg);
+}
+
+#buttonCreateNewArtwork {
+	background-color: var(--col-counterpick);
+	color: var(--col-text);
+	transition: background-color 0.1s, color 0.1s;
+}
+
+.newArtwork {
+	transition: filter 0.1s;
+}
+
+#buttonCreateNewArtwork:hover {
+	background-color: var(--col-buttonbg);
+}
+
+.artwork p {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	text-align: center;
+	left: 0;
+	transform: translateY(-50%);
+	font-family: var(--font-big);
+	font-size: var(--font-btn-size);
+	margin: 0;
+	padding: 0;
+	user-select: none;
+}
+
+#artworksWrapper, #groupsWrapper {
+	margin-left: 0;
+}
+
+/* these have to be separate because editor.js modifies these independently */
+.artwork {
+	margin-right: 0;
+	margin-left: var(--page-spacing);
+}
+
+.groupButton {
+	margin-right: 0;
+	margin-left: var(--page-spacing);
+}
+
+#formWrapper input[type="text"], #formWrapper textarea {
+	display: block;
+	margin-bottom: calc(var(--page-spacing) / 2);
+	width: calc(100% - 10px);
+	font-family: var(--font-big);
+	font-size: var(--font-btn-size);
+	padding: 4px;
+	border: 1px solid var(--col-buttonbg);
+}
+
+#formWrapper textarea {
+	height: calc(var(--font-btn-size) * 5.5);
+	overflow-y: scroll;
+}
+
+#formWrapper hr {
+	width: 100%;
+	margin: 0;
+	margin-bottom: calc(var(--page-spacing) / 2);
+	margin-top: calc(var(--page-spacing) / 2);
+}
+
+#formWrapper .guide {
+	font-style: italic;
+	font-size: var(--font-main-size);
+	color: var(--col-text-light);
+	margin: 0;
+	margin-bottom: 4px;
+}
+
+#formGroupCheckboxes {
+	width: calc(100% - 14px);
+	max-height: 115px;
+	overflow-y: scroll;
+	border: 1px solid var(--col-buttonbg);
+	padding: 6px;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	padding-bottom: 0;
+}
+
+#formGroupCheckboxes::-webkit-scrollbar {
+  display: none;
+}
+
+.labelledCheckbox {
+	display: inline-block;
+	width: 50%;
+	position: relative;
+	height: calc(var(--font-main-size) + 4px);
+	background-color: var(--col-body);
+	transition: background-color 0.1s;
+	cursor: pointer;
+}
+
+.labelledCheckbox:hover {
+	background-color: var(--col-buttonbg);
+}
+
+.labelledCheckbox label {
+	position: absolute;
+	height: 100%;
+	width: 90%;
+	top: 0%;
+	left: 10%;
+	pointer-events: none;
+	overflow: hidden;
+	
+}
+
+.labelledCheckbox input {
+	position: absolute;
+	height: calc(100% - 8px);
+	width: calc(10% - 8px);
+	margin: 0;
+	top: 4px;
+	left: 4px;
+	pointer-events: none;
+}
+
+#formWrapper .controlButton {
+	margin-bottom: 0;
+	width: calc(50% - var(--page-spacing) / 2);
+	margin-right: var(--page-spacing);
+}
+
+#formWrapper .controlButton:last-of-type {
+	margin-right: 0;
+}
+
+#actionMenuBackdrop, #popupBackdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9;
+}
+
+#popupBackdrop {
+	background-color: RGBA(0,0,0,0.3);
+	user-select: none;
+	z-index: 99;
+}
+
+.popup {
+	position: fixed;
+	width: 25%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border: 2px solid var(--col-buttonbg);
+	z-index: 100;
+	background-color: var(--col-body);
+	box-shadow: 0px 0px 8px RGBA(0,0,0,0.5);
+}
+
+.popup .controlButton {
+	margin: calc(var(--page-spacing) / 2);	
+	height: calc(var(--button-height) / 2);
+	margin-top: 0;
+	display: block;
+}
+
+#popupAlert .controlButton {
+	width: 20%;
+	margin-left: 40%;
+	margin-top: 0;
+}
+
+#popupSelect .controlButton {
+	width: calc(50% - var(--page-spacing) + var(--page-spacing) / 4);
+	float: left;
+}
+
+#popupSelect .controlButton:last-child {
+	margin-left: 0;
+}
+
+.popupTextMessage {
+	font-family: var(--font-big);
+	font-size: var(--font-btn-size);
+	text-align: center;
+	width: calc(100% - var(--page-spacing));
+	margin: calc(var(--page-spacing) / 2);
+}
+
+#actionMenu {
+	width: 250px;
+	position: absolute;
+	border: 2px solid var(--col-buttonbg);
+	background-color: var(--col-body);
+	box-shadow: 0px 0px 8px RGBA(0,0,0,0.2);
+	z-index: 10;
+}
+
+#actionMenu .controlButton {
+	width: calc(100% - var(--page-spacing));
+	margin: calc(var(--page-spacing) / 2);
+	margin-bottom: 0;
+	height: calc(var(--button-height) / 2);
+}
+
+#actionMenu .controlButton:last-child {
+	margin-bottom: calc(var(--page-spacing) / 2);
+}
+
+
+
+.artwork:first-child, .groupButton:first-child {
+	margin-left: var(--page-spacing);
+}
+
+.controlButton {
+	height: var(--button-height);
+	background-color: var(--col-buttonbg);
+	color: var(--col-highlight);
+	display: inline-block;
+	font-family: var(--font-big);
+	font-size: var(--font-btn-size);
+	position: relative;
+	transition: background-color 0.1s, color 0.1s;
+	user-select: none;
+	cursor: pointer;
+}
+
+.controlButton:hover {
+	color: var(--col-buttonbg);
+	background-color: var(--col-highlight);
+}
+
+.controlButton:active {
+	filter: brightness(80%);
+}
+
+.controlButton p {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
+	margin: 0;
+}
+
+
+.locatorWrapper {
+	width: var(--page-spacing);
+	height: 0;
+	position: relative;
+	display: none;
+	margin: 0;
+	margin-bottom: var(--page-spacing);
+}
+
+.locator {
+	background-color: blue;
+	width: 4px;
+	height: calc(100% - 4px);
+	margin-left: calc(var(--page-spacing) / 2  - 4px);
+	background-color: var(--col-body);
+	
+	position: absolute;
+	top: 0;	
+}
+
+.locatorWrapperArtwork {
+	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));
+	vertical-align: middle;
+}
+
+.locatorWrapperArtwork .locator {
+	border: 2px dashed var(--col-buttonbg); 
+	border-color: var(--col-buttonbg);
+}
+
+.locatorWrapperGroup .locator {
+	border: 2px dashed;
+	border-color: var(--col-buttonbg); 
+}
+
+.locatorWrapperGroup {
+	height: var(--button-height);
+}
+
+.locatorWrapper:hover {
+	width: calc(100% / var(--artworks-per-row));
+}
+
+.locatorWrapperArtwork:hover + .artwork, .locatorWrapperGroup:hover + .groupButton {
+	margin-left: var(--page-spacing);
+}
+
+.locatorWrapper:hover .locator {
+	width: calc(100% - var(--page-spacing) - 4px);
+	margin-left: var(--page-spacing);
+	opacity: 1;
+}
+
+#currentlyMoved {
+	width: 0;
+	opacity: 0;
+}
+
+#currentlyMovedLocator {
+	display: none;
 }

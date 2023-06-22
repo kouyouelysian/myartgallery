@@ -5,29 +5,96 @@
 //        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
 
 //==========================================================================//
+//================================ CONSTANTS ===============================//
+//==========================================================================//
+
+// used in other scripts like myag_editor.js to detect when the initial
+// set of stuff has been loaded
+const myag_ip_awLoaded = new CustomEvent("initialArtworksLoaded");
+
+//==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
+
 
 /* Creates an appendable div based on an Artwork instance
 inputs: aw <Artwork> [an Artwork class instance to be visualized]
 returns: <DOM element>
 */
-function myag_ip_generateImgDiv(aw)
+function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
 {
+	var div = document.createElement("div");
+	div.classList.add("artwork");
+	div.setAttribute("artworkId", aw.awid);
+
+	var onclick = action;
+	if (onclick == undefined)
+	{
+		var onclick = "myag_av_showViewer('"+aw.awid+"')";
+		if (myag_isEditor())
+			onclick = "myag_ed_showItemMenu('"+aw.awid+"', event)";
+	}
+
+	if (aw.filename == undefined)
+	{
+		div.setAttribute("onclick", onclick);
+	}
+	else
+	{
+		var img = document.createElement("img");
+		img.setAttribute("src", "./artworks/"+aw.filename);
+		img.classList.add("artworkImg");
+		img.setAttribute("onclick", onclick);
+		div.appendChild(img);
+	}
+
+	if (overlayText != undefined)
+	{
+		var para = document.createElement("p");
+		para.innerHTML = overlayText;
+		div.appendChild(para);
+	}
 	
-	var img = document.createElement('img');
-	img.setAttribute('src', "./artworks/"+aw.filename);
 
-	// onclick will activate a function in myag_viewer.js
-	img.setAttribute('onclick', "myag_av_showViewer('"+aw.awid+"');");
+	return div;
+}
 
-	var d = document.createElement('div');
-	d.classList.add('artwork');
-	d.appendChild(img);
+/* Creates an appendable locator div based on an Artwork instance. Is needed
+for the XML editor page, unused in the main page itself.
+inputs: aw <Artwork> [an Artwork class instance to be visualized]
+returns: <DOM element>
+*/
+function myag_ip_generateArtworkLocatorDiv(aw=undefined)
+{
+	var locatorWrapper = document.createElement("div");
+	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperArtwork");
+	locatorWrapper.setAttribute("artworkId", aw.awid);
 
-	return d;
 
+	var locator = document.createElement("div");
+	locator.classList.add("locator");
+	locator.setAttribute("title", "Insert artwork here")
+	if (aw.awid==undefined)
+		locator.setAttribute("onclick", "myag_ed_putArtworkAfter('start')");
+	else
+		locator.setAttribute("onclick", "myag_ed_putArtworkAfter('"+aw.awid+"')");
 
+	locatorWrapper.appendChild(locator);
+
+	return locatorWrapper;
+}
+
+/* generates and appends a single group button to a target.
+inputs: aw <Artwork> [source Artwork instance], target <html element> [append target element],
+		mode <string> [append mode. 'appendChild', 'prepend' or 'insertAfter']
+return: appended artwork div <html element>
+*/
+function myag_ip_appendSingleArtwork(aw, target, mode="appendChild", action=undefined, text=undefined)
+{
+	var artwork = myag_ip_generateArtworkDiv(aw, action, text);
+	var locator = myag_ip_generateArtworkLocatorDiv(aw);
+	myag_appendToGridMode(artwork, locator, target, mode);
+	return artwork;
 }
 
 /* processes an array of Artwork class instances and appends them to the target div wrapper
@@ -38,7 +105,7 @@ inputs: as <array of Artwork objects>
 		target <string> [target div id]
 return: none
 */
-function myag_ip_appendArworksRange(as, start, end, reverse=false, renew=true, target="artworksWrapper")
+function myag_ip_appendArworksRange(as, start, end, renew=true, target="artworksWrapper")
 {
 	// validate start/end
 	if ((start < 0) || (start > as.length) || (end <= start))
@@ -64,31 +131,14 @@ function myag_ip_appendArworksRange(as, start, end, reverse=false, renew=true, t
 		while(displayedArtworks.length > 0){
         	displayedArtworks[0].parentNode.removeChild(displayedArtworks[0]);
     	}
-
     	GLOBAL_currentlyLoadedArtworks = as.slice(start,end);
 	}
 	else
-	{
 		GLOBAL_currentlyLoadedArtworks = GLOBAL_currentlyLoadedArtworks.concat(as.slice(start,end))
-	}
-		
-	if (reverse)
-	{
-		for (var c = end - 1; c >= start ; c--)
-		
-		{
-			var aw = myag_ip_generateImgDiv(as[c]);
-			t.appendChild(aw);
-		}
-	}
-	else
-	{
-		for (var c = start; c < end; c++)	
-		{
-			var aw = myag_ip_generateImgDiv(as[c]);
-			t.appendChild(aw);
-		}
-	}	
+	
+
+	for (var c = start; c < end; c++)	 
+		myag_ip_appendSingleArtwork(as[c], t);
 }
 
 /* pagination-type-minding wrapper for myag_ip_appendArworksRange.
@@ -100,11 +150,11 @@ return: whatever the called functions return (supposed none) */
 function myag_ip_appendArworks(as, type="none", reverse=false, target="artworksWrapper")
 {
 	if (type == "none")
-		return myag_ip_appendArworksRange(as, 0, as.length, reverse, true, target)
+		return myag_ip_appendArworksRange(as, 0, as.length, true, target)
 	else if (type == "append")
-		return myag_ip_appendArworksRange(as, 0, as.length, reverse, false, target)
+		return myag_ip_appendArworksRange(as, 0, as.length, false, target)
 	else if (type == "pages")
-		return myag_ip_appendArworksRange(as, GLOBAL_currentPage*GLOBAL_artworksPerPage, (GLOBAL_currentPage+1)*GLOBAL_artworksPerPage, reverse, true, target)
+		return myag_ip_appendArworksRange(as, GLOBAL_currentPage*GLOBAL_artworksPerPage, (GLOBAL_currentPage+1)*GLOBAL_artworksPerPage, true, target)
 }
 
 /* 'switch function' to initialize the panel. called from myag_index.js and myag_group.js
@@ -118,7 +168,7 @@ return: whatever the called functions return (supposed none)
 function myag_ip_initArtworks(as, type="none", reverse=false, target="artworksWrapper")
 {
 	if (type == "none")
-		return myag_ip_appendArworksRange(as, 0, as.length, reverse, true, target);
+		return myag_ip_appendArworksRange(as, 0, as.length, true, target);
 	else
 	{
 		GLOBAL_artworksPerPage = SETTING_rowsPerPage * myag_ip_getArtworksPerRowHack();
@@ -154,6 +204,8 @@ function myag_ip_addPagination(artworks, type, target="artworksWrapper")
 		myag_ip_makePaginationAppend(artworks, t);
 
     GLOBAL_usedPaginationType = type;
+
+    window.dispatchEvent(myag_ip_awLoaded);
 
   }
 }
@@ -244,7 +296,7 @@ function myag_ip_goto(n, generateGetParam=true)
 	arrows[1].style.removeProperty("color");
 	if (GLOBAL_currentPage == 0)
 		arrows[0].style.color = "var(--col-body)";
-	else if (GLOBAL_currentPage == GLOBAL_pagesTotal - 1)
+	if (GLOBAL_currentPage == GLOBAL_pagesTotal - 1)
 		arrows[1].style.color = "var(--col-body)";
 
 
@@ -287,10 +339,22 @@ function myag_ip_makePaginationAppend(artworks, parent)
 	button.id = "paginationMoreTrigger";
 	parent.parentNode.insertBefore(button, parent.nextSibling);
 
-	myag_ip_appendArworksRange(artworks, 0, GLOBAL_artworksPerPage, false, true);
+	myag_ip_appendArworksRange(artworks, 0, GLOBAL_artworksPerPage, true);
 
 	document.addEventListener('scroll', myag_ip_loadMore);
+	const t = setTimeout(myag_ip_loadMore, 100); // prevents a "screen with one row stuck forever" cornercase
+												 // a bit crutchy... i will figure a better way someday.
 
+}
+
+function myag_ip_loadAllowed()
+{
+	target = document.getElementById("paginationMoreTrigger");
+	if (window.scrollY+window.innerHeight-250 >= target.getBoundingClientRect().top)
+		return true;
+	if (target.getBoundingClientRect().top <= window.innerHeight)
+		return true;
+	return false;
 }
 
 /* append another "page" of artworks to the already loaded ones.
@@ -299,11 +363,11 @@ return: none
 */
 function myag_ip_loadMore()
 {
-	target = document.getElementById("paginationMoreTrigger");
-	if (window.scrollY+window.innerHeight-250 >= target.getBoundingClientRect().top)
+	
+	if (myag_ip_loadAllowed())
 	{
 		GLOBAL_currentPage += 1;
-		myag_ip_appendArworksRange(GLOBAL_loadedArtworks, GLOBAL_currentPage*GLOBAL_artworksPerPage, (GLOBAL_currentPage+1)*GLOBAL_artworksPerPage, false, false);
+		myag_ip_appendArworksRange(GLOBAL_loadedArtworks, GLOBAL_currentPage*GLOBAL_artworksPerPage, (GLOBAL_currentPage+1)*GLOBAL_artworksPerPage, false);
 		if (GLOBAL_currentPage >= GLOBAL_pagesTotal-1) // remove the button if we loaded everything
 		{
 			document.removeEventListener('scroll', myag_ip_loadMore);

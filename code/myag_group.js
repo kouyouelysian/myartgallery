@@ -64,6 +64,9 @@ function myag_gr_startup()
 	});
 
 	myag_setTextElements(GLOBAL_group_groupname);
+
+	myag_setTitle(SETTING_title + " / " + GLOBAL_group_groupname);
+
 }
 
 

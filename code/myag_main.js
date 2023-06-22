@@ -18,6 +18,7 @@ GLOBAL_currentPage = 0;
 GLOBAL_pagesTotal = null;
 GLOBAL_usedPaginationType = "none";
 GLOBAL_artworksPerPage = null;
+GLOBAL_badcharsArray = ["<", ">", "\\", "/", "#", "&", '='];
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
@@ -46,6 +47,106 @@ class Artwork {
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
+function myag_badcharsPresent(arg)
+{
+  
+  for (var x = 0; x < GLOBAL_badcharsArray.length; x++)
+  {
+    if (arg.indexOf(GLOBAL_badcharsArray[x]) != -1)
+      return true;
+  }
+  return false;
+}
+
+function myag_badcharsAsString()
+{
+  out = "";
+  for (var x = 0; x < GLOBAL_badcharsArray.length; x++)
+  {
+    out += GLOBAL_badcharsArray[x];
+    if (x != GLOBAL_badcharsArray.length-1)
+      out += ", ";
+  }
+  return out;
+}
+
+/* Literally what it says. Is used in some hover-blocking shenanigans.
+*/
+function myag_doNothing()
+{
+  return;
+}
+
+/* Remove an html element by ID if it exists. True if OK, false if not.
+inputs: id <string> [target element id]
+return: bool
+*/
+
+function myag_removeIfExists(id)
+{
+  var m = document.getElementById(id);
+  if (m != undefined)
+  {
+    m.remove();
+    return true; 
+  }
+  return false;
+}
+
+
+/* Set page title (tab text) to some string if the arg is a valid string
+inputs: arg <string> - string to set the title to
+return: none
+*/
+function myag_setTitle(arg)
+{
+  if (typeof(arg) == "string")
+    document.title = arg;
+}
+
+/* Lazy check if the current location is index.html to alter load-ups
+inputs: none
+return: bool
+*/
+function myag_isEditor()
+{
+  if (window.location.toString().search("editor.html") != -1)
+    return true;
+  if (window.location.toString().split("/").reverse()[0] == "editor")
+    return true;
+  return false;
+}
+
+/* Appends a div to target, another one after it if the editor is open.
+Is a base function for stuff in panel and index script files.
+inputs: elem <html element> [element to add in all cases],
+        elemIfEditor <html element> [element to add if page is editor.html],
+        target <html element> [target element],
+        mode <string = "appendChild", "insertAfter" or "prepend"> [function mode]
+return: none
+*/
+function myag_appendToGridMode(elem, elemIfEditor, target, mode)
+{
+  if (mode == "appendChild")
+  {
+    target.appendChild(elem);
+    if (myag_isEditor())
+      target.appendChild(elemIfEditor);
+  }
+  else if (mode == "insertAfter")
+  {
+    target.parentNode.insertBefore(elem, target.nextSibling);
+    if (myag_isEditor())
+      target.parentNode.insertBefore(elemIfEditor, target.nextSibling.nextSibling);
+  }
+  else if (mode == "prepend")
+  {
+    
+    if (myag_isEditor())
+      target.prepend(elemIfEditor);
+    target.prepend(elem);
+  }
+}
 
 /*
 puts to the current address line a "?param=value" if there's no other get
@@ -74,7 +175,6 @@ function myag_setGetParam(param, value)
     toDelete = param+"="+prev; // full check because there may be 2 get params
     toAdd = param+"="+String(value); // with the same value
     href = loc.replace(toDelete,toAdd);
-    db('painis');
   }
 
   window.history.replaceState(null, null, href); 
@@ -165,6 +265,28 @@ output: correct awid
 function myag_makeAwid()
 {
   return String(Date.now())+"_"+myag_randString(5);
+}
+
+/* tells if the provided string is a valid awid
+inputs: awid <string> [string to test]
+output: <bool> [if it is a valid artwork id]
+*/
+function myag_isAwid(awid)
+{
+  var timestamp = awid.substr(0,13);
+  var underscore = awid.substr(13,1);
+  var rands = awid.substr(14);
+
+  if (isNaN(timestamp))
+    return false;
+
+  if (underscore != "_")
+    return false;
+
+  if (rands.length != 5)
+    return false;
+
+  return true;
 }
 
 /*
@@ -283,7 +405,6 @@ async function myag_getGroups()
     var xmlGroupName = xmlGroups[t].childNodes[0];
     var xmlGroupAbout = xmlGroups[t].childNodes[1];
     var g = new Group(undefined, undefined);
-    //db(xmlGroupAbout)
     g.name = xmlGroupName.childNodes[0].nodeValue;
 
     try
@@ -382,10 +503,8 @@ async function myag_getArtworkAll()
 
   }
 
-  if (SETTING_loadTopDown)
-    return artworks.reverse();
-  else
-    return artworks;
+  return artworks;
+
 }
 
 /*
@@ -432,9 +551,6 @@ async function myag_getArtworkGroup(groupname)
 
   }
   
-  if (SETTING_loadTopDown)
-    return artworks.reverse();
-  else
     return artworks;
 }
 
@@ -448,7 +564,6 @@ async function myag_getArtworkById(targetId)
   var allArtworks = await myag_getArtworkAll();
   for (var t = 0; t < allArtworks.length; t++)
   {
-    db(allArtworks[t].awid);
     if (allArtworks[t].awid == targetId)
     {
       return allArtworks[t];
