@@ -25,7 +25,7 @@ outputs: none
 */
 function myag_ind_visitGroup(groupname)
 {
-	window.location = "./group.html?g="+groupname;
+	window.location = "./group.html?g="+encodeURI(groupname);
 }
 
 /*

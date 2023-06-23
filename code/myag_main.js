@@ -156,6 +156,8 @@ outputs: none
 */
 function myag_setGetParam(param, value)
 {
+  
+  var valueString = encodeURI(String(value));
 
   var loc = location.href;
   var href = "";
@@ -167,13 +169,13 @@ function myag_setGetParam(param, value)
       loc += "?";
     else
       loc += "&";
-    href = loc + String(param) + "=" + String(value);
+    href = loc + String(param) + "=" + valueString;
     
   }
   else
   {
     toDelete = param+"="+prev; // full check because there may be 2 get params
-    toAdd = param+"="+String(value); // with the same value
+    toAdd = param+"="+String(valueString); // with the same value
     href = loc.replace(toDelete,toAdd);
   }
 
@@ -191,7 +193,11 @@ function myag_getGetParam(arg)
   // thanks Franklin Yu 
   // https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
   let params = new URLSearchParams(location.search);
-  return params.get(arg);
+  let value = params.get(arg);
+  if (value == null)
+    return null;
+  else
+    return decodeURI(value);
 }
 
 /*
