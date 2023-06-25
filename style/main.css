@@ -325,6 +325,7 @@ a:hover {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    display: none;
 
 }
 
@@ -407,22 +408,18 @@ a:hover {
 #artworkViewerAbout {
 	position: absolute;
 	background-color: var(--col-body);
-	color; var(--col-text);
+	color: var(--col-text);
 	border-width: var(--border-width);
 	border-color: var(--col-highlight);
 	border-style: solid;
 	border-radius: var(--corner-radius);
 	padding: var(--page-spacing);
-
-
 	max-height: calc(70vh - var(--page-spacing) - var(--page-spacing) - var(--border-width) - var(--border-width));
 	overflow-y: scroll;
 	width: calc(26% - var(--page-spacing) - var(--page-spacing) - var(--border-width) - var(--border-width));
 	left: 3%;
 	top: 15vh;
-
 	text-align: var(--main-text-align);
-
  	-ms-overflow-style: none;  
   	scrollbar-width: none;
 }

@@ -35,16 +35,16 @@ function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
 			onclick = "myag_ed_showItemMenu('"+aw.awid+"', event)";
 	}
 
-	if (aw.filename == undefined)
-	{
-		div.setAttribute("onclick", onclick);
-	}
-	else
+	
+	
+	div.setAttribute("onclick", onclick);
+	
+	if (aw.filename != undefined)
 	{
 		var img = document.createElement("img");
 		img.setAttribute("src", "./artworks/"+aw.filename);
 		img.classList.add("artworkImg");
-		img.setAttribute("onclick", onclick);
+		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);
 	}
 
