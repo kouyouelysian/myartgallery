@@ -18,7 +18,7 @@ GLOBAL_currentPage = 0;
 GLOBAL_pagesTotal = null;
 GLOBAL_usedPaginationType = "none";
 GLOBAL_artworksPerPage = null;
-GLOBAL_badcharsArray = ["<", ">", "\\", "/", "#", "&", '='];
+GLOBAL_badcharsArray = ["<", ">", "\\", "/", "#", "&", '=', '"', "'"];
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
