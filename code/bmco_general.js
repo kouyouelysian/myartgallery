@@ -11,6 +11,10 @@ pre-import requirements:
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
+/* Encodes the following characters into HTML entities: & < > " '
+inputs: arg <string> [plain string to be entity-encoded]
+return: <string>
+*/
 function bmco_HTMLEntitiesEncode(arg)
 {
 	// stolen from https://javascript.plainenglish.io/javascript-algorithm-convert-html-entities-99719d8ca118
@@ -32,16 +36,11 @@ function bmco_HTMLEntitiesEncode(arg)
 	return out;
 }
 
+/* Decodes the following HTML entities into characters: & < > " '
+inputs: arg <string> [entity-encoded string to be decoded]
+return: <string>
+*/
 function bmco_HTMLEntitiesDecode(arg) {
-	// stolen from https://tertiumnon.medium.com/js-how-to-decode-html-entities-8ea807a140e5
-	// thank you Vit Tertiumnon
-	/*
-	var textArea = document.createElement('textarea');
-	textArea.innerHTML = arg;
-	out = textArea.value;
-	textArea.remove();
-	return out;
-	*/
 	var out = arg;
 	var key = ["&amp;", "&lt;", "&gt;", "&quot;", "&apos;"];
 	var match = ["&", "<", ">", '"', "'"];
@@ -50,14 +49,9 @@ function bmco_HTMLEntitiesDecode(arg) {
 	return out;
 }
 
-
-
-
-
-/*
-checks if item is in an array
-inputs: array <array>, item <anything that array has>
-return: bool true/false
+/* checks if item is in an array
+inputs: array <array>, item <any>
+return: <bool> true/false
 */
 function bmco_arrayHas(array, item) {
 	for (var t = 0; t < array.length; t++)
@@ -68,17 +62,20 @@ function bmco_arrayHas(array, item) {
 	return false;
 }
 
+/* removes any occurences of a value from an array
+inputs: arr <array>, value <any>
+return: <array> [arr without value occurences]
+*/
 function bmco_arrayRemoveValue(arr, value)
 { 
-		// thanks Chris Love
-		// https://love2dev.com/blog/javascript-remove-from-array/
-				return arr.filter(function(ele){ 
-						return ele != value; 
-				});
+	// thanks Chris Love
+	// https://love2dev.com/blog/javascript-remove-from-array/
+	return arr.filter(function(ele){ 
+		return ele != value; 
+	});
 }
 
-/*
-returns random string of lowercase characters and numbers of length n
+/* returns random string of lowercase characters and numbers of length n
 inputs: n <integer> [length of the resulting string]
 return: <string> random string
 */
@@ -94,16 +91,29 @@ function bmco_randString(n)
 	return randStr;
 }
 
-/*
-puts a new get parameter-value to the current address bar location
+/* checks the url for what's in a GET parameter, if empty returns null
+inputs: arg <string> - name of the GET param
+return: <string> parameter value if exists, null otherwise
+*/
+function bmco_getParamRead(arg)
+{
+	// thanks Franklin Yu 
+	// https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
+	let params = new URLSearchParams(location.search);
+	let value = params.get(arg);
+	if (value == null)
+		return null;
+	else
+		return decodeURI(value);
+}
+
+/* puts a new get parameter-value to the current address bar location
 inputs: param <string> [get parameter name], value <string> [its value]
 return: none
 */
 function bmco_getParamWrite(param, value)
 {
-	
 	var valueString = encodeURI(String(value));
-
 	var loc = location.href;
 	var href = "";
 	var prev = bmco_getParamRead(param);
@@ -128,27 +138,9 @@ function bmco_getParamWrite(param, value)
 	
 }
 
-/*
-checks the url for what's in a GET parameter, if empty returns null
-inputs: arg (string) - name of the GET param
-return: if exists - returns parameter value, null otherwise
-*/
-function bmco_getParamRead(arg)
-{
-	// thanks Franklin Yu 
-	// https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
-	let params = new URLSearchParams(location.search);
-	let value = params.get(arg);
-	if (value == null)
-		return null;
-	else
-		return decodeURI(value);
-}
-
-/*
-deletes a GET parameter if it exists, if not exists returns false
-inputs: arg (string) - name of the GET param
-outputs: True if OK, false if not
+/* deletes a GET parameter if it exists, if not exists returns false
+inputs: arg <string> [name of the GET param]
+outputs: <bool> true if OK, false if not
 */
 function bmco_getParamDelete(arg)
 {
@@ -187,7 +179,6 @@ function bmco_setTitle(arg)
 inputs: id <string> [target element id]
 return: bool
 */
-
 function bmco_removeIfExists(id)
 {
 	var m = document.getElementById(id);
@@ -200,7 +191,11 @@ function bmco_removeIfExists(id)
 }
 
 
-
+/* Checks if any of the (supposedly) bad characters are presented in string
+inputs: arg <string> [checked string],
+		badchars <array of single char strings> [list of bad characters]
+return: <bool>
+*/
 function bmco_badcharsPresent(arg, badchars)
 {
   
@@ -212,6 +207,11 @@ function bmco_badcharsPresent(arg, badchars)
   return false;
 }
 
+/* Returns a badchars array used for bmco_badcharsPresent() as a comma-separated string
+is used for visual representation in popup alerts etc.
+inputs: badchars <array of single char strings> [list of bad characters]
+return: <string>
+*/
 function bmco_badcharsAsString(badchars)
 {
   out = "";
@@ -224,6 +224,10 @@ function bmco_badcharsAsString(badchars)
   return out;
 }
 
+/* Get a string of a 13-digit unix timestamp
+inputs: none
+return: <string> timestamp
+*/
 function bmco_timestamp()
 {
 	return String(Date.now());

@@ -637,115 +637,6 @@ function myag_ed_xmlUpdateLoadedData(xmldoc)
 	GLOBAL_loadedData = xmlText;
 }
 
-function myag_ed_xmlCheckAndFixTextFields(xmldoc, node, fields)
-{
-	ok = true;
-	for (var f = 0; f < fields.length; f++)
-	{
-		var fieldText = bmco_xml_childTagRead(node, fields[f]);
-		if (fieldText == null)
-		{
-			ok = false;
-
-			var text = "";
-			if (fields[f] == "awid")
-				text = myag_makeAwid();
-			else if (fields[f] == "gid")
-				text = myag_makeGid();
-
-			node.appendChild(bmco_xml_nodeTextCreate(xmldoc, fields[f], text));
-		}
-		else
-		{
-			if ((fields[f] == "awid") && (myag_isIdBase(fieldText)))
-			{
-				bmco_xml_ChildTagWrite(xmldoc, node, "awid", "aw_"+fieldText);
-				ok = false;
-			}
-		}
-	}
-	return ok;
-}
-
-function myag_ed_xmlCheckAndFixArtworkIngroups(xmldoc, ingroups)
-{
-	ok = true;
-	for (var c = 0; c < ingroups.length; c++)
-	{
-		var text = bmco_xml_nodeTextRead(ingroups[c]);
-		if (!(myag_isGid(text)))
-		{
-			ok = false;
-			bmco_xml_nodeTextWrite(xmldoc, ingroups[c], myag_ed_xmlGroupIdByName(xmldoc, text))
-		}	
-	}
-	return ok;
-}
-
-function myag_ed_xmlCheckAndFixMultiFields(xmldoc, node, fields)
-{
-	ok = true;
-
-	for (var f = 0; f < fields.length; f++)
-	{
-		if (bmco_xml_childTagExists(node, fields[f]))
-		{
-			if (fields[f] == "ingroups")
-			{
-				children = bmco_xml_childTagGetChildren(node, fields[f]);
-				ok = ok & myag_ed_xmlCheckAndFixArtworkIngroups(xmldoc, children);
-			}
-		}
-		else
-		{
-			ok = false;
-			node.appendChild(xmldoc.createElement(fields[f]));
-		}
-	}
-	return ok;
-}
-
-/*
-inputs: xmldoc
-return: <string> ["ok" if all good, new XML text if mistakes found and fixed]
-*/
-function myag_ed_xmlCheckAndFix(xmldoc)
-{
-	groups = xmldoc.getElementsByTagName('group');
-	artworks = xmldoc.getElementsByTagName('artwork');
-	meta = xmldoc.getElementsByTagName('meta')[0];
-
-	ok = true;
-
-	for (var x = 0; x < groups.length; x++)
-	{
-		ok = ok & myag_ed_xmlCheckAndFixTextFields(xmldoc, groups[x], ["gid", "name", "about"]);
-	}
-	
-	for (var x = 0; x < artworks.length; x++)
-	{
-		ok = ok & myag_ed_xmlCheckAndFixTextFields(xmldoc, artworks[x], ["awid", "name", "about", "filename"]);
-		ok = ok & myag_ed_xmlCheckAndFixMultiFields(xmldoc, artworks[x], ["ingroups"]);
-	}
-
-	if (meta == undefined)
-	{
-		ok = false;
-		var children = [];
-		children.push(new bmco_TagValuePair("updateCount", "1"));
-		children.push(new bmco_TagValuePair("updateDate", bmco_timestamp()));
-		xmldoc.getElementsByTagName('data')[0].appendChild(bmco_xml_nodeConstruct(xmldoc, "meta", children));
-	}
-
-	if (ok)
-		return "ok";
-	else
-	{
-		myag_ed_xmlUpdateLoadedData(xmldoc);
-		return GLOBAL_loadedData;
-	}
-}
-
 /* Fetches an <artwork> node with a required awid from xmldoc
 inputs: xmldoc <xml document object> [operational xml object],
 		awid <string> [target valid artwork id]
@@ -956,7 +847,107 @@ function myag_ed_xmlArtworkPutAfter(xmldoc, movedAwid, targetAwid)
 	bmco_xml_nodePutAfter(xmldoc, "artwork", "awid", movedAwid, targetAwid);
 }
 
+//==========================================================================//
+//================== XML FILE AUTO CHECK AND FIX FUNCTIONS =================//
+//==========================================================================//
 
+function myag_ed_xmlCheckAndFixTextFields(xmldoc, node, fields)
+{
+	ok = true;
+	for (var f = 0; f < fields.length; f++)
+	{
+		var fieldText = bmco_xml_childTagRead(node, fields[f]);
+		if (fieldText == null)
+		{
+			ok = false;
+
+			var text = "";
+			if (fields[f] == "awid")
+				text = myag_makeAwid();
+			else if (fields[f] == "gid")
+				text = myag_makeGid();
+
+			node.appendChild(bmco_xml_nodeTextCreate(xmldoc, fields[f], text));
+		}
+		else
+		{
+			if ((fields[f] == "awid") && (myag_isIdBase(fieldText)))
+			{
+				bmco_xml_ChildTagWrite(xmldoc, node, "awid", "aw_"+fieldText);
+				ok = false;
+			}
+		}
+	}
+	return ok;
+}
+function myag_ed_xmlCheckAndFixArtworkIngroups(xmldoc, ingroups)
+{
+	ok = true;
+	for (var c = 0; c < ingroups.length; c++)
+	{
+		var text = bmco_xml_nodeTextRead(ingroups[c]);
+		if (!(myag_isGid(text)))
+		{
+			ok = false;
+			bmco_xml_nodeTextWrite(xmldoc, ingroups[c], myag_ed_xmlGroupIdByName(xmldoc, text))
+		}	
+	}
+	return ok;
+}
+function myag_ed_xmlCheckAndFixMultiFields(xmldoc, node, fields)
+{
+	ok = true;
+
+	for (var f = 0; f < fields.length; f++)
+	{
+		if (bmco_xml_childTagExists(node, fields[f]))
+		{
+			if (fields[f] == "ingroups")
+			{
+				children = bmco_xml_childTagGetChildren(node, fields[f]);
+				ok = ok & myag_ed_xmlCheckAndFixArtworkIngroups(xmldoc, children);
+			}
+		}
+		else
+		{
+			ok = false;
+			node.appendChild(xmldoc.createElement(fields[f]));
+		}
+	}
+	return ok;
+}
+function myag_ed_xmlCheckAndFix(xmldoc)
+{
+	groups = xmldoc.getElementsByTagName('group');
+	artworks = xmldoc.getElementsByTagName('artwork');
+	meta = xmldoc.getElementsByTagName('meta')[0];
+
+	ok = true;
+
+	for (var x = 0; x < groups.length; x++)
+		ok = ok & myag_ed_xmlCheckAndFixTextFields(xmldoc, groups[x], ["gid", "name", "about"]);
+	for (var x = 0; x < artworks.length; x++)
+	{
+		ok = ok & myag_ed_xmlCheckAndFixTextFields(xmldoc, artworks[x], ["awid", "name", "about", "filename"]);
+		ok = ok & myag_ed_xmlCheckAndFixMultiFields(xmldoc, artworks[x], ["ingroups"]);
+	}
+	if (meta == undefined)
+	{
+		ok = false;
+		var children = [];
+		children.push(new bmco_TagValuePair("updateCount", "1"));
+		children.push(new bmco_TagValuePair("updateTimestamp", bmco_timestamp()));
+		xmldoc.getElementsByTagName('data')[0].appendChild(bmco_xml_nodeConstruct(xmldoc, "meta", children));
+	}
+
+	if (ok)
+		return "ok";
+	else
+	{
+		myag_ed_xmlUpdateLoadedData(xmldoc);
+		return GLOBAL_loadedData;
+	}
+}
 
 //==========================================================================//
 //================== BUTTON ACTIONS, MASTER FUNCTIONS, ETC =================//
@@ -1341,8 +1332,23 @@ function myag_ed_reverseArtworks()
 inputs: xmlText <string> [source XML document text without the xml metadata tag]
 return: <string> [prettified XML text]
 */
-function myag_ed_prettifyXml(xmlText)
+function myag_ed_prepareXml()
 {
+	var x = myag_ed_xmldoc();
+
+	var v = bmco_xml_childTagRead(x.getElementsByTagName("meta")[0], "updateCount");
+	if (isNaN(v))
+	{
+		myag_ed_guiPopupThrowAlert("Could not read the update counter as a number. Tell this\
+			to <a href='astrossoundhell.neocities.org/data/links/'>Aubery</a> please.");
+		return;
+	}
+	v = parseInt(v) + 1;
+	bmco_xml_ChildTagWrite(x, x.getElementsByTagName("meta")[0], "updateCount", String(v));
+	bmco_xml_ChildTagWrite(x, x.getElementsByTagName("meta")[0], "updateTimestamp", bmco_timestamp());
+	myag_ed_xmlUpdateLoadedData(x);
+
+	var xmlText = GLOBAL_loadedData;
 	return vkbeautify.xml(xmlText, 5);
 }
 
@@ -1353,7 +1359,7 @@ return: none
 */
 function myag_ed_openWebXmlEditor()
 {
-	var xml = myag_ed_prettifyXml(GLOBAL_loadedData);
+	var xml = myag_ed_prepareXml();
 
 	navigator.clipboard.writeText(xml).then(() => {
     	window.open(SETTING_neocitiesXmlFileEditLink, target="_blank");
@@ -1379,7 +1385,7 @@ outputs: none
 */
 function myag_ed_copyXml()
 {
-	var xml = myag_ed_prettifyXml(GLOBAL_loadedData);
+	var xml = myag_ed_prepareXml();
 	navigator.clipboard.writeText(xml).then(() => {
     	myag_ed_guiPopupThrowAlert('raw XML copied');
 	})
@@ -1387,8 +1393,6 @@ function myag_ed_copyXml()
 		myag_ed_guiPopupThrowAlert('Could not copy, tell Aubery about this ASAP: ' + err);
 	});
 }
-
-
 
 /* Page startup function. Adds "add new.." buttons, set title, etc.
 inputs: none

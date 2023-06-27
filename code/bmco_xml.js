@@ -11,7 +11,10 @@ pre-import requirements:
 //=============================== CLASSES ==================================//
 //==========================================================================//
 
-
+/* This class is used to store a tag and its value for quicker loop-processing
+params: tag <string> tag name
+		value <string> or <array of xml elements> tag value
+*/
 class bmco_TagValuePair {
   constructor(tag, value) {
     this.tag = tag;
@@ -36,17 +39,14 @@ class bmco_TagValuePair {
   		return null;
   	}
   }
-
 }
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-/* the data is held in text format in a JS variable called GLOBAL_loadedData.
-to manipulate it, one must use this function to load it to an xml document object.
-don't forget to save it after altering using myag_ed_xmlUpdateLoadedData.
-inputs: none
+/* Creates an XML document out of some valid text
+inputs: text <string> [text of a valid xml document]
 return: <xml document object>
  */
 function bmco_xml_xmldoc(text)
@@ -163,8 +163,8 @@ return: <string> [tag's text contents] or null [if no tag]
  	return bmco_xml_nodeTextRead(childrenOfTagName[0]);
  }
 
- /* tries to find and read the first child tag of a particular name in a parent
-node. null on fail. is used to access fields of artwork, group, etc.
+ /* tries to find and write to the first child tag of a particular name in a parent
+node. null on fail. is used to alter fields of artwork, group, etc.
 inputs: xmldoc <xml document> [operated xml document object],
 		node <xml element> [node to search children of],
 		tag <string> [name of the tag to search for],
@@ -180,9 +180,12 @@ return: none
  	bmco_xml_nodeTextWrite(xmldoc, target, text);
  }
 
-/* Fetches an <artwork> node with a required awid from xmldoc
+/* Fetches the first found instance of a tag in an xml document which has
+a child tag with some particular inner text value. Null on fail.
 inputs: xmldoc <xml document object> [operational xml object],
-		awid <string> [target valid artwork id]
+		nodeTag <string> [name of the target parent tag]
+		childTag <string> [name of the child tag whose value is being searched for],
+		value <string> [value of childTag to match for]
 return: <xml element> or null if not found
 */
 function bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
@@ -196,6 +199,13 @@ function bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
 	return null;
 }
 
+/* Constructs an XML node with child nodes filled with some values
+inputs: xmldoc <xml document object> [operational xml object],
+		nodeTag <string> [name of the returned tag],
+		childTagValuePairs <array of bmco_TagValuePair instances> [descriptions of 
+			child nodes to be appended]
+return: <xml element> nodeTag node with specified child nodes appended
+*/
 function bmco_xml_nodeConstruct(xmldoc, nodeTag, childTagValuePairs)
 {
 	var node = xmldoc.createElement(nodeTag);
@@ -204,18 +214,27 @@ function bmco_xml_nodeConstruct(xmldoc, nodeTag, childTagValuePairs)
 	return node;
 }
 
-
+/* Delete the first found instance of a tag in an xml document which has
+a child tag with some particular inner text value.
+inputs: xmldoc <xml document object> [operational xml object],
+		nodeTag <string> [name of the target parent tag]
+		childTag <string> [name of the child tag whose value is being searched for],
+		value <string> [value of childTag to match for]
+return: none
+*/
 function myag_ed_nodeDelete(xmldoc, nodeTag, childTag, value)
 {
 	var target = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value);
 	target.parentNode.removeChild(target);
 }
 
-
-/* Picks a group of some name and puts it after another group in xmldoc (used for reordering)
+/* Used for reordering tags of the same name inside a parent tag. Moves one tag of some name
+after another of the same name, locating by their child tags' values.
 inputs: xmldoc <xml document object> [operational xml object],
-		movedGname <string> [moved group's name]
-		targetGname <string> [name of the group to put after]
+		nodeTag <string> [name of the target parent tag]
+		childTag <string> [name of the child tags whose value are being considered],
+		movedValue <string> [value of childTag belonging to the moved nodeTag],
+		targetValue <string> [value of childTag belonging to the nodeTag we're putting the other one after]
 return: none
 */
 function bmco_xml_nodePutAfter(xmldoc, nodeTag, childTag, movedValue, targetValue)
@@ -230,15 +249,16 @@ function bmco_xml_nodePutAfter(xmldoc, nodeTag, childTag, movedValue, targetValu
 	}	
 }
 
-
+/* Used for reordering tags of the same name inside a parent tag. Moves a tag of some name
+to the beginning of its parent tag (before all its other children).
+inputs: xmldoc <xml document object> [operational xml object],
+		nodeTag <string> [name of the target parent tag]
+		childTag <string> [name of the child tags whose value are being considered],
+		movedValue <string> [value of childTag belonging to the moved nodeTag]
+return: none
+*/
 function bmco_xml_nodePutAtStart(xmldoc, nodeTag, childTag, movedValue)
 {
 	var moved = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
 	moved.parentNode.prepend(moved);
 }
-
-
-
-
-
-
