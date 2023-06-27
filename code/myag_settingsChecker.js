@@ -8,9 +8,7 @@ function myag_sc_exists(key)
 	catch (e)
 	{
 		if (e.toString().indexOf("is not defined") != -1)
-		{
 			return false;
-		}
 	}
 	return true;
 }
@@ -74,8 +72,18 @@ function myag_sc_displayBadKeys(active, deprecated)
 	}
 }
 
-settings_names = ["SETTING_neocitiesXmlFileEditLink", "SETTING_neocitiesArtworksFolderLink", "SETTING_title", 
-"SETTING_fullButton", "SETTING_about", "SETTING_pagingIndex", "SETTING_pagingGroup", "SETTING_rowsPerPage", "SETTING_nextPageOnWrap"];
-deprecated_names = ["SETTING_loadTopDown"];
-myag_sc_displayBadKeys(settings_names, deprecated_names);
-myag_setTitle(SETTING_title + " / settings checker");
+function myag_sc_run()
+{
+	settings_names = ["SETTING_neocitiesXmlFileEditLink", "SETTING_neocitiesArtworksFolderLink", "SETTING_title", 
+	"SETTING_fullButton", "SETTING_about", "SETTING_pagingIndex", "SETTING_pagingGroup", "SETTING_rowsPerPage", "SETTING_nextPageOnWrap"];
+	deprecated_names = ["SETTING_loadTopDown"];
+	myag_sc_displayBadKeys(settings_names, deprecated_names);
+	bmco_setTitle(SETTING_title + " / settings checker");
+}
+
+
+
+
+
+
+myag_sc_run();

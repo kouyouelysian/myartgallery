@@ -3,13 +3,12 @@
 //==========================================================================//
 
 /*
-This file contains the JS code that governs the graphical editor for MyAG.
-Functions are split into three main pools: GUI, XML and "master" functions.
-GUI and XML functions DO NOT OVERLAP and run the user interface and the XML 
-data manipulation respectively. The "master" functions are tied to the UI
-elements and call correct sets of XML/GUI operations to do stuff like adding,
-editing, deleting and moving artworks and groups. I'm almost 100% certain
-that you DO NOT WANT to edit this file or anything, but also, you do you.
+pre-import requirements:
+	bmco_general.js
+	bmco_xml.js
+	myag_main.js
+	myag_index.js
+	myag_panel.js
 */
 
 //==========================================================================//
@@ -29,8 +28,7 @@ GLOBAL_isMoving = "none"; // "none", "group" or "artwork"
 //=============================== GUI STUFF ================================//
 //==========================================================================//
 
-/* stolen from https://stackoverflow.com/questions/18421962/how-to-add-a-new-rule-to-an-existing-css-class
-Changes a line for an existing rule in one of the loaded CSS sheets
+/* Changes a line for an existing rule in one of the loaded CSS sheets
 inputs: typeAndClass <string> [valid name of a selector, e.g. ".myAss p"],
 		sheetIndex <int> [index of the CSS file to refer to, as they appear in <head>],
 		newRule <string> [name of a rule line, e.g. "margin-left"],
@@ -39,6 +37,7 @@ return: none
 */
 function myag_ed_changeCss(typeAndClass, sheetIndex, newRule, newValue)
 {
+	// stolen from https://stackoverflow.com/questions/18421962/how-to-add-a-new-rule-to-an-existing-css-class
     var thisCSS=document.styleSheets[sheetIndex];
     var ruleSearch=thisCSS.cssRules? thisCSS.cssRules: thisCSS.rules;
     for (i=0; i<ruleSearch.length; i++)
@@ -221,9 +220,9 @@ return: none
 */
 function myag_ed_guiPopupClose()
 {
-	myag_removeIfExists("popupBackdrop");
-	myag_removeIfExists("popupAlert");
-	myag_removeIfExists("popupSelect");
+	bmco_removeIfExists("popupBackdrop");
+	bmco_removeIfExists("popupAlert");
+	bmco_removeIfExists("popupSelect");
 }
 
 /* creates a sticky <div> to cover everything behind the popup
@@ -249,26 +248,25 @@ function myag_ed_guiPopupCreateBody(text, id=undefined)
 	if (id != undefined)
 		popup.id = id;
 	popup.classList.add("popup");
-
 	var textMessage = document.createElement("p");
 	textMessage.innerHTML = text;
 	textMessage.classList.add("popupTextMessage");
-
 	popup.appendChild(textMessage);
-
 	return popup;
 }
 
 /* Throws an alert message on-screen that can be closed by pressing
 "OK" - a fancy substitute for the built-in "alert(arg)" method
 inputs: message <string> [alert message text]
+		text <string, optional> [text to be displayed on the button],
+		fn <string, optional> [function to be executed on button press, closes the popup by default]
 return: <html element> [created popup div]
 */
-function myag_ed_guiPopupThrowAlert(message)
+function myag_ed_guiPopupThrowAlert(message, text="OK", fn="myag_ed_guiPopupClose()")
 {
 	document.body.appendChild(myag_ed_guiPopupCreateBackdrop());
 	var alertDiv = myag_ed_guiPopupCreateBody(message, "popupAlert");
-	alertDiv.appendChild(myag_ed_guiCreateControlButton("OK", "myag_ed_guiPopupClose()"));
+	alertDiv.appendChild(myag_ed_guiCreateControlButton(text, fn));
 	document.body.appendChild(alertDiv);
 	return alertDiv;
 }
@@ -294,28 +292,28 @@ function myag_ed_guiPopupThrowSelect(message, text1, fn1, text2, fn2)
 
 /* Creates a checkbox + label thing. Only used in group selection section
 in the artwork edit menu.
-inputs: name <string> [name text to be displayed next to the checkbox],
+inputs: g <Group instance> [checkbox represents this group],
 		checked <bool> [initial checkbox state]
 return: <html element> [div with checkbox input and label p inside]
 */
-function myag_ed_guiCheckboxCreate(name, checked=false)
+function myag_ed_guiCheckboxCreate(g, checked=false)
 {
 	var i = document.createElement("input");
-	i.setAttribute("name", name);
+	i.setAttribute("name", g.gid);
 	i.setAttribute("type", "checkbox");
-	i.id = "checkbox_"+name;
+	i.id = "checkbox_"+g.gid;
 	if (checked)
 		i.checked = true;
 
 	var l = document.createElement("label");
-	l.setAttribute("for", name);
-	l.innerHTML = name;
+	l.setAttribute("for", g.gid);
+	l.innerHTML = g.name;
 	
 	var d = document.createElement("div");
 	d.appendChild(i);
 	d.appendChild(l);
 	d.classList.add("labelledCheckbox");
-	d.setAttribute("onclick", "myag_ed_guiCheckboxToggle('checkbox_"+name+"')");
+	d.setAttribute("onclick", "myag_ed_guiCheckboxToggle('checkbox_"+g.gid+"')");
 
 	return d;
 }
@@ -369,6 +367,7 @@ function myag_ed_guiEditorLoadGroup(g=Group("new group", ""), makeNew=false)
 	else
 		ce.push(myag_ed_guiCreateControlButton("Update", "myag_ed_actionGroup('update')"));
 	ce.push(myag_ed_guiInputCreate("hidden", "inputNameOld", g.name));
+	ce.push(myag_ed_guiInputCreate("hidden", "inputGid", g.gid));
 	target.appendChild(myag_ed_guiArrayOfElementsToDiv(ce, "formWrapper"));
 }
 
@@ -395,8 +394,7 @@ function myag_ed_guiEditorLoadArtwork(aw, makeNew=false)
 	groupCheckboxes.id = "formGroupCheckboxes";
 	for (var t = 0; t < groups.length; t++)
 	{
-		var gname = myag_ed_xmlNodeTextRead(groups[t].childNodes[0]);
-		var chb = myag_ed_guiCheckboxCreate(gname, myag_in(aw.groups, gname));
+		var chb = myag_ed_guiCheckboxCreate(myag_groupXmlToObject(groups[t]), bmco_arrayHas(aw.groups, bmco_xml_childTagRead(groups[t], "gid")));
 		groupCheckboxes.appendChild(chb);
 	}
 	if (groups.length == 0)
@@ -411,7 +409,6 @@ function myag_ed_guiEditorLoadArtwork(aw, makeNew=false)
 	else
 		ce.push(myag_ed_guiCreateControlButton("Update", "myag_ed_actionArtwork('update')"));
 	ce.push(myag_ed_guiInputCreate("hidden", "inputAwid", aw.awid));
-
 	target.appendChild(myag_ed_guiArrayOfElementsToDiv(ce, "formWrapper"));
 }
 
@@ -438,73 +435,67 @@ function myag_ed_guiFindOfClassByAttribute(classname, attribute, value)
 }
 
 /* Creates a new group button and appends it after the "add new group" button in the grid
-inputs: name <string, optional> [name of the group to be used on the button. not really optional lol]
+inputs: g <Group instance> [group to be used on the button. not really optional lol]
 return: none
 */
-function myag_ed_guiGroupButtonCreate(name = "new group")
+function myag_ed_guiGroupButtonCreate(g)
 {
 	var target = document.getElementById("buttonCreateNewGroup").nextSibling;
-	myag_ind_appendSingleGroupButton(name, target, 'insertAfter');
+	myag_ind_appendSingleGroupButton(g, target, 'insertAfter');
 }
 
 /* Updates a group button with some name on it to display and operate with a newName instead.
-inputs: name <string> [name of the group currently used on the button]
+inputs: gid <string> [id of the group currently used on the button]
 		name <string> [new name of the group to be used on the button]
 return: none
 */
-function myag_ed_guiGroupButtonUpdate(name, newName)
+function myag_ed_guiGroupButtonUpdate(gid, name)
 {
 
-	var target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupName", name);
-	target.setAttribute("groupName", newName);
-	target.setAttribute("onclick", "myag_ed_showItemMenu('"+newName+"', event)");
-	target.innerHTML = "<p>"+newName+"</p>";
+	var target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", gid);
+	target.setAttribute("groupName", name);
+	target.innerHTML = "<p>"+name+"</p>";
 }
 
 /* Deletes a group button of some name (and its move locator)
-inputs: name <string> [name used by the group button being deleted]
+inputs: gid <string> [id used by the group button being deleted]
 return: none 
 */
-function myag_ed_guiGroupButtonDelete(name)
+function myag_ed_guiGroupButtonDelete(gid)
 {
-	myag_ed_guiFindOfClassByAttribute("groupButton", "groupName", name).remove();
-	myag_ed_guiFindOfClassByAttribute("locatorWrapperGroup", "groupName", name).remove();
+	myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", gid).remove();
+	myag_ed_guiFindOfClassByAttribute("locatorWrapperGroup", "groupId", gid).remove();
 }
 
 /* Takes a group button and puts it after some other group button instead of its current position.
-inputs: movedGname <string> [name used by the group button being moved]
-		targetGname <string> [name used by the group after which the moved button has to be placed]
+inputs: movedGid <string> [id used by the group button being moved]
+		targetGid <string> [id used by the group after which the moved button has to be placed]
 return: none
 */
-function myag_ed_guiGroupButtonPutAfter(movedGname, targetGname)
+function myag_ed_guiGroupButtonPutAfter(movedGid, targetGid)
 {
-	var moved = myag_ed_guiFindOfClassByAttribute("groupButton", "groupName", movedGname);
-	if ((targetGname == undefined) || (targetGname == "start"))
+	var moved = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", movedGid);
+	if ((targetGid == undefined) || (targetGid == "start"))
 		var target = document.getElementById("buttonCreateNewGroup");
 	else
-		var target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupName", targetGname);
+		var target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", targetGid);
 	target.parentNode.insertBefore(moved, target.nextSibling.nextSibling);
 	target = moved;
-	moved = myag_ed_guiFindOfClassByAttribute("locatorWrapperGroup", "groupName", movedGname);
+	moved = myag_ed_guiFindOfClassByAttribute("locatorWrapperGroup", "groupId", movedGid);
 	target.parentNode.insertBefore(moved, target.nextSibling);
 }
 
 /* Creates and appends a new artwork div after the "add new artwork" button.
-inputs: awid <string, optional> [a valid artwork ID string. autogenerated if not provided]
+inputs: aw <Artwork instance>
 return: none
 */
-function myag_ed_guiArtworkDivCreate(awid=myag_makeAwid())
+function myag_ed_guiArtworkDivCreate(aw)
 {
 	GLOBAL_newArtworksSpawned += 1;
 	var text = "New Artwork "+GLOBAL_newArtworksSpawned.toString();
-
 	colors = ["f9c", "fc9", "cf9", "c9f", "9fc", "9cf"];
 	var color = colors[Math.floor(Math.random()*colors.length)];
-
 	var target = document.getElementById("buttonCreateNewArtwork").nextSibling;
-
-	var aw = new Artwork(undefined, undefined, undefined, awid, undefined);
-
 	var newArtworkDiv = myag_ip_appendSingleArtwork(aw, target, 'insertAfter', undefined, text);
 	newArtworkDiv.style.backgroundColor = "#"+color;
 	newArtworkDiv.classList.add("newArtwork");
@@ -559,10 +550,10 @@ function myag_ed_guiActionMenuAppend(arg, mouseX, mouseY)
 		buttonFunctions = ["myag_ed_editArtwork('"+arg+"')", "myag_ed_moveArtwork('"+arg+"')", "myag_ed_deleteArtwork('"+arg+"')"];
 		target = myag_ed_guiFindOfClassByAttribute("artwork", "artworkId", arg);
 	}
-	else
+	else if (myag_isGid(arg))
 	{
 		buttonFunctions = ["myag_ed_editGroup('"+arg+"')", "myag_ed_moveGroup('"+arg+"')", "myag_ed_deleteGroup('"+arg+"')"];
-		target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupName", arg);
+		target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", arg);
 	}
 	if (target == undefined)
 		return;
@@ -589,8 +580,8 @@ return: none
 */
 function myag_ed_guiActionMenuDelete()
 {
-	myag_removeIfExists("actionMenuBackdrop");
-	myag_removeIfExists("actionMenu");
+	bmco_removeIfExists("actionMenuBackdrop");
+	bmco_removeIfExists("actionMenu");
 }
 
 /* Sets up the bottom buttons menu with necessary buttons.
@@ -633,9 +624,7 @@ return: <xml document object>
  */
 function myag_ed_xmldoc()
 {
-	var parser = new DOMParser();
-	var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
-	return xmldoc;
+	return bmco_xml_xmldoc(GLOBAL_loadedData);
 }
 
 /* Stores. the contents of an xml document object to GLOBAL_loadedData
@@ -648,45 +637,113 @@ function myag_ed_xmlUpdateLoadedData(xmldoc)
 	GLOBAL_loadedData = xmlText;
 }
 
-/* Creates an xml node with some text inside of it.
-inputs: xmldoc <xml document object> [operational xml object],
-		elem <string> [element tag name],
-		text <string> [text to be put into its insides' text node]
-return: <xml element> [tag with some text in its insides]
-*/
-function myag_ed_xmlNodeTextCreate(xmldoc, elem, text="")
+function myag_ed_xmlCheckAndFixTextFields(xmldoc, node, fields)
 {
-	var e = xmldoc.createElement(elem);
-	e.appendChild(xmldoc.createTextNode(text));
-	return e;
-}
-
-/* Writes to an xml node's insides' text
-inputs: xmldoc <xml document object> [operational xml object],
-		node <xml element> [node belonging to xmldoc to write to],
-		text <string> [text to write]
-return: none
-*/
-function myag_ed_xmlNodeTextWrite(xmldoc, node, text)
-{
-	if (node.childNodes[0] == undefined)
+	ok = true;
+	for (var f = 0; f < fields.length; f++)
 	{
-		var text = xmldoc.createTextNode(text);
-		node.appendChild(text);
-		return;
+		var fieldText = bmco_xml_childTagRead(node, fields[f]);
+		if (fieldText == null)
+		{
+			ok = false;
+
+			var text = "";
+			if (fields[f] == "awid")
+				text = myag_makeAwid();
+			else if (fields[f] == "gid")
+				text = myag_makeGid();
+
+			node.appendChild(bmco_xml_nodeTextCreate(xmldoc, fields[f], text));
+		}
+		else
+		{
+			if ((fields[f] == "awid") && (myag_isIdBase(fieldText)))
+			{
+				bmco_xml_ChildTagWrite(xmldoc, node, "awid", "aw_"+fieldText);
+				ok = false;
+			}
+		}
 	}
-	node.childNodes[0].nodeValue = text;
+	return ok;
 }
 
-/* reads from an xml node's insides' text
-inputs: node <xml element> [node to read from]
-return: <string> [node insides' text value or "" if no insides with text]
-*/
-function myag_ed_xmlNodeTextRead(node)
+function myag_ed_xmlCheckAndFixArtworkIngroups(xmldoc, ingroups)
 {
-	if (node.childNodes[0] == undefined)
-		return "";
-	return node.childNodes[0].nodeValue;
+	ok = true;
+	for (var c = 0; c < ingroups.length; c++)
+	{
+		var text = bmco_xml_nodeTextRead(ingroups[c]);
+		if (!(myag_isGid(text)))
+		{
+			ok = false;
+			bmco_xml_nodeTextWrite(xmldoc, ingroups[c], myag_ed_xmlGroupIdByName(xmldoc, text))
+		}	
+	}
+	return ok;
+}
+
+function myag_ed_xmlCheckAndFixMultiFields(xmldoc, node, fields)
+{
+	ok = true;
+
+	for (var f = 0; f < fields.length; f++)
+	{
+		if (bmco_xml_childTagExists(node, fields[f]))
+		{
+			if (fields[f] == "ingroups")
+			{
+				children = bmco_xml_childTagGetChildren(node, fields[f]);
+				ok = ok & myag_ed_xmlCheckAndFixArtworkIngroups(xmldoc, children);
+			}
+		}
+		else
+		{
+			ok = false;
+			node.appendChild(xmldoc.createElement(fields[f]));
+		}
+	}
+	return ok;
+}
+
+/*
+inputs: xmldoc
+return: <string> ["ok" if all good, new XML text if mistakes found and fixed]
+*/
+function myag_ed_xmlCheckAndFix(xmldoc)
+{
+	groups = xmldoc.getElementsByTagName('group');
+	artworks = xmldoc.getElementsByTagName('artwork');
+	meta = xmldoc.getElementsByTagName('meta')[0];
+
+	ok = true;
+
+	for (var x = 0; x < groups.length; x++)
+	{
+		ok = ok & myag_ed_xmlCheckAndFixTextFields(xmldoc, groups[x], ["gid", "name", "about"]);
+	}
+	
+	for (var x = 0; x < artworks.length; x++)
+	{
+		ok = ok & myag_ed_xmlCheckAndFixTextFields(xmldoc, artworks[x], ["awid", "name", "about", "filename"]);
+		ok = ok & myag_ed_xmlCheckAndFixMultiFields(xmldoc, artworks[x], ["ingroups"]);
+	}
+
+	if (meta == undefined)
+	{
+		ok = false;
+		var children = [];
+		children.push(new bmco_TagValuePair("updateCount", "1"));
+		children.push(new bmco_TagValuePair("updateDate", bmco_timestamp()));
+		xmldoc.getElementsByTagName('data')[0].appendChild(bmco_xml_nodeConstruct(xmldoc, "meta", children));
+	}
+
+	if (ok)
+		return "ok";
+	else
+	{
+		myag_ed_xmlUpdateLoadedData(xmldoc);
+		return GLOBAL_loadedData;
+	}
 }
 
 /* Fetches an <artwork> node with a required awid from xmldoc
@@ -696,15 +753,7 @@ return: <xml element> or null if not found
 */
 function myag_ed_xmlArtworkByAwid(xmldoc, awid)
 {
-	var artworks = xmldoc.getElementsByTagName('artwork');
-	for (var t = 0; t < artworks.length; t++)
-	{
-		if (myag_ed_xmlNodeTextRead(artworks[t].childNodes[4]) == awid)
-		{
-			return artworks[t];
-		}
-	}
-	return null;
+	return bmco_xml_nodeGetByChildTagValue(xmldoc, "artwork", "awid", awid);
 }
 
 /* Fetches a <group> node with a required name from xmldoc
@@ -714,15 +763,43 @@ return: <xml element> or null if not found
 */
 function myag_ed_xmlGroupByName(xmldoc, gname)
 {
-	var xmlGroups = xmldoc.getElementsByTagName('group');
-	for (var t = 0; t < xmlGroups.length; t++)
-	{
-		if (xmlGroups[t].childNodes[0].childNodes[0].nodeValue == gname) 
-		{
-			return xmlGroups[t];
-		}
-	}
-	return null;
+	return bmco_xml_nodeGetByChildTagValue(xmldoc, "group", "name", gname);
+}
+
+/* Fetches a <group> node with a required gid from xmldoc
+inputs: xmldoc <xml document object> [operational xml object],
+		gid <string> [target group id]
+return: <xml element> or null if not found
+*/
+function myag_ed_xmlGroupById(xmldoc, gid)
+{
+	return bmco_xml_nodeGetByChildTagValue(xmldoc, "group", "gid", gid);
+}
+
+/* Fetches group id by group name from xmldoc
+inputs: xmldoc <xml document object> [operational xml object],
+		gname <string> [target group name]
+return: <string> gid, or null if not found
+*/
+function myag_ed_xmlGroupIdByName(xmldoc, gname)
+{
+	var group = myag_ed_xmlGroupByName(xmldoc, gname);
+	if (group == null)
+		return null;
+	return bmco_xml_childTagRead(group, "gid");
+}
+
+/* Fetches group name by group id from xmldoc
+inputs: xmldoc <xml document object> [operational xml object],
+		gid <string> [target group id]
+return: <string> gid, or null if not found
+*/
+function myag_ed_xmlGroupNameById(xmldoc, gid)
+{
+	var group = myag_ed_xmlGroupById(xmldoc, gid);
+	if (group == null)
+		return null;
+	return bmco_xml_childTagRead(group, "name");
 }
 
 /* Checks if a <group> with a particular name exists in xmldoc
@@ -740,47 +817,43 @@ function myag_ed_xmlGroupCheckDupes(xmldoc, gname)
 /* Creates a new group node with needed child nodes in xmldoc.
 inputs: xmldoc <xml document object> [operational xml object],
 		gname <string, optional> [new group's name],
-		about <string, optional> [new group's about stirng]
+		g <Group instance> [new group]
 return: none
 */
-function myag_ed_xmlGroupCreate(xmldoc, gname = "new group", about = "")
+function myag_ed_xmlGroupCreate(xmldoc, g)
 {
-	var groups = xmldoc.getElementsByTagName('groups')[0];
-	var newG = xmldoc.createElement('group');
-	newG.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, 'name', gname));
-	newG.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, 'about', about));
-	groups.prepend(newG);
+	children = [];
+	children.push(new bmco_TagValuePair("name", g.name));
+	children.push(new bmco_TagValuePair("about", g.about));
+	children.push(new bmco_TagValuePair("gid", g.gid));
+	xmldoc.getElementsByTagName('groups')[0].prepend(bmco_xml_nodeConstruct(xmldoc, "group", children));
 }
 
 /* Updates a group node of some name with new info.
 inputs: xmldoc <xml document object> [operational xml object],
-		gname <string> [updated group's current name],
+		gid <string> [updated group's id],
 		newName <string, optional> [updated group's new name],
 		newAbout <string, optional> [updated group's about stirng]
 return: none
 */
-function myag_ed_xmlGroupUpdate(xmldoc, gname, newName, newAbout)
+function myag_ed_xmlGroupUpdate(xmldoc, gid, name, about)
 {
-	var targetGroup = myag_ed_xmlGroupByName(xmldoc, gname);
-	myag_ed_xmlNodeTextWrite(xmldoc, targetGroup.childNodes[0], newName);
-	myag_ed_xmlNodeTextWrite(xmldoc, targetGroup.childNodes[1], newAbout);
-	var xmlArtworks = xmldoc.getElementsByTagName('artwork');
-	for (var t = 0; t < xmlArtworks.length; t++)
-		myag_ed_xmlArtworkIngroupRename(xmldoc, xmlArtworks[t], gname, newName);
+	var targetGroup = myag_ed_xmlGroupById(xmldoc, gid);
+	bmco_xml_ChildTagWrite(xmldoc, targetGroup, "name", name);
+	bmco_xml_ChildTagWrite(xmldoc, targetGroup, "about", about);
 }
 
 /* Deletes a group node of some name from xmldoc
 inputs: xmldoc <xml document object> [operational xml object],
-		gname <string> [deleted group's name]
+		gid <string> [deleted group's id]
 returns: none
 */
-function myag_ed_xmlGroupDelete(xmldoc, gname)
+function myag_ed_xmlGroupDelete(xmldoc, gid)
 {
-	var targetGroup = myag_ed_xmlGroupByName(xmldoc, gname);
-	xmldoc.getElementsByTagName('groups')[0].removeChild(targetGroup);
+	myag_ed_nodeDelete(xmldoc, "group", "gid", gid);
 	var xmlArtworks = xmldoc.getElementsByTagName('artwork');
 	for (var t = 0; t < xmlArtworks.length; t++)
-		myag_ed_xmlArtworkIngroupRemove(xmldoc, xmlArtworks[t], gname);
+		myag_ed_xmlArtworkIngroupRemove(xmldoc, xmlArtworks[t], gid);
 }
 
 /* Picks a group of some name and puts it after another group in xmldoc (used for reordering)
@@ -791,14 +864,7 @@ return: none
 */
 function myag_ed_xmlGroupPutAfter(xmldoc, movedGname, targetGname)
 {
-
-	var moved = myag_ed_xmlGroupByName(xmldoc, movedGname);
-	var target = myag_ed_xmlGroupByName(xmldoc, targetGname);
-	if ((targetGname == "start") || (target == undefined))
-		xmldoc.getElementsByTagName('groups')[0].prepend(moved);
-	else
-		xmldoc.getElementsByTagName('groups')[0].insertBefore(moved, target.nextSibling);
-
+	bmco_xml_nodePutAfter(xmldoc, "group", "gid", movedGname, targetGname);
 }
 
 /* Creates a new artwork node with needed child nodes in xmldoc.
@@ -813,17 +879,37 @@ return: none
 function myag_ed_xmlArtworkCreate(xmldoc, awid, name, filename, about, ingroups)
 {
 	var aw = xmldoc.createElement("artwork");
-	aw.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, "name", name));
-	aw.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, "filename", filename));
-	aw.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, "about", about));
+	aw.appendChild(bmco_xml_nodeTextCreate(xmldoc, "name", name));
+	aw.appendChild(bmco_xml_nodeTextCreate(xmldoc, "filename", filename));
+	aw.appendChild(bmco_xml_nodeTextCreate(xmldoc, "about", about));
 	g = xmldoc.createElement("ingroups");
 	for (var k = 0; k < ingroups.length; k++)
 	{
-		g.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, "ingroup", ingroups[k]));
+		g.appendChild(bmco_xml_nodeTextCreate(xmldoc, "ingroup", ingroups[k]));
 	}
 	aw.appendChild(g);
-	aw.appendChild(myag_ed_xmlNodeTextCreate(xmldoc, "awid", awid));
+	aw.appendChild(bmco_xml_nodeTextCreate(xmldoc, "awid", awid));
 	xmldoc.getElementsByTagName("artworks")[0].prepend(aw);
+}
+
+/* In an artwork group, remove its ingroup by group name. Used in conjunction with groupDelete
+to delete a group across entire xmldoc. Does nothing if ingroup is not picked for this artwork.
+inputs: xmldoc <xml document object> [operational xml object],
+		awNode <xml node> [the edited artwork node, must belong to xmldoc],
+		name <string> [current ingroup name to search and delete]
+return: none;
+*/
+function myag_ed_xmlArtworkIngroupRemove(xmldoc, awNode, gid)
+{
+	var ingroups = awNode.childNodes[3];
+	for (var k = 0; k < ingroups.childNodes.length; k++)
+	{
+		if (bmco_xml_nodeTextRead(ingroups.childNodes[k]) == gid)
+		{
+			ingroups.removeChild(ingroups.childNodes[k]);
+			break;
+		}
+	}
 }
 
 /* Updates a artwork node of a particular awid with new information
@@ -838,13 +924,14 @@ return: none
 function myag_ed_xmlArtworkUpdate(xmldoc, awid, newName, newFilename, newAbout, newIngroups)
 {
 	var targetArtwork = myag_ed_xmlArtworkByAwid(xmldoc, awid);
-	myag_ed_xmlNodeTextWrite(xmldoc, targetArtwork.childNodes[0], newName);
-	myag_ed_xmlNodeTextWrite(xmldoc, targetArtwork.childNodes[1], newFilename);
-	myag_ed_xmlNodeTextWrite(xmldoc, targetArtwork.childNodes[2], newAbout);
+	bmco_xml_ChildTagWrite(xmldoc, targetArtwork, "name", newName);
+	bmco_xml_ChildTagWrite(xmldoc, targetArtwork, "filename", newFilename);
+	bmco_xml_ChildTagWrite(xmldoc, targetArtwork, "about", newAbout);
+
 	targetArtwork.childNodes[3].replaceChildren();
 	for (var k = 0; k < newIngroups.length; k++)
 	{
-		targetArtwork.childNodes[3].appendChild(myag_ed_xmlNodeTextCreate(xmldoc, "ingroup", newIngroups[k]));
+		targetArtwork.childNodes[3].appendChild(bmco_xml_nodeTextCreate(xmldoc, "ingroup", newIngroups[k]));
 	}
 }
 
@@ -855,8 +942,7 @@ returns: none
 */
 function myag_ed_xmlArtworkDelete(xmldoc, awid)
 {
-	var targetArtwork = myag_ed_xmlArtworkByAwid(xmldoc, awid);
-	xmldoc.getElementsByTagName('artworks')[0].removeChild(targetArtwork);
+	myag_ed_nodeDelete(xmldoc, "artwork", "awid", awid);
 }
 
 /* Picks an artwork of some name and puts it after another artwork in xmldoc (used for reordering)
@@ -867,54 +953,10 @@ return: none
 */
 function myag_ed_xmlArtworkPutAfter(xmldoc, movedAwid, targetAwid)
 {
-	var moved = myag_ed_xmlArtworkByAwid(xmldoc, movedAwid);
-	var target = myag_ed_xmlArtworkByAwid(xmldoc, targetAwid);
-	if ((targetAwid == "start") || (target == undefined))
-		xmldoc.getElementsByTagName('artworks')[0].prepend(moved);
-	else
-		xmldoc.getElementsByTagName('artworks')[0].insertBefore(moved, target.nextSibling);
+	bmco_xml_nodePutAfter(xmldoc, "artwork", "awid", movedAwid, targetAwid);
 }
 
-/* In an artwork group, rename its ingroup. Used in conjunction with groupUpdate
-to rename a group across entire xmldoc. Does nothing if ingroup is not picked for this artwork.
-inputs: xmldoc <xml document object> [operational xml object],
-		awNode <xml node> [the edited artwork node, must belong to xmldoc],
-		name <string> [current ingroup name to search for],
-		newName <string> [rename the located ingroup to this string]
-return: none;
-*/
-function myag_ed_xmlArtworkIngroupRename(xmldoc, awNode, name, newName)
-{
-	var ingroups = awNode.childNodes[3];
-	for (var k = 0; k < ingroups.childNodes.length; k++)
-	{
-		if (myag_ed_xmlNodeTextRead(ingroups.childNodes[k]) == name)
-		{
-			myag_ed_xmlNodeTextWrite(xmldoc, ingroups.childNodes[k], newName);
-			break;
-		}
-	}
-}
 
-/* In an artwork group, remove its ingroup by group name. Used in conjunction with groupDelete
-to delete a group across entire xmldoc. Does nothing if ingroup is not picked for this artwork.
-inputs: xmldoc <xml document object> [operational xml object],
-		awNode <xml node> [the edited artwork node, must belong to xmldoc],
-		name <string> [current ingroup name to search and delete]
-return: none;
-*/
-function myag_ed_xmlArtworkIngroupRemove(xmldoc, awNode, name)
-{
-	var ingroups = awNode.childNodes[3];
-	for (var k = 0; k < ingroups.childNodes.length; k++)
-	{
-		if (myag_ed_xmlNodeTextRead(ingroups.childNodes[k]) == name)
-		{
-			ingroups.removeChild(ingroups.childNodes[k]);
-			break;
-		}
-	}
-}
 
 //==========================================================================//
 //================== BUTTON ACTIONS, MASTER FUNCTIONS, ETC =================//
@@ -928,9 +970,11 @@ return: none
 function myag_ed_actionGroup(action)
 {
 	var xmldoc = myag_ed_xmldoc();
+	var gid = myag_ed_guiInputRead('inputGid');
 	var oldName = myag_ed_guiInputRead('inputNameOld');
 	var name = myag_ed_guiInputRead('inputName');
 	var about = myag_ed_guiInputRead('inputAbout');
+	var groupBadchars = ["<", ">"];
 
 	if (name.length > GLOBAL_maxLengthName)
 	{
@@ -942,9 +986,9 @@ function myag_ed_actionGroup(action)
 		myag_ed_guiPopupThrowAlert("Group name must not be an empty string. Input some name!");
 		return;
 	}
-	else if (myag_badcharsPresent(name))
+	else if (bmco_badcharsPresent(name, groupBadchars))
 	{
-		myag_ed_guiPopupThrowAlert("Please, do not use the following characters in the group name field:<br>"+myag_badcharsAsString());
+		myag_ed_guiPopupThrowAlert("Please, do not use the following characters in the group name field:<br>"+bmco_badcharsAsString(groupBadchars));
 		return;
 	}
 	else if (((name != oldName) || action=="create") && (myag_ed_xmlGroupCheckDupes(xmldoc, name)))
@@ -957,17 +1001,19 @@ function myag_ed_actionGroup(action)
 	{
 		if ((about != null) || (name != null))
 		{		
-			myag_ed_xmlGroupUpdate(xmldoc, oldName, name, about);
-			if (name != null)
-				myag_ed_guiGroupButtonUpdate(oldName, name);
+			myag_ed_xmlGroupUpdate(xmldoc, gid, name, about);
 			myag_ed_xmlUpdateLoadedData(xmldoc);
+			if (name != null)
+				myag_ed_guiGroupButtonUpdate(gid, name);
+			
 		}
 	}
 	else if (action = ("create"))
 	{
-		myag_ed_xmlGroupCreate(xmldoc, name, about);
+		var g = new Group(myag_makeGid(), name, about);
+		myag_ed_xmlGroupCreate(xmldoc, g);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
-		myag_ed_guiGroupButtonCreate(name);
+		myag_ed_guiGroupButtonCreate(g);
 	}
 	myag_av_hideViewer();
 }
@@ -984,8 +1030,7 @@ function myag_ed_actionArtwork(action)
 	var name = myag_ed_guiInputRead("inputName");
 	var about = myag_ed_guiInputRead("inputAbout");
 	var filename = myag_ed_guiInputRead("inputFilename");
-
-	ingroups = [];
+	var fnameBadchars = ["<", ">", "/", "\\"];
 
 	if (name.length > GLOBAL_maxLengthName)
 	{
@@ -1002,19 +1047,21 @@ function myag_ed_actionArtwork(action)
 		myag_ed_guiPopupThrowAlert("Please, provide a filename!")
 		return;
 	}
+	else if (bmco_badcharsPresent(filename, fnameBadchars))
+	{
+		myag_ed_guiPopupThrowAlert("Please, do not use the following characters in the filename field:<br>"+bmco_badcharsAsString(fnameBadchars));
+		return;
+	}
 
-
+	ingroups = [];
 	groups = xmldoc.getElementsByTagName('group');
 	for (var t = 0; t < groups.length; t++)
 	{
-		var gname = myag_ed_xmlNodeTextRead(groups[t].childNodes[0]);
-		var cbxId = "checkbox_"+gname;
+		var gid = bmco_xml_childTagRead(groups[t], "gid");
+		var cbxId = "checkbox_"+gid;
 		if (document.getElementById(cbxId).checked)
-		{
-			ingroups.push(gname);
-		}
+			ingroups.push(gid);
 	}
-
 	if (action == "update")
 	{
 		artworks = xmldoc.getElementsByTagName('artwork');
@@ -1025,11 +1072,10 @@ function myag_ed_actionArtwork(action)
 	{
 		myag_ed_xmlArtworkCreate(xmldoc, awid, name, filename, about, ingroups);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
-		myag_ed_guiArtworkDivCreate(awid);
+		myag_ed_guiArtworkDivCreate(new Artwork(awid, name, undefined, about, ingroups));
 	}	
 	myag_av_hideViewer();
 }
-
 
 /* Triggers a menu for creating a new group.
 Does nothing if the GUI is currently set up to move stuff around.
@@ -1050,48 +1096,47 @@ Does nothing if the GUI is currently set up to move stuff around.
 inputs: gname <string> [name of a present group]
 return: none
 */
-function myag_ed_editGroup(gname)
+function myag_ed_editGroup(gid)
 {
-	myag_getGroupByName(gname).then(function(g) {
-		if (g == null)
-			return;
-		myag_ed_guiEditorLoadGroup(g);	
-	});
+	var groupXml = myag_ed_xmlGroupById(myag_ed_xmldoc(), gid);
+	if (groupXml == null)
+		return;
+	myag_ed_guiEditorLoadGroup(myag_groupXmlToObject(groupXml));
 	myag_ed_guiActionMenuDelete();
 	myag_av_showViewer();
 }
 
 /* Asks the user if they really want to delete this group, then deletes it
-inputs: gname <string> [name of a present group],
+inputs: gid <string> [id of a present group],
 		confirmed <bool, optional> [if the user has confirmed their wish. is set automatically, never provided manually]
 return: none
 */
-function myag_ed_deleteGroup(gname, confirmed=false)
+function myag_ed_deleteGroup(gid, confirmed=false)
 {
 	if (confirmed)
 	{
 		var xmldoc = myag_ed_xmldoc();
-		myag_ed_xmlGroupDelete(xmldoc, gname);
+		myag_ed_xmlGroupDelete(xmldoc, gid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
-		myag_ed_guiGroupButtonDelete(gname);
+		myag_ed_guiGroupButtonDelete(gid);
 		myag_ed_guiActionMenuDelete();
 		myag_ed_guiPopupClose();
 	}
 	else
 	{
 		var text = "Do you really want to delete this group? This action can only be undone by refreshing the page, losing all work.";
-		myag_ed_guiPopupThrowSelect(text, "No", "myag_ed_guiPopupClose()", "Yes", "myag_ed_deleteGroup('"+gname+"', true)");
+		myag_ed_guiPopupThrowSelect(text, "No", "myag_ed_guiPopupClose()", "Yes", "myag_ed_deleteGroup('"+gid+"', true)");
 	}
 }
 
 /* Triggers the process of moving the group around.
-inputs: gname <string> [name of a present group that should be moved]
+inputs: gid <string> [id of a present group that should be moved]
 return: none
 */
-function myag_ed_moveGroup(gname)
+function myag_ed_moveGroup(gid)
 {
-	myag_ed_guiFindOfClassByAttribute('groupButton', 'groupName', gname).id = "currentlyMoved";
-	myag_ed_guiFindOfClassByAttribute('locatorWrapperGroup', 'groupName', gname).id = "currentlyMovedLocator";
+	myag_ed_guiFindOfClassByAttribute('groupButton', 'groupId', gid).id = "currentlyMoved";
+	myag_ed_guiFindOfClassByAttribute('locatorWrapperGroup', 'groupId', gid).id = "currentlyMovedLocator";
 	myag_ed_guiSetMovingMode("group");
 	myag_ed_guiActionMenuDelete();
 	myag_ed_guiBottomMenuSetMode("move");
@@ -1099,17 +1144,17 @@ function myag_ed_moveGroup(gname)
 
 /* Moves a group to a particular position. Is used by group locators to enable moving stuff around.
 Figures out which group is being moved on its own using id - only needs the destination.
-inputs: afterGname <string> [name of the group to put the moved group after]
+inputs: gid <string> [group id of the group to put the moved group after]
 return: none
 */
-function myag_ed_putGroupAfter(afterGname)
+function myag_ed_putGroupAfter(gid)
 {
-	movedGroupButton = document.getElementById("currentlyMoved");
+	var movedGroupButton = document.getElementById("currentlyMoved");
 	if (movedGroupButton == undefined)
 		return;
-	myag_ed_guiGroupButtonPutAfter(movedGroupButton.getAttribute("groupName"), afterGname);
+	myag_ed_guiGroupButtonPutAfter(movedGroupButton.getAttribute("groupId"), gid);
 	var xmldoc = myag_ed_xmldoc();
-	myag_ed_xmlGroupPutAfter(xmldoc, movedGroupButton.getAttribute("groupName"), afterGname);
+	myag_ed_xmlGroupPutAfter(xmldoc, movedGroupButton.getAttribute("groupId"), gid);
 	myag_ed_xmlUpdateLoadedData(xmldoc);
 	myag_ed_stopMoving();
 }
@@ -1123,7 +1168,7 @@ function myag_ed_createArtwork(awid)
 {
 	if (GLOBAL_isMoving != "none")
 		return;
-	var aw = new Artwork("", "", [], myag_makeAwid(), "");
+	var aw = new Artwork(myag_makeAwid(), "", "", "", []);
 	myag_ed_guiEditorLoadArtwork(aw, true);
 	myag_av_showViewer();
 }
@@ -1246,7 +1291,7 @@ function myag_ed_loadAllArtworks()
 		return;
 	GLOBAL_usedPaginationType = "none";
 	document.removeEventListener('scroll', myag_ip_loadMore);
-	myag_removeIfExists("paginationMoreTrigger")
+	bmco_removeIfExists("paginationMoreTrigger")
 	myag_ip_appendArworksRange(GLOBAL_loadedArtworks, GLOBAL_currentlyLoadedArtworks.length, GLOBAL_loadedArtworks.length, false);
 }
 
@@ -1298,7 +1343,7 @@ return: <string> [prettified XML text]
 */
 function myag_ed_prettifyXml(xmlText)
 {
-	return vkbeautify.xml('<?xml version="1.0" encoding="utf-8"?>'+xmlText, 5);
+	return vkbeautify.xml(xmlText, 5);
 }
 
 /* Opens up the neocities editor to the XML file, puts the XML text to user's clipboard, so they
@@ -1351,7 +1396,7 @@ return: none
 */
 function myag_ed_startup()
 {
-	myag_setTitle(SETTING_title + " / editor");
+	bmco_setTitle(SETTING_title + " / editor");
 	myag_ed_guiBottomMenuSetMode("default");
 	window.addEventListener("initialArtworksLoaded", (event) => {
 		var target = document.getElementById("artworksWrapper");
@@ -1360,9 +1405,19 @@ function myag_ed_startup()
 		artwork.id = "buttonCreateNewArtwork";
 	});
 	window.addEventListener("initialGroupsLoaded", (event) => {
+		var dummyG = new Group("start", "Add new...", "");
 		var target = document.getElementById("groupsWrapper");
-		var button = myag_ind_appendSingleGroupButton("Add new...", target, "prepend", "myag_ed_createGroup()");
+		var button = myag_ind_appendSingleGroupButton(dummyG, target, "prepend", "myag_ed_createGroup()");
 		button.id = "buttonCreateNewGroup";
+	});
+	window.addEventListener("xmlFileLoaded", (event) => {
+		check = myag_ed_xmlCheckAndFix(myag_ed_xmldoc());
+		if (check != "ok")
+		{
+			var text = "Looks like your XML file is out of date or damaged. The automatic repair/update routine prepared a \
+			fixed version for you - please, update your XML contents, then force-refresh this page.";
+			myag_ed_guiPopupThrowAlert(text, "Update", "myag_ed_openWebXmlEditor()")
+		}
 	});
 }
 

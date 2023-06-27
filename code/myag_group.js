@@ -2,7 +2,13 @@
 //================ SPECIFIC STUFF FOR GROUPVIEW PAGE =======================//
 //==========================================================================//
 
-//        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
+/*
+pre-import requirements:
+	bmco_general.js
+	bmco_xml.js
+	myag_main.js
+	myag_panel.js
+*/
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -14,60 +20,44 @@ GLOBAL_group_groupname = undefined;
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-
-
 /*
 sets the group description paragraph to the description of the group 'groupname' from the xml file
-inputs: groupname (string) - name of the target group 
-output: none
+inputs: g <Group instance> 
+return: none
 */
-function myag_setTextElements(groupname)
+function myag_gr_setTextElements(g)
 {
-	myag_getGroupByName(groupname).then(function(g) {
-		if (g == null)
-		{
-			db("myag_setGroupDescription - group not located!!!")
-			return null;
-		}
+	var title = document.getElementById('groupName');
+	title.innerHTML = bmco_HTMLEntitiesDecode(g.name);
 
-
-		var ta = document.getElementById('groupAbout');
-		if (g.about == "")
-			ta.remove();
-		else
-			ta.innerHTML = g.about;
-
-		var t = document.getElementById('groupName');
-		t.innerHTML = g.name;
-	});
+	var about = document.getElementById('groupAbout');
+	if (g.about == "")
+		about.remove();
+	else
+		about.innerHTML = bmco_HTMLEntitiesDecode(g.about);
 }
 
 /*
 group view page startup function
 inputs: none
-outputs: none
+return: none
 */
 function myag_gr_startup()
 {
-	GLOBAL_group_groupname = myag_getGetParam('g');
-	if (GLOBAL_group_groupname === null)
-		window.location = "./index.html"; // go to index if no g param
-
-	myag_getGroupNames().then(function(groupnames) {
-		if (!myag_in(groupnames, GLOBAL_group_groupname))
-			window.location = "./index.html"; // go to index if g param not valid
+	myag_getGroupById(bmco_getParamRead('g')).then(function(group) {
+		if (group === null)
+			window.location = "./index.html"; // go to index if no g param
+		myag_gr_setTextElements(group);
+		bmco_setTitle(SETTING_title + " / " + group.name);
+		myag_getArtworksInGroup(group.gid).then(function(artworks) {
+			GLOBAL_loadedArtworks = artworks;
+			myag_ip_initArtworks(artworks, type=SETTING_pagingGroup);
+		});
 	});
-
-	myag_getArtworkGroup(GLOBAL_group_groupname).then(function(artworks) {
-		GLOBAL_loadedArtworks = artworks;
-		myag_ip_initArtworks(artworks, type=SETTING_pagingGroup);
-	});
-
-	myag_setTextElements(GLOBAL_group_groupname);
-
-	myag_setTitle(SETTING_title + " / " + GLOBAL_group_groupname);
-
 }
 
+//==========================================================================//
+//================================ STARTUP =================================//
+//==========================================================================//
 
 myag_gr_startup();

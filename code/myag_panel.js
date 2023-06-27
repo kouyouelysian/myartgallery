@@ -2,7 +2,10 @@
 //============== LOADS PANELS OF PICS AND PAGE NAVIGATION ==================//
 //==========================================================================//
 
-//        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
+/*
+pre-import requirements:
+  myag_main.js
+*/
 
 //==========================================================================//
 //================================ CONSTANTS ===============================//
@@ -243,7 +246,7 @@ function myag_ip_makePaginationPages(artworks, parent)
     parent.parentNode.insertBefore(pagination, parent.nextSibling);
 
 
-    getPage = myag_getGetParam("page");
+    getPage = bmco_getParamRead("page");
     if (getPage == null)
     	myag_ip_goto(0, generateGetParam=false);
     else
@@ -301,7 +304,7 @@ function myag_ip_goto(n, generateGetParam=true)
 
 
 	if (generateGetParam)
-		myag_setGetParam("page", GLOBAL_currentPage);
+		bmco_getParamWrite("page", GLOBAL_currentPage);
   
 }
 

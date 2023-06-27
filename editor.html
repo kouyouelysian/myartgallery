@@ -13,15 +13,6 @@
 	<div id="mainWrapper">
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<!--<div id="header">
-			
-			<div id="shortInfo">
-				<p id="username">MyAG Gallery Editor Page</p>
-				<p id="userinfo">Use this page to add, edit and remove artworks and groups. Simply click on the artwork image or group button to open the editing menu. Once done, click "update XML" at the bottom of the page and simply delete all the existing text and paste in the one that just got auto-loaded into your copypaste clipboard. Then, click on "upload images" and upload the files that you prepared the information for! If you're not the owner of this MyAG instance, please, leave this page; it serves no use to you, and you will not be able to modify anything.</p>
-			</div>
-			
-
-		</div>-->
 		<h1>MyAG Gallery Editor Page</h1>
 		<p class="para">Use this page to add, edit and remove artworks and groups. Simply click on the artwork image or group button to open the editing menu. Once done, click "update XML" at the bottom of the page and simply delete all the existing text and paste in the one that just got auto-loaded into your copypaste clipboard. Then, click on "upload images" and upload the files that you prepared the information for! If you're not the owner of this MyAG instance, please, leave this page; it serves no use to you, and you will not be able to modify anything.<br><br><span style="color: red">By the way</span>, did you know that you can (and should) check if your settings.js file is up to date using the included <a href="./settingsChecker.html" target="_blank">settings file checker</a>? Now you do!</p>
 
@@ -48,10 +39,9 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<!--scripts start-->
 	<script type="text/javascript" src="./user/settings.js"></script>
-	<script type="text/javascript">
-		// force other pagination settings
-		SETTING_pagingIndex = "append";
-	</script>
+	<script type="text/javascript">SETTING_pagingIndex = "append";</script>
+	<script type="text/javascript" src="./code/bmco_general.js"></script>
+	<script type="text/javascript" src="./code/bmco_xml.js"></script>
 	<script type="text/javascript" src="./code/myag_main.js"></script>
 	<script type="text/javascript" src="./code/myag_panel.js"></script>
 	<script type="text/javascript" src="./code/myag_index.js"></script>

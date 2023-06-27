@@ -2,14 +2,17 @@
 //================ MYARTGALLERY MAIN FUNCTIONS/CLASSES =====================//
 //==========================================================================//
 
-// most scripts refer to globals/functions/classes from here.
-// hook this up before using anything more specific!
+/*
+pre-import requirements:
+  bmco_general.js
+  bmco_xml.js
+*/
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
 //==========================================================================//
 
-GLOBAL_debug = true ;
+GLOBAL_debug = true;
 GLOBAL_workingFile = "./files/data.xml";
 GLOBAL_loadedData = undefined;
 GLOBAL_loadedArtworks = undefined;
@@ -18,7 +21,8 @@ GLOBAL_currentPage = 0;
 GLOBAL_pagesTotal = null;
 GLOBAL_usedPaginationType = "none";
 GLOBAL_artworksPerPage = null;
-GLOBAL_badcharsArray = ["<", ">", "\\", "/", "#", "&", '=', '"', "'"];
+
+const myag_xmlLoaded = new CustomEvent("xmlFileLoaded");
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
@@ -26,19 +30,29 @@ GLOBAL_badcharsArray = ["<", ">", "\\", "/", "#", "&", '=', '"', "'"];
 
 
 class Group {
-  constructor(name, about) {
+  constructor(gid, name, about) {
+    this.gid = gid;
     this.name = name;
     this.about = about;
   }
 }
 
 class Artwork {
-  constructor(filename, about, groups, awid, name) {
+  constructor(awid, name, filename, about, groups) {
+    this.awid = awid;
+    this.name = name;
     this.filename = filename;
     this.about = about;
     this.groups = groups;
-    this.awid = awid;
-    this.name = name;
+  }
+
+  ingroup(gid) {
+    for (var x = 0; x < this.groups.length; x++)
+    {
+      if (this.groups[x] == gid)
+        return true;
+    }
+    return false;
   }
 }
 
@@ -47,61 +61,11 @@ class Artwork {
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-function myag_badcharsPresent(arg)
-{
-  
-  for (var x = 0; x < GLOBAL_badcharsArray.length; x++)
-  {
-    if (arg.indexOf(GLOBAL_badcharsArray[x]) != -1)
-      return true;
-  }
-  return false;
-}
-
-function myag_badcharsAsString()
-{
-  out = "";
-  for (var x = 0; x < GLOBAL_badcharsArray.length; x++)
-  {
-    out += GLOBAL_badcharsArray[x];
-    if (x != GLOBAL_badcharsArray.length-1)
-      out += ", ";
-  }
-  return out;
-}
-
 /* Literally what it says. Is used in some hover-blocking shenanigans.
 */
 function myag_doNothing()
 {
   return;
-}
-
-/* Remove an html element by ID if it exists. True if OK, false if not.
-inputs: id <string> [target element id]
-return: bool
-*/
-
-function myag_removeIfExists(id)
-{
-  var m = document.getElementById(id);
-  if (m != undefined)
-  {
-    m.remove();
-    return true; 
-  }
-  return false;
-}
-
-
-/* Set page title (tab text) to some string if the arg is a valid string
-inputs: arg <string> - string to set the title to
-return: none
-*/
-function myag_setTitle(arg)
-{
-  if (typeof(arg) == "string")
-    document.title = arg;
 }
 
 /* Lazy check if the current location is index.html to alter load-ups
@@ -148,83 +112,6 @@ function myag_appendToGridMode(elem, elemIfEditor, target, mode)
   }
 }
 
-/*
-puts to the current address line a "?param=value" if there's no other get
-params or "&param=value" if there are
-inputs: param, value - any stringable values
-outputs: none
-*/
-function myag_setGetParam(param, value)
-{
-  
-  var valueString = encodeURI(String(value));
-
-  var loc = location.href;
-  var href = "";
-  var prev = myag_getGetParam(param);
-  if (prev === null)
-  {
-
-    if (loc.indexOf("?") === -1)
-      loc += "?";
-    else
-      loc += "&";
-    href = loc + String(param) + "=" + valueString;
-    
-  }
-  else
-  {
-    toDelete = param+"="+prev; // full check because there may be 2 get params
-    toAdd = param+"="+String(valueString); // with the same value
-    href = loc.replace(toDelete,toAdd);
-  }
-
-  window.history.replaceState(null, null, href); 
-  
-}
-
-/*
-checks the url for what's in a GET parameter, if empty returns null
-inputs: arg (string) - name of the GET param
-outputs: if exists - returns parameter value, null otherwise
-*/
-function myag_getGetParam(arg)
-{
-  // thanks Franklin Yu 
-  // https://stackoverflow.com/questions/814613/how-to-read-get-data-from-a-url-using-javascript
-  let params = new URLSearchParams(location.search);
-  let value = params.get(arg);
-  if (value == null)
-    return null;
-  else
-    return decodeURI(value);
-}
-
-/*
-deletes a GET parameter if it exists, if not exists returns false
-inputs: arg (string) - name of the GET param
-outputs: True if OK, false if not
-*/
-function myag_deleteGetParam(arg)
-{
-  var loc = location.href;
-  var param = myag_getGetParam(arg);
-  var toSearch = arg+'='+param;
-  if (loc.indexOf(toSearch) != -1)
-  {
-    var newLoc = loc.replace('&'+toSearch,"");
-    if (newLoc == loc) // if it was the first parameter
-        newLoc = loc.replace('?'+toSearch,"");
-    window.history.replaceState(null, null, newLoc); 
-    
-    return true;
-  }
-
-  return false;
-
-
-}
-
 
 /*
 debug logger function. set GLOBAL_debug to true if you want some console garbage.
@@ -237,30 +124,13 @@ function db(arg) {
 		console.log(arg);
 }
 
-function myag_removeFromArray(arr, value)
-{ 
-    // thanks Chris Love
-    // https://love2dev.com/blog/javascript-remove-from-array/
-        return arr.filter(function(ele){ 
-            return ele != value; 
-        });
-}
-
-/*
-returns random string of lowercase characters and numbers of length n
-inputs: n (integer) - length of the result
-outputs: random string
+/* makes an id base string
+inputs: none
+outputs: id string base
 */
-function myag_randString(n)
+function myag_makeIdBase()
 {
-  dict = '1234567890qwertyuiopasdfghjklzxcvbnm'; // PRESS ALL THE BUTTONS :D
-  randStr = "";
-  for (var t = 0; t < n; t++)
-  {
-    randStr += dict.charAt(Math.floor(Math.random()*dict.length));
-  }
-
-  return randStr;
+  return bmco_timestamp()+"_"+bmco_randString(5);
 }
 
 /*
@@ -270,7 +140,38 @@ output: correct awid
 */
 function myag_makeAwid()
 {
-  return String(Date.now())+"_"+myag_randString(5);
+  return "aw_"+String(Date.now())+"_"+bmco_randString(5);
+}
+
+/*
+makes a group id string
+inputs: none
+output: correct gid 
+*/
+function myag_makeGid()
+{
+  return "g_"+String(Date.now())+"_"+bmco_randString(5);
+}
+
+
+/* tells if the provided string is a valid id string base
+inputs: arg <string> [string to test]
+output: <bool> [if it is a valid id base]
+*/
+function myag_isIdBase(arg)
+{
+  var timestamp = arg.substr(0,13);
+  var underscore = arg.substr(13,1);
+  var rands = arg.substr(14); 
+
+  if (isNaN(timestamp))
+    return false;
+  if (underscore != "_")
+    return false;
+  if (rands.length != 5)
+    return false;
+
+  return true;
 }
 
 /* tells if the provided string is a valid awid
@@ -279,46 +180,28 @@ output: <bool> [if it is a valid artwork id]
 */
 function myag_isAwid(awid)
 {
-  var timestamp = awid.substr(0,13);
-  var underscore = awid.substr(13,1);
-  var rands = awid.substr(14);
-
-  if (isNaN(timestamp))
+  var header = awid.substr(0,3);
+  var base = awid.substr(3);
+  if (header != "aw_")
     return false;
-
-  if (underscore != "_")
+  if (!myag_isIdBase(base))
     return false;
-
-  if (rands.length != 5)
-    return false;
-
   return true;
 }
 
-/*
-extracts timestamp (int) from the awid string
-inputs: awid (string) - correct artwork id
-output: timestamp (int)
+/* tells if the provided string is a valid gid
+inputs: gid <string> [string to test]
+output: <bool> [if it is a valid group id]
 */
-function myag_getTimestampFromAwid(awid)
+function myag_isGid(gid)
 {
-  var tstamp = awid.split("_")[0];
-  return parseInt(tstamp);
-}
-
-/*
-checks if item is in an array
-inputs: a (array), i (item)
-outputs: bool true/false
-*/
-function myag_in(a, i) {
-  var good = false;
-  for (var t = 0; t < a.length; t++)
-  {
-    if (a[t] == i)
-      good = true;
-  }
-  return good;
+  var header = gid.substr(0,2);
+  var base = gid.substr(2);
+  if (header != "g_")
+    return false;
+  if (!myag_isIdBase(base))
+    return false;
+  return true;
 }
 
 /*
@@ -330,10 +213,9 @@ outputs: none
 async function myag_checkXmlLoaded() {
 
 	if (GLOBAL_loadedData == undefined)
-	{
-
+  {
 		await myag_waitForXml();
-	}
+  }
 	return;
 }
 // part of myag_checkXmlLoaded - waits for the xhr to come back
@@ -344,6 +226,7 @@ async function myag_waitForXml() {
     xmlText = xmlText.replace(/>\s*/g, '>');  // Replace "> " with ">"
     xmlText = xmlText.replace(/\s*</g, '<');  // Replace "< " with "<"
     GLOBAL_loadedData = xmlText.replaceAll(/[\n\r\t]/g, '' );
+    window.dispatchEvent(myag_xmlLoaded);
     return;
   } catch (err) {
     console.log(err)
@@ -372,26 +255,6 @@ async function myag_promiseXml()
   });
 }
 
-/*
-fetches groupnames found in the xml file. very async. :C
-inputs: none
-outputs: groupnames (array of strings)
-*/
-async function myag_getGroupNames()
-{
-	await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
-
-	var parser = new DOMParser();
-	var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
-	var xmlGroups = xmldoc.getElementsByTagName('group');
-	var groupnames = [];
-	for (var t = 0; t < xmlGroups.length; t++)
-  {
-    var xmlGroupName = xmlGroups[t].childNodes[0];
-		groupnames.push(xmlGroupName.childNodes[0].nodeValue);
-  }
-	return groupnames;
-}
 
 /*
 fetches Group class instances as by the xml file. very async. :C
@@ -406,25 +269,9 @@ async function myag_getGroups()
   var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
   var xmlGroups = xmldoc.getElementsByTagName('group');
   var groups = [];
-  for (var t = 0; t < xmlGroups.length; t++)
-  {
-    var xmlGroupName = xmlGroups[t].childNodes[0];
-    var xmlGroupAbout = xmlGroups[t].childNodes[1];
-    var g = new Group(undefined, undefined);
-    g.name = xmlGroupName.childNodes[0].nodeValue;
-
-    try
-    {
-      g.about = xmlGroupAbout.childNodes[0].nodeValue;
-    }
-    catch
-    {
-      g.about = "";
-    }
-
-    
-    groups.push(g);
-  }
+  for (var t = 0; t < xmlGroups.length; t++)  
+    groups.push(myag_groupXmlToObject(xmlGroups[t]));
+  
   return groups;
 }
 
@@ -433,6 +280,7 @@ fetches a Group class instance by its name as by the xml file. very async. :C
 inputs: targetName (string) - target group name
 outputs: Groups (array of Group instances or null if not found)
 */
+/*
 async function myag_getGroupByName(targetName)
 {
   await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
@@ -445,19 +293,43 @@ async function myag_getGroupByName(targetName)
   {
     var xmlGroupName = xmlGroups[t].childNodes[0];
     var xmlGroupAbout = xmlGroups[t].childNodes[1];
+    var xmlGroupId = xmlGroups[t].childNodes[2];
     var g = new Group(undefined, undefined);
     g.name = xmlGroupName.childNodes[0].nodeValue;
     try 
       {g.about = xmlGroupAbout.childNodes[0].nodeValue;}
     catch
       {g.about = "";}
-    
+
+
     if (g.name == targetName)
       return g;
 
   }
   return null;
 }
+*/
+
+function myag_groupXmlToObject(groupXml)
+{
+  var g = bmco_xml_childTagRead(groupXml, "gid");
+  var n = bmco_xml_childTagRead(groupXml, "name");
+  var a = bmco_xml_childTagRead(groupXml, "about");
+  var out = new Group(g, n, a);
+  return out;
+}
+
+function myag_artworkXmlToObject(artworkXml)
+{
+  var aw = bmco_xml_childTagRead(artworkXml, "awid");
+  var n = bmco_xml_childTagRead(artworkXml, "name");
+  var fn = bmco_xml_childTagRead(artworkXml, "filename");
+  var a = bmco_xml_childTagRead(artworkXml, "about");
+  var ig = bmco_xml_childTagGetChildrenValues(artworkXml, "ingroups");
+  return new Artwork(aw, n, fn, a, ig);
+}
+
+
 
 /*
 My super secret (and (forreal) absolutely harmless) function to check
@@ -477,40 +349,7 @@ outputs: artworks (array of Artwork class instances)
 */
 async function myag_getArtworkAll()
 {
-  await myag_checkXmlLoaded();
-
-  var parser = new DOMParser();
-  var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
-  var xmlArtworks = xmldoc.getElementsByTagName('artwork');
-  var artworks = [];
-  for (var t = 0; t < xmlArtworks.length; t++)
-  {
-    var a = new Artwork(undefined, undefined, [], undefined);
-    var xmla = xmlArtworks[t];
-    var props = xmla.childNodes;
-
-    a.filename = props[1].childNodes[0].nodeValue;
-
-    try
-      {a.name = props[0].childNodes[0].nodeValue;}
-    catch
-      {a.name = ""}
-    
-    
-    try 
-      {a.about = props[2].childNodes[0].nodeValue;}
-    catch
-      {a.about = "";}
-    a.awid     = props[4].childNodes[0].nodeValue;
-    var agroups = props[3].childNodes;
-    for (var tt = 0; tt < agroups.length; tt++)
-      a.groups.push(agroups[tt].childNodes[0].nodeValue);
-    artworks.push(a);
-
-  }
-
-  return artworks;
-
+  return myag_getArtworksInGroup("any");
 }
 
 /*
@@ -520,62 +359,56 @@ outputs: artworks (array of Artwork class instances)
 
 probably could be done using myag_getArtworkAll() to avoid repetition..
 */
-async function myag_getArtworkGroup(groupname)
+async function myag_getArtworksInGroup(gid)
 {
-  await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
-
-  var parser = new DOMParser();
-  var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
+  await myag_checkXmlLoaded();
+  var xmldoc = bmco_xml_xmldoc(GLOBAL_loadedData);
+  artworks = [];
   var xmlArtworks = xmldoc.getElementsByTagName('artwork');
-  var artworks = [];
   for (var t = 0; t < xmlArtworks.length; t++)
   {
-    var good = false;
-    var a = new Artwork(undefined, undefined, [], undefined);
-    var xmla = xmlArtworks[t];
-    var props = xmla.childNodes;
-    try
-      {a.name = props[0].childNodes[0].nodeValue;}
-    catch
-      {a.name = ""}
-    a.filename = props[1].childNodes[0].nodeValue;
-    try 
-      {a.about = props[2].childNodes[0].nodeValue;}
-    catch
-      {a.about = "";}
-    a.awid     = props[4].childNodes[0].nodeValue;
-    var agroups = props[3].childNodes;
-
-    for (var tt = 0; tt < agroups.length; tt++)
-    {
-      a.groups.push(agroups[tt].childNodes[0].nodeValue);
-      if (agroups[tt].childNodes[0].nodeValue == groupname)
-        good = true;
-    }
-    if (good)
-      artworks.push(a);
-
+    var aw = myag_artworkXmlToObject(xmlArtworks[t]);
+    if ((aw.ingroup(gid)) || (gid == "any"))
+      artworks.push(aw);
   }
-  
-    return artworks;
+  return artworks;
+    
 }
 
 /*
 fetches Artwork class instances based on the xml file artwork entries
-inputs: id (string) - awid field value of artwork entry/Artwork class instance
+inputs: awid (string) - awid field value of artwork class instance
 output: (Artwork class instance) the class instance searched for
 */
-async function myag_getArtworkById(targetId)
+async function myag_getArtworkById(awid)
 {
   var allArtworks = await myag_getArtworkAll();
   for (var t = 0; t < allArtworks.length; t++)
   {
-    if (allArtworks[t].awid == targetId)
+    if (allArtworks[t].awid == awid)
     {
       return allArtworks[t];
     }
   }
+  return null;
 }
 
+/*
+fetches Group class instances based on the xml file artwork entries
+inputs: gid (string) - gid field value of group class instance
+output: (Group class instance) the class instance searched for
+*/
+async function myag_getGroupById(gid)
+{
+  var allGroups = await myag_getGroups();
+  for (var t = 0; t < allGroups.length; t++)
+  {
+    if (allGroups[t].gid == gid)
+    {
+      return allGroups[t];
+    }
+  }
+  return null;
+}
 
 

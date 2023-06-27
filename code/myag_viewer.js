@@ -2,7 +2,11 @@
 //==================== ARTWORK VIEWER THING HANDLER ========================//
 //==========================================================================//
 
-//        HOOK UP MYAG_MAIN.JS AND MYAG_PANEL.JS BEFORE USING THIS!!!!!
+/*
+pre-import requirements:
+	myag_general.js
+	myag_panel.js
+*/
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -86,7 +90,7 @@ function myag_av_putToViewer(aw_id)
 		img.style.backgroundImage = "url('./artworks/"+aw.filename+"')";
 		GLOBAL_viewerWrapperObject.setAttribute('awid', aw.awid);
 
-		myag_setGetParam('id', aw.awid); // put get param to URL so users can share an image directly
+		bmco_getParamWrite('id', aw.awid); // put get param to URL so users can share an image directly
 
 		var a = document.getElementById('artworkViewerAbout');
 
@@ -212,7 +216,7 @@ function myag_av_hideViewer()
 		  
 			GLOBAL_viewerWrapperObject.style.display = "none";
 		}, 300) // aaand another one
-		myag_deleteGetParam('id'); // delete the artwork GET field
+		bmco_getParamDelete('id'); // delete the artwork GET field
 		GLOBAL_viewerState = false;
 	}
 }
@@ -244,7 +248,7 @@ function myag_av_startup(){
 	GLOBAL_viewerWrapperObject.setAttribute('awid', null); // stores curent artwork's id
 														   // as an html tag attribute.
 														   // yes i am a good programmer :D
-	var awid = myag_getGetParam('id');
+	var awid = bmco_getParamRead('id');
 	if (awid != null)
 	{
 		myag_av_showViewer(awid);

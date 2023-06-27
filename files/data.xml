@@ -1,80 +1,87 @@
-<?xml version="1.0" encoding="utf-8"?>
 <data>
      <groups>
           <group>
                <name>squares</name>
                <about>Test group - square shaped images only (these are different files!)</about>
+               <gid>g_1687803087225_6tvdv</gid>
           </group>
           <group>
                <name>odd tests</name>
                <about/>
+               <gid>g_1687803087225_exo68</gid>
           </group>
           <group>
                <name>even tests</name>
                <about/>
+               <gid>g_1687803087225_48hvw</gid>
           </group>
           <group>
                <name>💖weird symbols☆</name>
                <about>testout of uncanonical symbols in the group name. works like a charm👌👌👌</about>
+               <gid>g_1687803087225_gusi4</gid>
           </group>
      </groups>
      <artworks>
           <artwork>
                <name>Test Image 1</name>
                <filename>test1.png</filename>
-               <about>Tests displaying square-shaped images</about>
+               <about>Tests displaying square-shaped images. Ths is a &amp;lt;a href=&amp;quot;./editor.html&amp;quot;&amp;gt;link to the editor&amp;lt;/a&amp;gt; by the way!</about>
                <ingroups>
-                    <ingroup>squares</ingroup>
-                    <ingroup>odd tests</ingroup>
+                    <ingroup>g_1687803087225_6tvdv</ingroup>
+                    <ingroup>g_1687803087225_exo68</ingroup>
                </ingroups>
-               <awid>1681895247228_g6gox</awid>
+               <awid>aw_1681895247228_g6gox</awid>
           </artwork>
           <artwork>
                <name>Test Image 2</name>
                <filename>test2.png</filename>
                <about>Tests displaying wide rectangular images</about>
                <ingroups>
-                    <ingroup>even tests</ingroup>
+                    <ingroup>g_1687803087225_48hvw</ingroup>
                </ingroups>
-               <awid>1681895247084_xgvt2</awid>
+               <awid>aw_1681895247084_xgvt2</awid>
           </artwork>
           <artwork>
                <name>Test Image 3</name>
                <filename>test3.png</filename>
                <about>Tests displaying tall rectangular images</about>
                <ingroups>
-                    <ingroup>odd tests</ingroup>
+                    <ingroup>g_1687803087225_exo68</ingroup>
                </ingroups>
-               <awid>1681895246948_kq5rv</awid>
+               <awid>aw_1681895246948_kq5rv</awid>
           </artwork>
           <artwork>
                <name>Test Image 4</name>
                <filename>test4.png</filename>
                <about>Tests correct transparency</about>
                <ingroups>
-                    <ingroup>even tests</ingroup>
+                    <ingroup>g_1687803087225_48hvw</ingroup>
                </ingroups>
-               <awid>1681895246708_y3k7p</awid>
+               <awid>aw_1681895246708_y3k7p</awid>
           </artwork>
           <artwork>
                <name>Test Image 5 long name long name long name long name long name</name>
                <filename>test5.png</filename>
                <about>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</about>
                <ingroups>
-                    <ingroup>squares</ingroup>
-                    <ingroup>odd tests</ingroup>
+                    <ingroup>g_1687803087225_6tvdv</ingroup>
+                    <ingroup>g_1687803087225_exo68</ingroup>
                </ingroups>
-               <awid>1681895246564_kvk0e</awid>
+               <awid>aw_1681895246564_kvk0e</awid>
           </artwork>
           <artwork>
                <name/>
                <filename>test6.png</filename>
                <about/>
                <ingroups>
-                    <ingroup>squares</ingroup>
-                    <ingroup>even tests</ingroup>
+                    <ingroup>g_1687803087225_6tvdv</ingroup>
+                    <ingroup>g_1687803087225_48hvw</ingroup>
                </ingroups>
-               <awid>1681895246396_ed20e</awid>
+               <awid>aw_1681895246396_ed20e</awid>
           </artwork>
      </artworks>
+     <meta>
+          <updateCount>1</updateCount>
+          <updateDate>1687815565912</updateDate>
+     </meta>
 </data>

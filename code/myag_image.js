@@ -2,7 +2,11 @@
 //================ SPECIFIC STUFF FOR FULL IMAGE VIEW ======================//
 //==========================================================================//
 
-//        HOOK UP MYAG_MAIN.JS BEFORE USING THIS!!!!!
+/*
+pre-import requirements:
+	bmco_xml.js
+	myag_main.js
+*/
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
@@ -24,10 +28,9 @@ GLOBAL_linkTimeout = undefined;
 //==========================================================================//
 
 
-/*
-checks the url for what's in the "id" GET parameter, if empty returns null
+/* checks the url for what's in the "id" GET parameter, if empty returns null
 inputs: none
-outputs: 'id' GET field contents
+return: 'id' GET field contents
 */
 function myag_im_readGetFromUrl()
 {
@@ -38,13 +41,9 @@ function myag_im_readGetFromUrl()
 	return artworkid;
 }
 
-
-
-
-/*
-sends the user back on the button press
+/* sends the user back on the button press
 inputs: none (reads GLOBAL_returnUrl)
-output: none
+return: none
 */
 function myag_im_back()
 {
@@ -58,10 +57,9 @@ function myag_im_back()
 	}
 }
 
-/*
-copies the page link to share on share button click
+/* copies the page link to share on share button click
 inputs: none
-output: none
+return: none
 */
 function myag_im_share()
 {
@@ -88,7 +86,10 @@ function myag_im_share()
 	});
 }
 
-
+/* initiates download of the displayed image file.
+inputs: none
+return: none
+*/
 function myag_im_download() {
 
 	// thank you johnpyp
@@ -104,10 +105,9 @@ function myag_im_download() {
 }
 
 
-/*
-image full view page startup function
+/* image full view page startup function
 inputs: none
-outputs: none
+return: none
 */
 function myag_im_startup()
 {
@@ -143,22 +143,16 @@ function myag_im_startup()
 
 		if (GLOBAL_fullArtwork.about == "")
 		{
-			db("hell");
 			document.getElementById('fullViewTextAboutWrapper').remove();
 			document.getElementById('postAboutHr').remove();
-			
 		}
 
 
-		if(document.referrer.split('/')[2]!=location.hostname){
+		if(document.referrer.split('/')[2]!=location.hostname)
 			GLOBAL_returnUrl = "./index.html";
-		}else{
+		else
 		    GLOBAL_returnUrl = undefined;
-}
-
-	});
-
-	
+	});	
 }
 
 
