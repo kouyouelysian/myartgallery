@@ -11,6 +11,21 @@ pre-import requirements:
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
+/* Replaces all occurences of target in arg to replace
+inputs: arg <string> [plain string to be processed],
+		target <string> [string to be found in arg],
+		replace <string, optional> [replace target with this
+			string, not provided = delete occurences]
+return: <string>
+
+*/
+function bmco_replaceAllInString(arg, target, replace="")
+{
+	while (arg.indexOf(target) != -1)
+		arg = arg.replace(target, replace);
+	return arg;
+}
+
 /* Encodes the following characters into HTML entities: & < > " '
 inputs: arg <string> [plain string to be entity-encoded]
 return: <string>
@@ -45,7 +60,7 @@ function bmco_HTMLEntitiesDecode(arg) {
 	var key = ["&amp;", "&lt;", "&gt;", "&quot;", "&apos;"];
 	var match = ["&", "<", ">", '"', "'"];
 	for (var x = 0; x < key.length; x++)
-		out = out.replaceAll(key[x], match[x]);
+		out = bmco_replaceAllInString(out, key[x], match[x]);
 	return out;
 }
 

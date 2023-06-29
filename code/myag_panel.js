@@ -174,7 +174,7 @@ function myag_ip_initArtworks(as, type="none", reverse=false, target="artworksWr
 		return myag_ip_appendArworksRange(as, 0, as.length, true, target);
 	else
 	{
-		GLOBAL_artworksPerPage = SETTING_rowsPerPage * myag_ip_getArtworksPerRowHack();
+		GLOBAL_artworksPerPage = SETTING_rowsPerPage * myag_ip_getArtworksPerRow();
 		return myag_ip_addPagination(as, type);
 	}
 }
@@ -379,17 +379,11 @@ function myag_ip_loadMore()
 	}
 }
 
-/* get the user-set number of artworks per row using a dirty hack
+/* get the user-set number of artworks per row, now using a less dirty hack
 inputs: none
 return: <integer> int-parsed value of the --artworks-per-row CSS variable
 */
-function myag_ip_getArtworksPerRowHack()
+function myag_ip_getArtworksPerRow()
 {
-	var d = document.createElement("div");
-	d.style.zIndex = "var(--artworks-per-row)";
-	d.style.display = "none";
-	document.getElementById("mainWrapper").appendChild(d);
-	var n = getComputedStyle(d).getPropertyValue("z-index");
-	d.remove();
-	return parseInt(n);
+	return parseInt(getComputedStyle(document.body).getPropertyValue('--artworks-per-row'));
 }

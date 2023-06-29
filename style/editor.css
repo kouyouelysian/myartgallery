@@ -143,6 +143,7 @@ as is, as far as i can see :'D
 	transform: translateY(-50%);
 	color: inherit;
 	user-select: none;
+	-webkit-user-select: none;
 }
 
 .bottomButton:hover {
@@ -193,6 +194,7 @@ as is, as far as i can see :'D
 	margin: 0;
 	padding: 0;
 	user-select: none;
+	-webkit-user-select: none;
 }
 
 #artworksWrapper, #groupsWrapper {
@@ -312,6 +314,7 @@ as is, as far as i can see :'D
 #popupBackdrop {
 	background-color: RGBA(0,0,0,0.3);
 	user-select: none;
+	-webkit-user-select: none;
 	z-index: 99;
 }
 
@@ -393,6 +396,7 @@ as is, as far as i can see :'D
 	position: relative;
 	transition: background-color 0.1s, color 0.1s;
 	user-select: none;
+	-webkit-user-select: none;
 	cursor: pointer;
 }
 

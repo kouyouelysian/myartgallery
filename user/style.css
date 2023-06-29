@@ -38,7 +38,7 @@ body {
 	/* user section settings */
 	--userpic-size:           150px;  /* px (static) or % (dynamically resized along with the page) */
 	--userpic-radius:         50%;    /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
-	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
+	--userpic-file:           url('../files/missing_image.png'), url('./files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
 	--userpic-border:         solid;  /* options: solid, dashed, none*/
 	--username-align:         left;   /*  options: left, middle or right */
 

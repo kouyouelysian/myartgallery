@@ -225,7 +225,7 @@ async function myag_waitForXml() {
     let xmlText = await myag_promiseXml()
     xmlText = xmlText.replace(/>\s*/g, '>');  // Replace "> " with ">"
     xmlText = xmlText.replace(/\s*</g, '<');  // Replace "< " with "<"
-    GLOBAL_loadedData = xmlText.replaceAll(/[\n\r\t]/g, '' );
+    GLOBAL_loadedData = bmco_replaceAllInString(xmlText, /[\n\r\t]/g);
     window.dispatchEvent(myag_xmlLoaded);
     return;
   } catch (err) {
