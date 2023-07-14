@@ -45,7 +45,10 @@ function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
 	if (aw.filename != undefined)
 	{
 		var img = document.createElement("img");
-		img.setAttribute("src", "./artworks/"+aw.filename);
+		if (SETTING_remoteImageHost == null)
+			img.setAttribute("src", "./artworks/"+aw.filename);
+		else
+			img.setAttribute("src", SETTING_remoteImageHost + "/artworks/"+aw.filename);
 		img.classList.add("artworkImg");
 		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);

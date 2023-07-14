@@ -47,3 +47,7 @@ SETTING_rowsPerPage     = 1;
 // first one.
 SETTING_nextPageOnWrap  = true;
 
+// this should be set if the package is being run as an editor-only instance
+// within neomanager. it's set automatically under normal conditions!
+// 'null' is normal for standalone, no-localhost-manager operation.
+SETTING_remoteImageHost = null;

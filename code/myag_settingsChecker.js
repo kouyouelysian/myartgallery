@@ -75,7 +75,8 @@ function myag_sc_displayBadKeys(active, deprecated)
 function myag_sc_run()
 {
 	settings_names = ["SETTING_neocitiesXmlFileEditLink", "SETTING_neocitiesArtworksFolderLink", "SETTING_title", 
-	"SETTING_fullButton", "SETTING_about", "SETTING_pagingIndex", "SETTING_pagingGroup", "SETTING_rowsPerPage", "SETTING_nextPageOnWrap"];
+	"SETTING_fullButton", "SETTING_about", "SETTING_pagingIndex", "SETTING_pagingGroup", "SETTING_rowsPerPage", "SETTING_nextPageOnWrap",
+	"SETTING_remoteImageHost"];
 	deprecated_names = ["SETTING_loadTopDown"];
 	myag_sc_displayBadKeys(settings_names, deprecated_names);
 	bmco_setTitle(SETTING_title + " / settings checker");
