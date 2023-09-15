@@ -113,7 +113,7 @@ function myag_im_startup()
 {
 	GLOBAL_targetId = myag_im_readGetFromUrl();
 	if (GLOBAL_targetId === null)
-		window.location = "./index.html"; // go to index if no g param
+		window.location = "./index.html"; // go to index if no id param
 
 	myag_getArtworkAll().then(function(artworks) {
 		for (var t = 0; t < artworks.length; t++)
@@ -127,7 +127,8 @@ function myag_im_startup()
 			}
 		}
 		if (GLOBAL_fullArtwork == undefined)
-			window.location = "./index.html"; // go to index if g param not valid
+			window.location = "./index.html"; // go to index if id param not valid
+		
 
 
 		var img = document.getElementById('fullViewImage');
