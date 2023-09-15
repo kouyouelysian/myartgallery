@@ -33,12 +33,13 @@ Click on "index.html" - a page pops up in a new tab. If it displays some test im
 In neocities dashboard view (with the folders and all) where you just uploaded the stuff, you have to open (right click + open in new tab for most browsers) two folders in new tabs : 'files' and 'artworks'. On the tab with the 'files' one, click on 'data.xml' - an editor will pop up. you don't have to edit anything; just keep it open. Don't do anything with the 'artworks' folder tab. Keeping these two tabs open, go back to the initial tab with the dashboard view.
 
 ### 3. edit user/settings.js
-This is the hardest thing you have to do here - this will enable the gallery editor to redirect you automatically. navigate to the "settings" folder, then press "edit" at the line showing "settings.js". there are two lines where you have to paste links:
+This is the hardest thing you have to do here - this will enable the gallery editor to redirect you automatically. navigate to the "user" folder, then press "edit" at the line showing "settings.js". there are two text lines that you have to edit:
 
 SETTING_neocitiesXmlFileEditLink = "pastelinkhere";
+
 SETTING_neocitiesArtworksFolderLink = "pastelinkhere";
 
-The **pastelinkhere**s have to be replaced with actual links. The first one, SETTING_neocitiesXmlFileEditLink, should get the link to the data.xml file editor tab. Just copy the link from the tab that you opened before, and paste it to the setting.js line. The second one, SETTING_neocitiesArtworksFolderLink, is the same story but with the artworks folder. The two lines should look something like this at the end:
+The **pastelinkhere**s have to be replaced with actual links. The first one, SETTING_neocitiesXmlFileEditLink, should get the link to the data.xml file editor tab. Just copy the link from the tab that you opened before, and paste it to the setting.js line. The second one, SETTING_neocitiesArtworksFolderLink, is the same story but with the artworks folder. Don't forget to keep the double quotes! The two lines should look something like this at the end:
 
 SETTING_neocitiesXmlFileEditLink = "https://neocities.org/site_files/files/data.xml";
 
