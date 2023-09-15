@@ -1,0 +1,17 @@
+{
+	"items_remote": [
+		"./",
+		"- README.md",
+		"- TODO.md",
+		"- insall.json"
+	],
+	"items_local": [
+		"./code/",
+		"- ./code/myag_group.js",
+		"- ./code/myag_image.js",
+		"- ./code/myag_settingsChecker.js",
+		"./style/",
+		"./user/",
+		"./editor.html",
+	]
+}
