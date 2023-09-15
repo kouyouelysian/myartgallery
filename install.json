@@ -12,6 +12,6 @@
 		"- ./code/myag_settingsChecker.js",
 		"./style/",
 		"./user/",
-		"./editor.html",
+		"./editor.html"
 	]
 }
