@@ -6,6 +6,7 @@
 		"- insall.json"
 	],
 	"items_local": [
+<<<<<<< HEAD
 		"code/",
 		"style/",
 		"user/",
@@ -16,5 +17,14 @@
 		"- README.md",
 		"- TODO.md",
 		"- insall.json"
+=======
+		"./code/",
+		"- ./code/myag_group.js",
+		"- ./code/myag_image.js",
+		"- ./code/myag_settingsChecker.js",
+		"./style/",
+		"./user/",
+		"./editor.html"
+>>>>>>> ff701c824923589dd44729b67046376bfd301651
 	]
 }
