@@ -13,7 +13,7 @@ pre-import requirements:
 //==========================================================================//
 
 GLOBAL_debug = true;
-GLOBAL_workingFile = "./files/data.xml";
+GLOBAL_workingFile = "./myag_files/data.xml";
 GLOBAL_loadedData = undefined;
 GLOBAL_loadedArtworks = undefined;
 GLOBAL_currentlyLoadedArtworks = [];

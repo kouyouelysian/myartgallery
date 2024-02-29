@@ -46,9 +46,9 @@ function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
 	{
 		var img = document.createElement("img");
 		if (SETTING_remoteImageHost == null)
-			img.setAttribute("src", "./artworks/"+aw.filename);
+			img.setAttribute("src", "./myag_artworks/"+aw.filename);
 		else
-			img.setAttribute("src", SETTING_remoteImageHost + "/artworks/"+aw.filename);
+			img.setAttribute("src", SETTING_remoteImageHost + "/myag_artworks/"+aw.filename);
 		img.classList.add("artworkImg");
 		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);
