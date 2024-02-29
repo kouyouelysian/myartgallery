@@ -15,11 +15,11 @@ Wanna see MyAG in action? My own kandi museum page runs on MyAG, [check it out](
 ### 1. load the package contents to neocities.
 [Download the package](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip) from this github page and deploy it to your Neocities. This means extracting the zip file you just got, going to Neocities dashboard view (the thing where you can make and delete files, etc), and drag-n-dropping stuff to the location where you want your gallery to be. All the files and folders from the package must exist in the **same Neocities site folder**. Upload folders one by one, **DO NOT GROUP-LOAD FOLDERS** - neocities has a bug with that. Uploading all the *files* at once is OK though! You have to upload the following:
 - folders (drag and drop one by one to load a folder with all its contents):
-    - artworks
-    - code
-    - files
-    - style
-    - user
+    - myag_artworks
+    - myag_code
+    - myag_files
+    - myag_style
+    - myag_user
 - files (basically, upload all .html files from the package):
     - editor.html
     - group.html
@@ -32,7 +32,7 @@ Click on "index.html" - a page pops up in a new tab. If it displays some test im
 ### 2. open two needed pages in new tabs
 In neocities dashboard view (with the folders and all) where you just uploaded the stuff, you have to open (right click + open in new tab for most browsers) two folders in new tabs : 'files' and 'artworks'. On the tab with the 'files' one, click on 'data.xml' - an editor will pop up. you don't have to edit anything; just keep it open. Don't do anything with the 'artworks' folder tab. Keeping these two tabs open, go back to the initial tab with the dashboard view.
 
-### 3. edit user/settings.js
+### 3. edit myag_user/settings.js
 This is the hardest thing you have to do here - this will enable the gallery editor to redirect you automatically. navigate to the "user" folder, then press "edit" at the line showing "settings.js". there are two text lines that you have to edit:
 
 SETTING_neocitiesXmlFileEditLink = "pastelinkhere";
@@ -48,9 +48,9 @@ SETTING_neocitiesArtworksFolderLink = "https://neocities.org/dashboard?dir=Fartw
 Save the file (ctrl/cmd + S or click the red "save" button) and return to the dashboard view by pressing 'dashboard' at top left corner. Now the bundled gallery editor that helps you edit the image names, infos and groups, will be able to easily redirect you to the artwork upload page and XML update page upon clicking a button.
 
 ### 4. customize!
-The fun part is that you customize the website look! All the "easy" customization files are located in the "user" folder. You will not have to edit anything else to change things up. Open the file "style.css" in the "user" folder. There are some assignable variables that you can change, with guidance next to them. Feel free to rewrite the default values with custom ones - just be sure to follow the same format that i used and noted in the guide comments if you're not familiar with css! You can open your gallery's index and refresh it to see the results of your customizations. If it doesn't go through, try [force-refreshing](https://www.howtogeek.com/672607/how-to-hard-refresh-your-web-browser-to-bypass-your-cache/) the page.
+The fun part is that you customize the website look! All the "easy" customization files are located in the "myag_user" folder. You will not have to edit anything else to change things up. Open the file "style.css" in the "user" folder. There are some assignable variables that you can change, with guidance next to them. Feel free to rewrite the default values with custom ones - just be sure to follow the same format that i used and noted in the guide comments if you're not familiar with css! You can open your gallery's index and refresh it to see the results of your customizations. If it doesn't go through, try [force-refreshing](https://www.howtogeek.com/672607/how-to-hard-refresh-your-web-browser-to-bypass-your-cache/) the page.
 
-You can load your user picture to the "files" folder. No size constraints but i suggest resizing to 400x400px. put the filename to the --userpic-file in user/style.css - otherwise it will keep pointing to the question mark image!  
+You can load your user picture to the "myag_files" folder. No size constraints but i suggest resizing to 400x400px. put the filename to the --userpic-file in myag_user/style.css - otherwise it will keep pointing to the question mark image!  
 
 All the pages generate text automatically, except for the landing (index) page. the index page has info that is presented when someone first reaches your webpage! edit "index.html" and put your info instead of the stock text. Done, you're marvelous!
 
