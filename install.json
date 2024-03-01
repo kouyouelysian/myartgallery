@@ -19,7 +19,7 @@
 	"editor": {
 		"type": "template",
 		"file": "editor.html",
-		"lines": "offline_editor.json"
+		"chunks": "offline_editor.json"
 	}
 	
 }

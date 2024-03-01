@@ -3,15 +3,19 @@
 <head>
 	<!-- change this to what you want to display at the browser top -->
 	<title>My Art Gallery</title>
+	<!--*chunk styles*-->
 	<link rel="stylesheet" type="text/css" href="myag_style/panel.css">
 	<link rel="stylesheet" type="text/css" href="myag_style/editor.css">
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_general.css" />
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_pagetabs.css" />
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_gui.css" />
-	
+	<!--*endchunk*-->
 </head>
+
+<!--*chunk bodytag*-->
 <body isEditor="isEditor" isOffline="isOffline">
-	
+<!--*endchunk-->
+
 	<div id="artworkViewerWrapper"></div>
 	
 	<div id="mainWrapper">
@@ -51,8 +55,13 @@
 		<input type="text" name="inputName" id="inputName">
 		<p>Description (optional)</p>
 		<textarea id="inputAbout"></textarea>
+		
 		<label for="inputFilename">Filename (automatic, usually left as is)</label>
 		<input type="text" name="inputFilename" id="inputFilename">
+
+		<label for="inputFileUpload">Upload file:</label>
+		<input type="file" name="inputFileUpload" id="inputFileUpload">
+		<hr>
 		<div id="filloutArtworkGroupCheckboxes">
 			<p>In groups:</p>
 		</div>
@@ -73,40 +82,27 @@
 		<div class="bottombar" id="filloutGroupBottomBar"></div>
 	</form>
 
-
-<!-- 
-		<h1>MyAG Gallery Editor Page</h1>
-		<p class="para">Use this page to add, edit and remove artworks and groups. Simply click on the artwork image or group button to open the editing menu. Once done, click "update XML" at the bottom of the page and simply delete all the existing text and paste in the one that just got auto-loaded into your copypaste clipboard. Then, click on "upload images" and upload the files that you prepared the information for! If you're not the owner of this MyAG instance, please, leave this page; it serves no use to you, and you will not be able to modify anything.<br><br><span style="color: red">By the way</span>, did you know that you can (and should) check if your settings.js file is up to date using the included <a href="./settingsChecker.html" target="_blank">settings file checker</a>? Now you do!</p>
-
--->
-
 	<div class="bottombar" id="bottomButtonWrapper">
 	</div>	
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!--scripts start-->
-	
+
+	<!--*chunk bodytag*-->
 	<script type="text/javascript" src="myag_code/bmco_general.js"></script>
 	<script type="text/javascript" src="myag_code/bmco_gui.js" ></script>
 	<script type="text/javascript" src="myag_code/bmco_pagetabs.js" ></script>
 	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
-
-
 	<script type="text/javascript" src="myag_user/settings.js"></script>
 	<script type="text/javascript" src="myag_code/myag_main.js"></script>
-
-
-	<script type="text/javascript">
-		SETTING_pagingIndex = "append";
-		bmco_tab_init("artworks");
-	</script>
-
 	<script type="text/javascript" src="myag_code/myag_panel.js"></script>
 	<script type="text/javascript" src="myag_code/myag_index.js"></script>
 	<script type="text/javascript" src="myag_code/plugin_vkbeautify.js"></script>
 	<script type="text/javascript" src="myag_code/myag_viewer.js"></script>
 	<script type="text/javascript" src="myag_code/myag_editor.js"></script>
+	<script type="text/javascript">
+		SETTING_pagingIndex = "append";
+		bmco_tab_init("artworks");
+	</script>
+	<!--*endchunk-->
 
-	<!--scripts end-->
 </body>
 </html>

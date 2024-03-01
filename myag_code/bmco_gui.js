@@ -183,7 +183,6 @@ function bmco_gui_popupConfirm(message, fn1, text1="YES", fn2="bmco_gui_popupClo
 	bmco_gui_backdropCreate("bmco_gui_popupClose()");
 	if (addAutoClose)
 		fn1 += "; bmco_gui_popupClose()";
-	console.log(fn1);
 	var selectDiv = bmco_gui_popupCreatePopupBody(message, "popupSelect");
 	bmco_gui_popupAddButton(selectDiv, text1, fn1);
 	bmco_gui_popupAddButton(selectDiv, text2, fn2);
@@ -240,7 +239,6 @@ return: none
 */
 function bmco_gui_filloutShow(id)
 {
-	console.log("painis");
 	var target = document.getElementById(id);
 	if (target == undefined)
 		return;
@@ -280,12 +278,12 @@ function bmco_gui_actionMenuAppend(arg, mouseX, mouseY)
 	if (myag_isAwid(arg))
 	{
 		buttonFunctions = ["myag_ed_editArtwork('"+arg+"')", "myag_ed_moveArtwork('"+arg+"')", "myag_ed_deleteArtwork('"+arg+"')"];
-		target = myag_ed_guiFindOfClassByAttribute("artwork", "artworkId", arg);
+		target = bmco_firstElementOfClassByAttribute("artwork", "artworkId", arg);
 	}
 	else if (myag_isGid(arg))
 	{
 		buttonFunctions = ["myag_ed_editGroup('"+arg+"')", "myag_ed_moveGroup('"+arg+"')", "myag_ed_deleteGroup('"+arg+"')"];
-		target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", arg);
+		target = bmco_firstElementOfClassByAttribute("groupButton", "groupId", arg);
 	}
 	if (target == undefined)
 		return;

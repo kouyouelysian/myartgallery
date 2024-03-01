@@ -28,29 +28,6 @@ GLOBAL_isMoving = "none"; // "none", "group" or "artwork"
 //=============================== GUI STUFF ================================//
 //==========================================================================//
 
-/* Changes a line for an existing rule in one of the loaded CSS sheets
-inputs: typeAndClass <string> [valid name of a selector, e.g. ".myAss p"],
-		sheetIndex <int> [index of the CSS file to refer to, as they appear in <head>],
-		newRule <string> [name of a rule line, e.g. "margin-left"],
-		newValue <string> [a valid parameter for the rule, e.g. "20px"]
-return: none 
-*/
-function myag_ed_changeCss(typeAndClass, sheetIndex, newRule, newValue)
-{
-	// stolen from https://stackoverflow.com/questions/18421962/how-to-add-a-new-rule-to-an-existing-css-class
-    var thisCSS=document.styleSheets[sheetIndex];
-    var ruleSearch=thisCSS.cssRules? thisCSS.cssRules: thisCSS.rules;
-    for (i=0; i<ruleSearch.length; i++)
-    {
-        if(ruleSearch[i].selectorText==typeAndClass)
-        {
-            var target=ruleSearch[i];
-            break;
-        }
-    }
-    target.style[newRule] = newValue;
-}
-
 /* myag_ed_changeCss wrapper targeting style/editor.css
 inputs: typeAndClass <string> [valid name of a selector, e.g. ".myAss p"],
 		newRule <string> [name of a rule line, e.g. "margin-left"],
@@ -59,7 +36,7 @@ return: none
 */
 function myag_ed_changeEditorCss(typeAndClass, newRule, newValue)
 {
-	myag_ed_changeCss(typeAndClass, 1, newRule, newValue);
+	bmco_forceCssToSheet(typeAndClass, 1, newRule, newValue);
 }
 
 /* myag_ed_changeCss wrapper targeting style/main.css
@@ -68,9 +45,9 @@ inputs: typeAndClass <string> [valid name of a selector, e.g. ".myAss p"],
 		newValue <string> [a valid parameter for the rule, e.g. "20px"]
 return: none 
 */
-function myag_ed_changMainCss(typeAndClass, newRule, newValue)
+function myag_ed_changeMainCss(typeAndClass, newRule, newValue)
 {
-	myag_ed_changeCss(typeAndClass, 0, newRule, newValue)
+	bmco_forceCssToSheet(typeAndClass, 0, newRule, newValue)
 }
 
 /* This clusterfuck switches the layout between move group, more artwork and
@@ -83,121 +60,125 @@ returns: none
 */
 function myag_ed_guiSetMovingMode(mode="none")
 {
-	if ((mode != "none") && (mode != "artwork") && (mode != "group"))
+	if (!bmco_arrayHas(["none", "artwork", "group"], mode))
 		return;
+	
 	GLOBAL_isMoving = mode;
 	if (mode == "none")
 	{
+		bmco_ofClassRemoveClass("locatorWrapperArtwork", "locatorActive");
+		bmco_ofClassRemoveClass("locatorWrapperGroup", "locatorActive");
+		/*
 		myag_ed_changeEditorCss(".locatorWrapperGroup", "display", "none");
 		myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "none");
 		myag_ed_changeEditorCss(".artwork", "margin-left", "var(--page-spacing)");
 		myag_ed_changeEditorCss(".groupButton", "margin-left", "var(--page-spacing)");
 		myag_ed_changeEditorCss(".locatorWrapperGroup", "display", "none");
 		myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "none");
-		myag_ed_changMainCss(".groupButton:hover", "pointer-events", "auto");
-		myag_ed_changMainCss(".artwork:hover", "pointer-events", "auto");
+		myag_ed_changeMainCss(".groupButton:hover", "pointer-events", "auto");
+		myag_ed_changeMainCss(".artwork:hover", "pointer-events", "auto");
 		document.getElementById("buttonCreateNewGroup").removeAttribute("style");
 		document.getElementById("buttonCreateNewArtwork").removeAttribute("style");
+		*/
 	}
 	else
 	{
 		if (mode == "artwork")
 		{
+			bmco_ofClassAddClass("locatorWrapperArtwork", "locatorActive");
+			/*
 			myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "inline-block");
 			myag_ed_changeEditorCss(".artwork", "margin-left", "0");
 			myag_ed_changeEditorCss(".groupButton", "margin-left", "var(--page-spacing)");
+			*/
 		}
-		else
+		else if (mode == "group")
 		{	
+			bmco_ofClassAddClass("locatorWrapperGroup", "locatorActive");
+			/*	
 			myag_ed_changeEditorCss(".locatorWrapperGroup", "display", "inline-block");
 			myag_ed_changeEditorCss(".groupButton", "margin-left", "0");
 			myag_ed_changeEditorCss(".artwork", "margin-left", "var(--page-spacing)");	
+			*/
 		}
-
-		myag_ed_changMainCss(".groupButton:hover", "pointer-events", "none");
-		myag_ed_changMainCss(".artwork:hover", "pointer-events", "none");
+		/*
+		myag_ed_changeMainCss(".groupButton:hover", "pointer-events", "none");
+		myag_ed_changeMainCss(".artwork:hover", "pointer-events", "none");
 		document.getElementById("buttonCreateNewGroup").style.backgroundColor = "#ccc";
 		document.getElementById("buttonCreateNewGroup").style.borderColor = "#ccc";
 		document.getElementById("buttonCreateNewArtwork").style.backgroundColor = "#ccc";
+		*/
 	} 
 }
 
-/* Creates an input field of a type (or a textarea), fit with ID and name attributes
-I really don't get why textarea is its own tag and not an input type.
-inputs: type <string> [html <input> tag type, like "text" or "password"],
-		name <string> [name of this element, to be used for name and id properties],
-		value <string, optional> [if set, the field will have this for its pre-set value]
-return: <html element> [resulting <input> thing prepared with all the goodies]
-
+/* Displays the group editor menu fillout. Used in conjunction with other stuff when running the group editor.
+inputs: g <Group instance, optional> [group the info of which gets autoloaded to the editor],
+		makeNew <bool, optional> [marks if the menu is opened to create a new group and not edit an existing one]
+return: none
 */
-function myag_ed_guiInputCreate(type, name, value=null)
+function myag_ed_guiEditorLoadGroup(g=Group("new group", ""), makeNew=false)
 {
-	var input = undefined;
-	if (type == "textarea")
-		input = document.createElement("textarea");
+	bmco_gui_actionMenuDelete();
+
+	var gname = makeNew? "" : g.name;
+	var gabout = makeNew? "" : g.about;
+	var nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutGroup')"]];
+	if (makeNew)
+		nameFnTuples.push(["Create", "myag_ed_actionGroup('create')"]);
 	else
+		nameFnTuples.push(["Update", "myag_ed_actionGroup('update')"]);
+
+	bmco_inputValueSet("inputGroupName",gname);
+	bmco_inputValueSet("inputGroupNameOld",gname);
+	bmco_inputValueSet("inputGroupAbout",gabout);
+	bmco_inputValueSet("inputGid", g.gid);
+	document.getElementById("filloutGroupTitle").innerHTML = makeNew? "Add a new group" : "Edit group details";
+	
+	bmco_gui_filloutShow("filloutGroup");
+	bmco_gui_bottomBarPopulate(nameFnTuples, "filloutGroupBottomBar");
+
+}
+
+/* Displays the artwork editor menu fillout. Used in conjunction with other stuff when running the artwork editor.
+inputs: aw <Artwork instance, optional> [artwork the info of which gets autoloaded to the editor],
+		makeNew <bool, optional> [marks if the menu is opened to create a new artwork and not edit an existing one]
+return: none
+*/
+function myag_ed_guiEditorLoadArtwork(aw, makeNew=false)
+{
+	if (aw.awid == undefined)
+			aw.awid = myag_makeAwid();
+	var nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutArtwork')"]];
+	var name  =    makeNew? "" : aw.name;
+	var about =    makeNew? "" : aw.about;
+	var filename = makeNew? "" : aw.filename;
+	document.getElementById("filloutArtworkTitle").innerHTML = makeNew? "Add a new artwork" : "Edit artwork details";
+
+	if (makeNew)
+		nameFnTuples.push(["Add", "myag_ed_actionArtwork('create');"]);	
+	else
+		nameFnTuples.push(["Update", "myag_ed_actionArtwork('update')"]);
+
+	bmco_inputValueSet("inputName", name);
+	bmco_inputValueSet("inputAbout", about);
+	bmco_inputValueSet("inputFilename", filename);
+	bmco_inputValueSet("inputAwid", aw.awid);
+
+	// generate checkboxes - probably should generate once and only check them here, but ehhh
+	var groups = myag_ed_xmldoc().getElementsByTagName('group');
+	groupCheckboxes = document.getElementById("filloutArtworkGroupCheckboxes");
+	groupCheckboxes.innerHTML = "<p>In groups:</p>"; // reset the cbox div to just the titletext
+	for (var t = 0; t < groups.length; t++)
 	{
-		input = document.createElement("input");
-		input.setAttribute("name", name);
-		input.setAttribute("type", type);
-	}	
-	input.value = value;
-	input.id = name;
-	return input;
+		var checked = makeNew ? "" : bmco_arrayHas(aw.groups, bmco_xml_childTagRead(groups[t], "gid"));
+		groupCheckboxes.appendChild(myag_ed_guiGroupCheckboxCreate(myag_groupXmlToObject(groups[t]), checked));
+	}
+	if (groups.length == 0)
+		groupCheckboxes.style.display = "none";
+
+	bmco_gui_bottomBarPopulate(nameFnTuples, "filloutArtworkBottomBar");
+	bmco_gui_filloutShow("filloutArtwork");
 }
-
-/* Creates a styled <p> to put before input fields with some explanation text
-inputs: text <string> [displayed guide line text]
-return: <html element>
-*/
-function myag_ed_guiInputGuideCreate(text)
-{
-	var p = document.createElement("p");
-	p.innerHTML = text;
-	p.classList.add("guide");
-	return p;
-}
-
-/* Attempts reading a value from some input field by its ID. Returns "" if not found.
-inputs: id <string> [target input element id]
-return: <string> [element's value attribute or "" if element not found]
-*/
-function myag_ed_guiInputRead(id)
-{
-	var f = document.getElementById(id);
-	if ((f == undefined) || (f == null))
-		return "";
-	return f.value.trim();
-}
-
-/* A rather dumb but useful function that returns an HTML div with a <p>aragraph inside of it.
-Used by button constructors and such.
-inputs: text <string> [text to be put into the paragraph],
-		fn <string, optional> [if set, this will be put to the resulting div's onclick attribute]
-return: <html element>
-*/
-function myag_ed_guiCreateDivWithP(text, fn=undefined)
-{
-	var div = document.createElement("div");
-	div.innerHTML = "<p>"+text+"</p>";
-	if (fn != undefined)
-		div.setAttribute("onclick", fn);
-	return div;
-}
-
-/*
-
-removed functons:
-
-function myag_ed_guiCreateControlButton(text, fn)
-function myag_ed_guiCreateBottomButton(text, fn)
-function myag_ed_guiPopupClose()
-function myag_ed_guiPopupCreateBackdrop()
-function myag_ed_guiPopupCreateBody(text, id=undefined)
-function myag_ed_guiPopupThrowAlert(message, text="OK", fn="myag_ed_guiPopupClose()")
-function myag_ed_guiPopupThrowSelect(message, text1, fn1, text2, fn2)
-function myag_ed_guiArrayOfElementsToDiv
-*/
 
 /* Creates a checkbox + label thing. Only used in group selection section
 in the artwork edit menu.
@@ -205,7 +186,7 @@ inputs: g <Group instance> [checkbox represents this group],
 		checked <bool> [initial checkbox state]
 return: <html element> [div with checkbox input and label p inside]
 */
-function myag_ed_guiCheckboxCreate(g, checked=false)
+function myag_ed_guiGroupCheckboxCreate(g, checked=false)
 {
 	var i = document.createElement("input");
 	i.setAttribute("name", g.gid);
@@ -227,135 +208,6 @@ function myag_ed_guiCheckboxCreate(g, checked=false)
 	return d;
 }
 
-/* Attempt to toggle a checkbox's state by its ID. returns if not found.
-inputs: id <string> [target checkbox ID attribute]
-return: none
-*/
-function myag_ed_guiCheckboxToggle(id)
-{
-	t = document.getElementById(id);
-	if ((t == undefined) || (t == null))
-		return;
-	t.checked = !t.checked;
-}
-
-/* Loads the group editor menu to formViewer. Used in conjunction with other stuff
-when running the group editor.
-inputs: g <Group instance, optional> [group the info of which gets autoloaded to the editor],
-		makeNew <bool, optional> [marks if the menu is opened to create a new group and not edit an existing one]
-return: none
-*/
-function myag_ed_guiEditorLoadGroup(g=Group("new group", ""), makeNew=false)
-{
-	bmco_gui_actionMenuDelete();
-
-	var gname = "";
-	var gabout = "";
-	var title = "Edit group details";
-	var nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutGroup')"]];
-	if (makeNew)
-	{
-		nameFnTuples.push(["Create", "myag_ed_actionGroup('create')"]);
-		title = "Add a new group";
-	}
-	else
-	{
-		nameFnTuples.push(["Update", "myag_ed_actionGroup('update')"]);
-		gname = g.name;
-		gabout = g.about;
-	}
-
-	bmco_inputValueSet("inputGroupName",gname);
-	bmco_inputValueSet("inputGroupNameOld",bmco_inputValueGet("inputGroupName"));
-	bmco_inputValueSet("inputGroupAbout",gabout);
-	bmco_inputValueSet("inputGid", g.gid);
-	document.getElementById("filloutGroupTitle").innerHTML = title;
-	
-	bmco_gui_filloutShow("filloutGroup");
-	bmco_gui_bottomBarPopulate(nameFnTuples, "filloutGroupBottomBar");
-
-}
-
-/* Loads the artwork editor menu to formViewer. Used in conjunction with other stuff
-when running the artwork editor.
-inputs: aw <Artwork instance, optional> [artwork the info of which gets autoloaded to the editor],
-		makeNew <bool, optional> [marks if the menu is opened to create a new artwork and not edit an existing one]
-return: none
-*/
-function myag_ed_guiEditorLoadArtwork(aw, makeNew=false)
-{
-	if (aw.awid == undefined)
-			aw.awid = myag_makeAwid();
-	var nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutArtwork')"]];
-	var title = "Edit artwork details";
-	var name  ="";
-	var about = "";
-	var filename = "";
-
-	if (makeNew)
-	{
-		nameFnTuples.push(["Add", "myag_ed_actionArtwork('create');"]);	
-		title = "Add a new artwork";
-	}
-	else
-	{
-		nameFnTuples.push(["Update", "myag_ed_actionArtwork('update')"]);
-		name = aw.name;
-		about = aw.about;
-		filename = aw.filename;
-	}
-
-	document.getElementById("filloutArtworkTitle").innerHTML = title;
-	bmco_inputValueSet("inputName", name);
-	bmco_inputValueSet("inputAbout", about);
-	bmco_inputValueSet("inputFilename", filename);
-	bmco_inputValueSet("inputAwid", aw.awid);
-
-	// generate checkboxes - probably should generate once and only check them here, but ehhh
-	var xmldoc = myag_ed_xmldoc();
-	var groups = xmldoc.getElementsByTagName('group');
-	groupCheckboxes = document.getElementById("filloutArtworkGroupCheckboxes");
-	groupCheckboxes.innerHTML = "<p>In groups:</p>";
-	for (var t = 0; t < groups.length; t++)
-	{
-		var checked = false;
-		if (!makeNew)
-			checked = bmco_arrayHas(aw.groups, bmco_xml_childTagRead(groups[t], "gid"));
-
-		var chb = myag_ed_guiCheckboxCreate(myag_groupXmlToObject(groups[t]), checked);
-		groupCheckboxes.appendChild(chb);
-	}
-	if (groups.length == 0)
-		groupCheckboxes.style.display = "none";
-
-	bmco_gui_bottomBarPopulate(nameFnTuples, "filloutArtworkBottomBar");
-	bmco_gui_filloutShow("filloutArtwork");
-}
-
-
-
-/* VERY IMPORTANT FUNCTION!!! Finds the first element of class 'classname'  which has
-the 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
-inputs: classname <string> [elements of this class will get searched up]
-		attribute <string> [attribute name to look for]
-		value <string> [attribute value to match]
-return: <html element> or <undefined> on fail
-*/
-function myag_ed_guiFindOfClassByAttribute(classname, attribute, value)
-{
-	var classItems = document.getElementsByClassName(classname);
-	for (var x = 0; x < classItems.length; x++)
-	{
-		var target = classItems[x];
-		if (target.getAttribute(attribute) == value)
-		{
-			return target;
-			break;
-		}
-	}
-	return undefined;
-}
-
 /* Creates a new group button and appends it after the "add new group" button in the grid
 inputs: g <Group instance> [group to be used on the button. not really optional lol]
 return: none
@@ -373,8 +225,7 @@ return: none
 */
 function myag_ed_guiGroupButtonUpdate(gid, name)
 {
-
-	var target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", gid);
+	var target = bmco_firstElementOfClassByAttribute("groupButton", "groupId", gid);
 	target.setAttribute("groupName", name);
 	target.innerHTML = "<p>"+name+"</p>";
 }
@@ -385,8 +236,8 @@ return: none
 */
 function myag_ed_guiGroupButtonDelete(gid)
 {
-	myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", gid).remove();
-	myag_ed_guiFindOfClassByAttribute("locatorWrapperGroup", "groupId", gid).remove();
+	bmco_firstElementOfClassByAttribute("groupButton", "groupId", gid).remove();
+	bmco_firstElementOfClassByAttribute("locatorWrapperGroup", "groupId", gid).remove();
 }
 
 /* Takes a group button and puts it after some other group button instead of its current position.
@@ -396,14 +247,14 @@ return: none
 */
 function myag_ed_guiGroupButtonPutAfter(movedGid, targetGid)
 {
-	var moved = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", movedGid);
+	var moved = bmco_firstElementOfClassByAttribute("groupButton", "groupId", movedGid);
 	if ((targetGid == undefined) || (targetGid == "start"))
 		var target = document.getElementById("buttonCreateNewGroup");
 	else
-		var target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", targetGid);
+		var target = bmco_firstElementOfClassByAttribute("groupButton", "groupId", targetGid);
 	target.parentNode.insertBefore(moved, target.nextSibling.nextSibling);
 	target = moved;
-	moved = myag_ed_guiFindOfClassByAttribute("locatorWrapperGroup", "groupId", movedGid);
+	moved = bmco_firstElementOfClassByAttribute("locatorWrapperGroup", "groupId", movedGid);
 	target.parentNode.insertBefore(moved, target.nextSibling);
 }
 
@@ -429,8 +280,8 @@ return: none
 */
 function myag_ed_guiArtworkDivDelete(awid)
 {
-	myag_ed_guiFindOfClassByAttribute("artwork", "artworkId", awid).remove();
-	myag_ed_guiFindOfClassByAttribute("locatorWrapperArtwork", "artworkId", awid).remove();
+	bmco_firstElementOfClassByAttribute("artwork", "artworkId", awid).remove();
+	bmco_firstElementOfClassByAttribute("locatorWrapperArtwork", "artworkId", awid).remove();
 }
 
 /* Takes an artwork div and puts it after some other artwork div instead of its current position.
@@ -440,15 +291,15 @@ return: none
 */
 function myag_ed_guiArtworkDivPutAfter(movedAwid, targetAwid)
 {
-	var moved = myag_ed_guiFindOfClassByAttribute("artwork", "artworkId", movedAwid);
+	var moved = bmco_firstElementOfClassByAttribute("artwork", "artworkId", movedAwid);
 	if ((targetAwid == undefined) || (targetAwid == "start"))
 		var target = document.getElementById("buttonCreateNewArtwork");
 	else
-		var target = myag_ed_guiFindOfClassByAttribute("artwork", "artworkId", targetAwid);
+		var target = bmco_firstElementOfClassByAttribute("artwork", "artworkId", targetAwid);
 
 	target.parentNode.insertBefore(moved, target.nextSibling.nextSibling);
 	target = moved;
-	moved = myag_ed_guiFindOfClassByAttribute("locatorWrapperArtwork", "artworkId", movedAwid);
+	moved = bmco_firstElementOfClassByAttribute("locatorWrapperArtwork", "artworkId", movedAwid);
 
 	target.parentNode.insertBefore(moved, target.nextSibling);
 }
@@ -585,10 +436,11 @@ return: none
 */
 function myag_ed_xmlGroupCreate(xmldoc, g)
 {
-	children = [];
-	children.push(new bmco_TagValuePair("name", g.name));
-	children.push(new bmco_TagValuePair("about", g.about));
-	children.push(new bmco_TagValuePair("gid", g.gid));
+	children = [
+		new bmco_TagValuePair("name", g.name),
+		new bmco_TagValuePair("about", g.about),
+		new bmco_TagValuePair("gid", g.gid)
+	];
 	xmldoc.getElementsByTagName('groups')[0].prepend(bmco_xml_nodeAndChildrenWithTextConstruct(xmldoc, "group", children));
 }
 
@@ -833,10 +685,10 @@ return: none
 function myag_ed_actionGroup(action)
 {
 	var xmldoc = myag_ed_xmldoc();
-	var gid = myag_ed_guiInputRead('inputGid');
-	var oldName = myag_ed_guiInputRead('inputGroupNameOld');
-	var name = myag_ed_guiInputRead('inputGroupName');
-	var about = myag_ed_guiInputRead('inputGroupAbout');
+	var gid = bmco_inputValueGet('inputGid');
+	var oldName = bmco_inputValueGet('inputGroupNameOld');
+	var name = bmco_inputValueGet('inputGroupName');
+	var about = bmco_inputValueGet('inputGroupAbout');
 	var groupBadchars = ["<", ">"];
 
 	if (name.length > GLOBAL_maxLengthName)
@@ -890,10 +742,10 @@ return: none
 function myag_ed_actionArtwork(action)
 {
 	var xmldoc = myag_ed_xmldoc();
-	var awid = myag_ed_guiInputRead("inputAwid");
-	var name = myag_ed_guiInputRead("inputName");
-	var about = myag_ed_guiInputRead("inputAbout");
-	var filename = myag_ed_guiInputRead("inputFilename");
+	var awid = bmco_inputValueGet("inputAwid");
+	var name = bmco_inputValueGet("inputName");
+	var about = bmco_inputValueGet("inputAbout");
+	var filename = bmco_inputValueGet("inputFilename");
 	var fnameBadchars = ["<", ">", "/", "\\"];
 
 	if (name.length > GLOBAL_maxLengthName)
@@ -997,8 +849,8 @@ return: none
 */
 function myag_ed_moveGroup(gid)
 {
-	myag_ed_guiFindOfClassByAttribute('groupButton', 'groupId', gid).id = "currentlyMoved";
-	myag_ed_guiFindOfClassByAttribute('locatorWrapperGroup', 'groupId', gid).id = "currentlyMovedLocator";
+	bmco_firstElementOfClassByAttribute('groupButton', 'groupId', gid).id = "currentlyMoved";
+	bmco_firstElementOfClassByAttribute('locatorWrapperGroup', 'groupId', gid).id = "currentlyMovedLocator";
 	myag_ed_guiSetMovingMode("group");
 	bmco_gui_actionMenuDelete();
 	myag_ed_guiBottomMenuSetMode("move");
@@ -1078,8 +930,8 @@ return: none
 */
 function myag_ed_moveArtwork(awid)
 {
-	myag_ed_guiFindOfClassByAttribute('artwork', 'artworkId', awid).id = "currentlyMoved";
-	myag_ed_guiFindOfClassByAttribute('locatorWrapperArtwork', 'artworkId', awid).id = "currentlyMovedLocator";
+	bmco_firstElementOfClassByAttribute('artwork', 'artworkId', awid).id = "currentlyMoved";
+	bmco_firstElementOfClassByAttribute('locatorWrapperArtwork', 'artworkId', awid).id = "currentlyMovedLocator";
 	myag_ed_guiSetMovingMode("artwork");
 	bmco_gui_actionMenuDelete();
 	myag_ed_guiBottomMenuSetMode("move");
@@ -1128,6 +980,11 @@ function myag_ed_showItemMenu(arg, event)
 		bmco_gui_actionMenuAppend(arg, event.clientX, event.clientY);	
 }
 
+
+/* Loads a menu of macro tools to the tools tab.
+inputs: none
+return: none
+*/
 function myag_ed_loadTools()
 {
 	var tools = [
@@ -1158,18 +1015,6 @@ function myag_ed_loadTools()
 	}
 }
 
-/* Displays a menu of XML-specific tools.
-inputs: none
-return: none
-*/
-function myag_ed_showMacroToolsMenu()
-{
-	var text = "These macro commands allow you to do some tedious work rather quickly. Keep in mind that there's no undo button! More commands coming someday.";
-	var popup = myag_ed_guiPopupThrowSelect(text, "Reverse groups", "myag_ed_reverseGroups()", "Reverse artworks", "myag_ed_reverseArtworks()");
-	popup.childNodes[0].style.textAlign = "justify";
-	popup.childNodes[0].style.borderBottom = "3px dotted var(--col-highlight)";
-	popup.childNodes[0].style.paddingBottom = "calc(var(--page-spacing) / 2)";
-}
 
 /* Force-load all artworks as per the available xml data
 inputs: none
@@ -1202,7 +1047,6 @@ function myag_ed_reverseGroups()
 	for (var x = 0; x < groupsNum; x++)
 	{
 		var gid = document.getElementsByClassName("groupButton")[groupsNum].getAttribute("groupid");
-		console.log(gid);
 		myag_ed_guiGroupButtonPutAfter(gid, target);
 		myag_ed_xmlGroupPutAfter(xmldoc, gid, target);
 		target = gid;
@@ -1229,6 +1073,23 @@ function myag_ed_reverseArtworks()
 		target = awid;
 	}
 	myag_ed_xmlUpdateLoadedData(xmldoc);
+}
+
+/* update function called from the offline neomanager version
+inputs: none
+return: none
+*/
+function myag_ed_neomanagerUpdate()
+{
+	dataFiles = [
+			{
+				remote_name: "myag_files/data.xml",
+				type: "xml",
+				contents: myag_ed_prepareXml()
+			}
+		];	
+	console.log(dataFiles);
+	bmco_runUpdateForm(dataFiles);
 }
 
 /* Make a pretty, tabbed XML out of a minified string.

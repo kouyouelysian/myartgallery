@@ -3,7 +3,7 @@
 body {
 
 	/* group buttons options */
-	--buttons-per-row:        5;      /* number of group buttons per row, suggested 4-6 */      
+	--buttons-per-row:        4;      /* number of group buttons per row, suggested 4-6 */      
 	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
@@ -256,72 +256,17 @@ as is, as far as i can see :'D
 	margin-right: 0;
 }
 
-/*
-#actionMenuBackdrop, #popupBackdrop {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 9;
-}
-
-#popupBackdrop {
-	background-color: RGBA(0,0,0,0.3);
-	user-select: none;
-	-webkit-user-select: none;
-	z-index: 99;
-}
-
-.popup {
-	position: fixed;
-	width: 25%;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	border: 2px solid var(--col-buttonbg);
-	z-index: 100;
-	background-color: var(--col-body);
-	box-shadow: 0px 0px 8px RGBA(0,0,0,0.5);
-}
-
-.popup .controlButton {
-	margin: calc(var(--page-spacing) / 2);	
-	height: calc(var(--button-height) / 2);
-	margin-top: 0;
-	display: block;
-}
-
-#popupAlert .controlButton {
-	width: 20%;
-	margin-left: 40%;
-	margin-top: 0;
-}
-
-#popupSelect .controlButton {
-	width: calc(50% - var(--page-spacing) + var(--page-spacing) / 4);
-	float: left;
-}
-
-#popupSelect .controlButton:last-child {
-	margin-left: 0;
-}
-
-.popupTextMessage {
-	font-family: var(--font-big);
-	font-size: var(--font-btn-size);
-	text-align: center;
-	width: calc(100% - var(--page-spacing));
-	margin: calc(var(--page-spacing) / 2);
-}
-*/
-
-
-
 
 .artwork:first-child, .groupButton:first-child {
 	margin-left: var(--page-spacing);
 }
+
+
+
+
+
+
+
 
 
 .locatorWrapper {
@@ -340,7 +285,6 @@ as is, as far as i can see :'D
 	height: calc(100% - 4px);
 	margin-left: calc(var(--page-spacing) / 2  - 4px);
 	background-color: var(--col-body);
-	
 	position: absolute;
 	top: 0;	
 }
@@ -350,42 +294,54 @@ as is, as far as i can see :'D
 	vertical-align: middle;
 }
 
-.locatorWrapperArtwork .locator {
-	border: 2px dashed var(--col-counterpick); 
-	border-color: var(--col-counterpick);
-}
-
-.locatorWrapperGroup .locator {
-	border: 2px dashed;
-	border-color: var(--col-counterpick); 
-}
-
 .locatorWrapperGroup {
 	height: calc(var(--button-height) + var(--border-width) + var(--border-width));
 }
 
-.locatorWrapper:hover {
-	width: calc(100% / var(--artworks-per-row));
+.locatorWrapperArtwork .locator, .locatorWrapperGroup .locator {
+	border: 2px dashed var(--col-counterpick); 
 }
 
-.locatorWrapperArtwork:hover + .artwork, .locatorWrapperGroup:hover + .groupButton {
-	margin-left: var(--page-spacing);
+.locatorWrapperArtwork.locatorActive, .locatorWrapperGroup.locatorActive {
+	display: inline-block;
 }
 
-.locatorWrapper:hover .locator {
+.locatorWrapperArtwork.locatorActive + .artwork, .locatorWrapperGroup.locatorActive + .groupButton {
+	margin-left: 0;
+}
+
+.locatorWrapper.locatorActive:hover .locator {
 	width: calc(100% - var(--page-spacing) - 4px);
 	margin-left: var(--page-spacing);
 	opacity: 1;
 }
 
+.locatorWrapperArtwork.locatorActive:hover {
+	width: calc(100% / var(--artworks-per-row));
+}
+
+.locatorWrapperGroup.locatorActive:hover {
+	width: calc(100% / var(--buttons-per-row));
+}
+
+.locatorWrapperArtwork.locatorActive:hover + .artwork, .locatorWrapperGroup.locatorActive:hover + .groupButton {
+	margin-left: var(--page-spacing);
+}
+
 #currentlyMoved {
+	border: 0;
 	width: 0;
 	opacity: 0;
 }
 
-div#currentlyMoved.groupButton {
-	display: none;
+.locatorWrapperArtwork.locatorActive:hover + #currentlyMoved, .locatorWrapperGroup.locatorActive:hover + #currentlyMoved {
+	display: inline-block;
+	margin-left: var(--page-spacing);
 }
+
+
+
+
 
 #currentlyMovedLocator {
 	display: none;

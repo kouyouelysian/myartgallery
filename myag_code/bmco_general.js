@@ -398,3 +398,63 @@ function bmco_inputValueGet(id)
 		return false;
 	return t.value;
 }
+
+
+/* Finds the first element of class 'classname'  which has
+the 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
+inputs: classname <string> [elements of this class will get searched up]
+		attribute <string> [attribute name to look for]
+		value <string> [attribute value to match]
+return: <html element> or <undefined> on fail
+*/
+function bmco_firstElementOfClassByAttribute(classname, attribute, value)
+{
+	var classItems = document.getElementsByClassName(classname);
+	for (var x = 0; x < classItems.length; x++)
+	{
+		var target = classItems[x];
+		if (target.getAttribute(attribute) == value)
+		{
+			return target;
+			break;
+		}
+	}
+	return undefined;
+}
+
+function bmco_ofClassAddClass(haveClass, otherClass, remove=false)
+{
+	var els = document.getElementsByClassName(haveClass);
+	if (els.length == 0)
+		return;
+	for (var x = 0; x < els.length; x++)
+		remove? els[x].classList.remove(otherClass) : els[x].classList.add(otherClass);
+}
+
+function bmco_ofClassRemoveClass(haveClass, removeClass)
+{
+	bmco_ofClassAddClass(haveClass, removeClass, true)
+}
+
+/* Changes a line for an existing rule in one of the loaded CSS sheets
+inputs: typeAndClass <string> [valid name of a selector, e.g. ".myAss p"],
+		sheetIndex <int> [index of the CSS file to refer to, as they appear in <head>],
+		newRule <string> [name of a rule line, e.g. "margin-left"],
+		newValue <string> [a valid parameter for the rule, e.g. "20px"]
+return: none 
+*/
+function bmco_forceCssToSheet(typeAndClass, sheetIndex, newRule, newValue)
+{
+	// stolen from https://stackoverflow.com/questions/18421962/how-to-add-a-new-rule-to-an-existing-css-class
+    var thisCSS=document.styleSheets[sheetIndex];
+    var ruleSearch=thisCSS.cssRules? thisCSS.cssRules: thisCSS.rules;
+    for (i=0; i<ruleSearch.length; i++)
+    {
+        if(ruleSearch[i].selectorText==typeAndClass)
+        {
+            var target=ruleSearch[i];
+            break;
+        }
+    }
+    target.style[newRule] = newValue;
+}
