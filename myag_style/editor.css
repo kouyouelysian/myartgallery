@@ -2,53 +2,8 @@
 
 body {
 
-	/* color settings. accept hex values e.g. #AAB, #008080, or HTML basic colours e.g. 'red' */
-	--col-backg:              #eee; /* page (behind main content) background color */
-	--col-highlight:          #222; /* highlights (borders, headings, etc) */
-	--col-body:               #fff; /* content body color */
-	--col-text:               #222; /* main text color */
-	--col-text-light:         #666; /* secondary text color */
-	--col-buttonbg:           #fab; /* group button background color */
-	--col-viewer:             #fff; /* image viewer pop-up borders/button text */
-	--col-viewer-text:        #222; /* image viewer bottom description text color */
-	--col-viewer-background:  #fff; /* background color for indiv. image view overlay - can be "none" */
-
-	--col-counterpick: #9fc;
-
-	/* radius of corners of all main elements on the page. 0...N pixels (e.g. 3px, 0px=sharp corners) */
-	--corner-radius:          0px;    
-
-	/* thiccness of borders for all main elements on the page. 0...N pixels (e.g. 3px) */
-	--border-width:           0px;    
-
-	/* font settings. accept default fonts like 'Arial', 'Calibri' or stuff. To use a custom font,
-	put an @font-face rule at the very first line of this file and point it to your custom font.
-	if you're not sure how to do that --> https://www.w3schools.com/cssref/css3_pr_font-face_rule.php */
-	--font-main:             'Courier New'; /* font for usual text */
-	--font-main-size:         22px;
-	--font-big:              'Arial'; /* font for titles etc */
-	--font-big-size:          36px;
-	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
-	--main-text-align:        left;   /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
-
-	/* general page spacing settings */
-	--page-margin:            5%;   /* spacing between screen borders and main wrapper in %. 5-10% rec. */
-	--page-spacing:           32px;   /* master spacing between all the elements on page. 16-48px rec. */
-
-	/* user section settings */
-	--userpic-size:           150px;  /* px (static) or % (dynamically resized along with the page) */
-	--userpic-radius:         50%;    /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
-	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
-	--userpic-border:         solid;  /* options: solid, dashed, none*/
-	--username-align:         left;   /*  options: left, middle or right */
-
-	/* section divider horizontal line settings */
-	--divider-width:          calc(100% - var(--page-spacing) - var(--page-spacing)); /* width, % or calc(% - px). default setting fits itself to page spacing */
-	--divider-size:           3px;    /* thiccness of the divider line, px */
-	--divider-style:          dotted; /* line styling options: solid, dashed, dotted */;
-
 	/* group buttons options */
-	--buttons-per-row:        6;      /* number of group buttons per row, suggested 4-6 */      
+	--buttons-per-row:        5;      /* number of group buttons per row, suggested 4-6 */      
 	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
@@ -56,9 +11,6 @@ body {
 	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
 	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
 	--artwork-drop-shadow:    none;   /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
-
-	/* on-click big image view options */
-	--overlay-opacity:        0.5;    /* opacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */
 
 }
 
@@ -160,12 +112,14 @@ as is, as far as i can see :'D
 }
 
 #buttonCreateNewGroup {
+	border-color: var(--col-counterpick);
 	background-color: var(--col-counterpick);
 	color: var(--col-text);
 }
 
 #buttonCreateNewGroup:hover {
-	background-color: var(--col-buttonbg);
+	background-color: var(--col-body);
+	color: var(--col-counterpick);
 }
 
 #buttonCreateNewArtwork {
@@ -302,6 +256,7 @@ as is, as far as i can see :'D
 	margin-right: 0;
 }
 
+/*
 #actionMenuBackdrop, #popupBackdrop {
 	position: fixed;
 	top: 0;
@@ -359,64 +314,13 @@ as is, as far as i can see :'D
 	width: calc(100% - var(--page-spacing));
 	margin: calc(var(--page-spacing) / 2);
 }
+*/
 
-#actionMenu {
-	width: 250px;
-	position: absolute;
-	border: 2px solid var(--col-buttonbg);
-	background-color: var(--col-body);
-	box-shadow: 0px 0px 8px RGBA(0,0,0,0.2);
-	z-index: 10;
-}
-
-#actionMenu .controlButton {
-	width: calc(100% - var(--page-spacing));
-	margin: calc(var(--page-spacing) / 2);
-	margin-bottom: 0;
-	height: calc(var(--button-height) / 2);
-}
-
-#actionMenu .controlButton:last-child {
-	margin-bottom: calc(var(--page-spacing) / 2);
-}
 
 
 
 .artwork:first-child, .groupButton:first-child {
 	margin-left: var(--page-spacing);
-}
-
-.controlButton {
-	height: var(--button-height);
-	background-color: var(--col-buttonbg);
-	color: var(--col-highlight);
-	display: inline-block;
-	font-family: var(--font-big);
-	font-size: var(--font-btn-size);
-	position: relative;
-	transition: background-color 0.1s, color 0.1s;
-	user-select: none;
-	-webkit-user-select: none;
-	cursor: pointer;
-}
-
-.controlButton:hover {
-	color: var(--col-buttonbg);
-	background-color: var(--col-highlight);
-}
-
-.controlButton:active {
-	filter: brightness(80%);
-}
-
-.controlButton p {
-	position: absolute;
-	width: 100%;
-	text-align: center;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
-	margin: 0;
 }
 
 
@@ -427,6 +331,7 @@ as is, as far as i can see :'D
 	display: none;
 	margin: 0;
 	margin-bottom: var(--page-spacing);
+	vertical-align: top;
 }
 
 .locator {
@@ -446,17 +351,17 @@ as is, as far as i can see :'D
 }
 
 .locatorWrapperArtwork .locator {
-	border: 2px dashed var(--col-buttonbg); 
-	border-color: var(--col-buttonbg);
+	border: 2px dashed var(--col-counterpick); 
+	border-color: var(--col-counterpick);
 }
 
 .locatorWrapperGroup .locator {
 	border: 2px dashed;
-	border-color: var(--col-buttonbg); 
+	border-color: var(--col-counterpick); 
 }
 
 .locatorWrapperGroup {
-	height: var(--button-height);
+	height: calc(var(--button-height) + var(--border-width) + var(--border-width));
 }
 
 .locatorWrapper:hover {
@@ -476,6 +381,10 @@ as is, as far as i can see :'D
 #currentlyMoved {
 	width: 0;
 	opacity: 0;
+}
+
+div#currentlyMoved.groupButton {
+	display: none;
 }
 
 #currentlyMovedLocator {

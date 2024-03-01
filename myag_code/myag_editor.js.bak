@@ -59,7 +59,7 @@ return: none
 */
 function myag_ed_changeEditorCss(typeAndClass, newRule, newValue)
 {
-	myag_ed_changeCss(typeAndClass, 1, newRule, newValue);
+	myag_ed_changeCss(typeAndClass, 2, newRule, newValue)
 }
 
 /* myag_ed_changeCss wrapper targeting style/main.css
@@ -92,10 +92,10 @@ function myag_ed_guiSetMovingMode(mode="none")
 		myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "none");
 		myag_ed_changeEditorCss(".artwork", "margin-left", "var(--page-spacing)");
 		myag_ed_changeEditorCss(".groupButton", "margin-left", "var(--page-spacing)");
-		myag_ed_changeEditorCss(".locatorWrapperGroup", "display", "none");
-		myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "none");
-		myag_ed_changMainCss(".groupButton:hover", "pointer-events", "auto");
-		myag_ed_changMainCss(".artwork:hover", "pointer-events", "auto");
+		myag_ed_changMainCss(".artwork:hover", "filter", "brightness(90%)");
+		myag_ed_changMainCss(".groupButton:hover", "box-shadow", "0px 0px 6px RGBA(0,0,0,0.2)");
+		myag_ed_changMainCss(".groupButton:hover", "background-color", "var(--col-highlight)");
+		myag_ed_changMainCss(".groupButton:hover", "color", "var(--col-buttonbg)");
 		document.getElementById("buttonCreateNewGroup").removeAttribute("style");
 		document.getElementById("buttonCreateNewArtwork").removeAttribute("style");
 	}
@@ -104,20 +104,23 @@ function myag_ed_guiSetMovingMode(mode="none")
 		if (mode == "artwork")
 		{
 			myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "inline-block");
+			myag_ed_changeEditorCss(".locatorWrapperGroup", "display", "none");
 			myag_ed_changeEditorCss(".artwork", "margin-left", "0");
 			myag_ed_changeEditorCss(".groupButton", "margin-left", "var(--page-spacing)");
 		}
 		else
-		{	
+		{
+			myag_ed_changeEditorCss(".locatorWrapperArtwork", "display", "none");
 			myag_ed_changeEditorCss(".locatorWrapperGroup", "display", "inline-block");
 			myag_ed_changeEditorCss(".groupButton", "margin-left", "0");
 			myag_ed_changeEditorCss(".artwork", "margin-left", "var(--page-spacing)");	
 		}
 
-		myag_ed_changMainCss(".groupButton:hover", "pointer-events", "none");
-		myag_ed_changMainCss(".artwork:hover", "pointer-events", "none");
+		myag_ed_changMainCss(".groupButton:hover", "box-shadow", "none");
+		myag_ed_changMainCss(".groupButton:hover", "background-color", "var(--col-buttonbg)");
+		myag_ed_changMainCss(".groupButton:hover", "color", "var(--col-highlight)");
+		myag_ed_changMainCss(".artwork:hover", "filter", "none");
 		document.getElementById("buttonCreateNewGroup").style.backgroundColor = "#ccc";
-		document.getElementById("buttonCreateNewGroup").style.borderColor = "#ccc";
 		document.getElementById("buttonCreateNewArtwork").style.backgroundColor = "#ccc";
 	} 
 }
@@ -185,19 +188,107 @@ function myag_ed_guiCreateDivWithP(text, fn=undefined)
 	return div;
 }
 
-/*
-
-removed functons:
-
-function myag_ed_guiCreateControlButton(text, fn)
-function myag_ed_guiCreateBottomButton(text, fn)
-function myag_ed_guiPopupClose()
-function myag_ed_guiPopupCreateBackdrop()
-function myag_ed_guiPopupCreateBody(text, id=undefined)
-function myag_ed_guiPopupThrowAlert(message, text="OK", fn="myag_ed_guiPopupClose()")
-function myag_ed_guiPopupThrowSelect(message, text1, fn1, text2, fn2)
-function myag_ed_guiArrayOfElementsToDiv
+/* Wrapper for myag_ed_guiCreateDivWithP, special for ControlButton's
+used in drop-down menus, editors, etc
+inputs: text <string> [text to be put into the paragraph],
+		fn <string> [function to be executed upon clicking the button]
+return: <html element>
 */
+function myag_ed_guiCreateControlButton(text, fn)
+{
+	var button = myag_ed_guiCreateDivWithP(text, fn);
+	button.classList.add("controlButton");
+	return button;
+}
+
+/* Wrapper for myag_ed_guiCreateDivWithP, special for BottomButton's
+used in the sticky bottommost menu
+inputs: text <string> [text to be put into the paragraph],
+		fn <string> [function to be executed upon clicking the button]
+return: <html element>
+*/
+function myag_ed_guiCreateBottomButton(text, fn)
+{
+	var button = myag_ed_guiCreateDivWithP(text, fn);
+	button.classList.add("bottomButton");
+	return button;
+}
+
+/* closes any generated popup, if there is one
+inputs: none
+return: none
+*/
+function myag_ed_guiPopupClose()
+{
+	bmco_removeIfExists("popupBackdrop");
+	bmco_removeIfExists("popupAlert");
+	bmco_removeIfExists("popupSelect");
+}
+
+/* creates a sticky <div> to cover everything behind the popup
+inputs: none
+return: <html element>
+*/
+function myag_ed_guiPopupCreateBackdrop()
+{
+	var backdrop = document.createElement("div");
+	backdrop.id = "popupBackdrop";
+	backdrop.setAttribute("onclick", "myag_doNothing()")
+	return backdrop;
+}
+
+/* creates the default popup body to which buttons have to be appended
+inputs: text <string> [popup message text],
+		id <string, optional> [if set - the popup window id]
+return: <html element>
+*/
+function myag_ed_guiPopupCreateBody(text, id=undefined)
+{
+	var popup = document.createElement("div");
+	if (id != undefined)
+		popup.id = id;
+	popup.classList.add("popup");
+	var textMessage = document.createElement("p");
+	textMessage.innerHTML = text;
+	textMessage.classList.add("popupTextMessage");
+	popup.appendChild(textMessage);
+	return popup;
+}
+
+/* Throws an alert message on-screen that can be closed by pressing
+"OK" - a fancy substitute for the built-in "alert(arg)" method
+inputs: message <string> [alert message text]
+		text <string, optional> [text to be displayed on the button],
+		fn <string, optional> [function to be executed on button press, closes the popup by default]
+return: <html element> [created popup div]
+*/
+function myag_ed_guiPopupThrowAlert(message, text="OK", fn="myag_ed_guiPopupClose()")
+{
+	document.body.appendChild(myag_ed_guiPopupCreateBackdrop());
+	var alertDiv = myag_ed_guiPopupCreateBody(message, "popupAlert");
+	alertDiv.appendChild(myag_ed_guiCreateControlButton(text, fn));
+	document.body.appendChild(alertDiv);
+	return alertDiv;
+}
+
+/* Throws a select prompt message on-screen that can disappears when
+the user chooses one of the two options.
+inputs: message <string> [select prompt text],
+		text1 <string> [text on the left button],
+		fn1 <string> [onclick to be executed by the left button],
+		text2 <string> [text on the right button],
+		fn2 <string> [onclick to be executed by the right button]
+return: <html element> [created popup div]
+*/
+function myag_ed_guiPopupThrowSelect(message, text1, fn1, text2, fn2)
+{
+	document.body.appendChild(myag_ed_guiPopupCreateBackdrop());
+	var selectDiv = myag_ed_guiPopupCreateBody(message, "popupSelect");
+	selectDiv.appendChild(myag_ed_guiCreateControlButton(text1, fn1));
+	selectDiv.appendChild(myag_ed_guiCreateControlButton(text2, fn2));
+	document.body.appendChild(selectDiv);
+	return selectDiv;
+}
 
 /* Creates a checkbox + label thing. Only used in group selection section
 in the artwork edit menu.
@@ -239,6 +330,21 @@ function myag_ed_guiCheckboxToggle(id)
 	t.checked = !t.checked;
 }
 
+/* Creates a div and appends all the html elements from the elements array into it
+inputs: elements <html element array> [an array of html elements to be appended into one div],
+		id <string, optional> [if set - the resulting div's id will be set to this]
+return: <html element> [resulting div]
+*/
+function myag_ed_guiArrayOfElementsToDiv(elements, id=undefined)
+{
+	var outDiv = document.createElement("div");
+	if (id != undefined)
+		outDiv.id = id;
+	for (var x = 0; x < elements.length; x++)
+		outDiv.appendChild(elements[x]);
+	return outDiv;
+}
+
 /* Loads the group editor menu to formViewer. Used in conjunction with other stuff
 when running the group editor.
 inputs: g <Group instance, optional> [group the info of which gets autoloaded to the editor],
@@ -273,50 +379,38 @@ return: none
 */
 function myag_ed_guiEditorLoadArtwork(aw, makeNew=false)
 {
-	
-	nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutArtwork')"]];
-	if (makeNew)
-	{
-		if (aw.awid == undefined)
-			aw.awid = myag_makeAwid();
-		nameFnTuples.push(["Add", "myag_ed_actionArtwork('create');"]);
-		document.getElementById("inputName").value = "";
-		document.getElementById("inputAbout").value = "";
-		document.getElementById("inputFilename").value = "";
-	}
-	else
-	{
-		if (aw.awid == undefined)
-			return;
-		nameFnTuples.push(["Update", "myag_ed_actionArtwork('update')"]);
-		document.getElementById("inputName").value = aw.name;
-		document.getElementById("inputAbout").value = aw.about;
-		document.getElementById("inputFilename").value = aw.filename;
-	}
-
-	document.getElementById("inputAwid").value = aw.awid;
-
+	target = document.getElementById("artworkViewer");
+	target.innerHTML = "";		
+	ce = [];
+	ce.push(myag_ed_guiInputGuideCreate("File name with extension"));
+	ce.push(myag_ed_guiInputCreate("text", "inputFilename", aw.filename));
+	ce.push(myag_ed_guiInputGuideCreate("Title (optional)"));
+	ce.push(myag_ed_guiInputCreate("text", "inputName", aw.name));
+	ce.push(myag_ed_guiInputGuideCreate("Description (optional)"));
+	ce.push(myag_ed_guiInputCreate("textarea", "inputAbout", aw.about));
 	var xmldoc = myag_ed_xmldoc();
 	var groups = xmldoc.getElementsByTagName('group');
-	groupCheckboxes = document.getElementById("filloutArtworkGroupCheckboxes");
-	groupCheckboxes.innerHTML = "<p>In groups:</p>";
+	groupCheckboxes = document.createElement("div");
+	groupCheckboxes.id = "formGroupCheckboxes";
 	for (var t = 0; t < groups.length; t++)
 	{
-		var checked = false;
-		if (!makeNew)
-			checked = bmco_arrayHas(aw.groups, bmco_xml_childTagRead(groups[t], "gid"));
-
-		var chb = myag_ed_guiCheckboxCreate(myag_groupXmlToObject(groups[t]), checked);
+		var chb = myag_ed_guiCheckboxCreate(myag_groupXmlToObject(groups[t]), bmco_arrayHas(aw.groups, bmco_xml_childTagRead(groups[t], "gid")));
 		groupCheckboxes.appendChild(chb);
 	}
 	if (groups.length == 0)
 		groupCheckboxes.style.display = "none";
-
-	bmco_gui_bottomBarPopulate(nameFnTuples, "filloutArtworkBottomBar");
-	bmco_gui_filloutShow("filloutArtwork");
+	else
+		ce.push(myag_ed_guiInputGuideCreate("Groups selection"));
+	ce.push(groupCheckboxes);
+	ce.push(document.createElement("hr"));
+	ce.push(myag_ed_guiCreateControlButton("Cancel", "myag_av_hideViewer()"));
+	if (makeNew)
+		ce.push(myag_ed_guiCreateControlButton("Create", "myag_ed_actionArtwork('create')"));
+	else
+		ce.push(myag_ed_guiCreateControlButton("Update", "myag_ed_actionArtwork('update')"));
+	ce.push(myag_ed_guiInputCreate("hidden", "inputAwid", aw.awid));
+	target.appendChild(myag_ed_guiArrayOfElementsToDiv(ce, "formWrapper"));
 }
-
-
 
 /* VERY IMPORTANT FUNCTION!!! Finds the first element of class 'classname'  which has
 the 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
@@ -437,7 +531,58 @@ function myag_ed_guiArtworkDivPutAfter(movedAwid, targetAwid)
 	target.parentNode.insertBefore(moved, target.nextSibling);
 }
 
+/* Creates and appends an action selection menu to the screen. Is called when the artwork or group
+has been pressed to present options like edit, delete and move. Also creates the invisible backdrop
+that allows to close the menu by clicking elsewhere.
+inputs: arg <string> [a group name or an artwork id of a present group/artwork],
+		mouseX <int> [X position of the mouse at the moment of call],
+		mouseY <int> [Y position of the mouse at the moment of call]
+return: none
+*/
+function myag_ed_guiActionMenuAppend(arg, mouseX, mouseY)
+{
+	buttonNames = ["Edit", "Move", "Delete"];
+	buttonFunctions = [];
+	target = undefined;
 
+	if (myag_isAwid(arg))
+	{
+		buttonFunctions = ["myag_ed_editArtwork('"+arg+"')", "myag_ed_moveArtwork('"+arg+"')", "myag_ed_deleteArtwork('"+arg+"')"];
+		target = myag_ed_guiFindOfClassByAttribute("artwork", "artworkId", arg);
+	}
+	else if (myag_isGid(arg))
+	{
+		buttonFunctions = ["myag_ed_editGroup('"+arg+"')", "myag_ed_moveGroup('"+arg+"')", "myag_ed_deleteGroup('"+arg+"')"];
+		target = myag_ed_guiFindOfClassByAttribute("groupButton", "groupId", arg);
+	}
+	if (target == undefined)
+		return;
+
+	ce = [];
+	for (var x = 0; x < buttonNames.length; x++)
+		ce.push(myag_ed_guiCreateControlButton(buttonNames[x], buttonFunctions[x]));
+
+	var menu = myag_ed_guiArrayOfElementsToDiv(ce, "actionMenu");
+	var offset = 40;
+	menu.style.left = Math.min(mouseX - offset, (window.innerWidth - 300))+"px";
+	menu.style.top = (mouseY+window.scrollY - offset)+"px";
+	document.body.prepend(menu);
+
+	var bd = document.createElement("div");
+	bd.id = "actionMenuBackdrop";
+	bd.setAttribute("onclick", "myag_ed_guiActionMenuDelete()");
+	document.body.prepend(bd);
+}
+
+/* Removes the action selection menu and its backdrop from the screen.
+inputs: none
+return: none
+*/
+function myag_ed_guiActionMenuDelete()
+{
+	bmco_removeIfExists("actionMenuBackdrop");
+	bmco_removeIfExists("actionMenu");
+}
 
 /* Sets up the bottom buttons menu with necessary buttons.
 inputs: mode <string = "default" or "move"> [defines which situation the menu has to be set up for]
@@ -445,19 +590,26 @@ return: none
 */
 function myag_ed_guiBottomMenuSetMode(mode)
 {
-	nameFnTuples = [];
+	if ((mode != "default") && (mode != "move"))
+		return;
+
+	ce = [];
 	if (mode == "default")
 	{
-		nameFnTuples.push(["Macro tools", "myag_ed_showMacroToolsMenu()"]);
-		nameFnTuples.push(["Update XML", "myag_ed_openWebXmlEditor()"]);	
-		nameFnTuples.push(["Upload Files", "myag_ed_openWebFileUpload()"]);	
-		nameFnTuples.push(["Copy Raw XML", "myag_ed_copyXml()"]);		
+		ce.push(myag_ed_guiCreateBottomButton("Macro tools", "myag_ed_showMacroToolsMenu()"));  
+		ce.push(myag_ed_guiCreateBottomButton("Update XML", "myag_ed_openWebXmlEditor()"));  
+		ce.push(myag_ed_guiCreateBottomButton("Upload Files", "myag_ed_openWebFileUpload()"));
+		ce.push(myag_ed_guiCreateBottomButton("Copy Raw XML", "myag_ed_copyXml()"));
 	}
-	else if (mode == "move")
-		nameFnTuples.push(["Cancel Moving", "myag_ed_stopMoving()"]);
 	else
-		return;
-	bmco_gui_bottomBarPopulate(nameFnTuples, "bottomButtonWrapper");
+	{
+		ce.push(myag_ed_guiCreateBottomButton("Cancel Moving", "myag_ed_stopMoving()"));
+	}
+
+	var target = document.getElementById("bottomButtonWrapper");
+	target.innerHTML = "";
+	for (var x = 0; x < ce.length; x++)
+		target.appendChild(ce[x]);
 }
 
 //==========================================================================//
@@ -589,7 +741,7 @@ returns: none
 */
 function myag_ed_xmlGroupDelete(xmldoc, gid)
 {
-	bmco_xml_nodeDeleteByChildTagText(xmldoc, "group", "gid", gid);
+	myag_ed_nodeDelete(xmldoc, "group", "gid", gid);
 	var xmlArtworks = xmldoc.getElementsByTagName('artwork');
 	for (var t = 0; t < xmlArtworks.length; t++)
 		myag_ed_xmlArtworkIngroupRemove(xmldoc, xmlArtworks[t], gid);
@@ -681,7 +833,7 @@ returns: none
 */
 function myag_ed_xmlArtworkDelete(xmldoc, awid)
 {
-	bmco_xml_nodeDeleteByChildTagText(xmldoc, "artwork", "awid", awid);
+	myag_ed_nodeDelete(xmldoc, "artwork", "awid", awid);
 }
 
 /* Picks an artwork of some name and puts it after another artwork in xmldoc (used for reordering)
@@ -817,22 +969,22 @@ function myag_ed_actionGroup(action)
 
 	if (name.length > GLOBAL_maxLengthName)
 	{
-		bmco_gui_popupAlert("Group name is too long. Please, keep it 32 symbols or less.");
+		myag_ed_guiPopupThrowAlert("Group name is too long. Please, keep it 32 symbols or less.");
 		return;
 	}
 	else if (name.trim() == "")
 	{
-		bmco_gui_popupAlert("Group name must not be an empty string. Input some name!");
+		myag_ed_guiPopupThrowAlert("Group name must not be an empty string. Input some name!");
 		return;
 	}
 	else if (bmco_badcharsPresent(name, groupBadchars))
 	{
-		bmco_gui_popupAlert("Please, do not use the following characters in the group name field:<br>"+bmco_badcharsAsString(groupBadchars));
+		myag_ed_guiPopupThrowAlert("Please, do not use the following characters in the group name field:<br>"+bmco_badcharsAsString(groupBadchars));
 		return;
 	}
 	else if (((name != oldName) || action=="create") && (myag_ed_xmlGroupCheckDupes(xmldoc, name)))
 	{
-		bmco_gui_popupAlert("Group name already taken - please, select a different one!");
+		myag_ed_guiPopupThrowAlert("Group name already taken - please, select a different one!");
 	   	return;
 	}
 
@@ -873,22 +1025,22 @@ function myag_ed_actionArtwork(action)
 
 	if (name.length > GLOBAL_maxLengthName)
 	{
-		bmco_gui_popupAlert("Artwork name should be not longer than 64 characters!");
+		myag_ed_guiPopupThrowAlert("Artwork name should be not longer than 64 characters!");
 		return;
 	}
 	else if (filename.length > GLOBAL_maxLengthFilename)
 	{
-		bmco_gui_popupAlert("File name should be not longer than 64 characters!");
+		myag_ed_guiPopupThrowAlert("File name should be not longer than 64 characters!");
 		return;
 	}
 	else if ((filename.length == 0) || (filename == ""))
 	{
-		bmco_gui_popupAlert("Please, provide a filename!")
+		myag_ed_guiPopupThrowAlert("Please, provide a filename!")
 		return;
 	}
 	else if (bmco_badcharsPresent(filename, fnameBadchars))
 	{
-		bmco_gui_popupAlert("Please, do not use the following characters in the filename field:<br>"+bmco_badcharsAsString(fnameBadchars));
+		myag_ed_guiPopupThrowAlert("Please, do not use the following characters in the filename field:<br>"+bmco_badcharsAsString(fnameBadchars));
 		return;
 	}
 
@@ -913,7 +1065,7 @@ function myag_ed_actionArtwork(action)
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiArtworkDivCreate(new Artwork(awid, name, undefined, about, ingroups));
 	}	
-	bmco_gui_filloutHide('filloutArtwork');
+	myag_av_hideViewer();
 }
 
 /* Triggers a menu for creating a new group.
@@ -941,7 +1093,7 @@ function myag_ed_editGroup(gid)
 	if (groupXml == null)
 		return;
 	myag_ed_guiEditorLoadGroup(myag_groupXmlToObject(groupXml));
-	bmco_gui_actionMenuDelete();
+	myag_ed_guiActionMenuDelete();
 	myag_av_showViewer();
 }
 
@@ -958,7 +1110,7 @@ function myag_ed_deleteGroup(gid, confirmed=false)
 		myag_ed_xmlGroupDelete(xmldoc, gid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiGroupButtonDelete(gid);
-		bmco_gui_actionMenuDelete();
+		myag_ed_guiActionMenuDelete();
 		myag_ed_guiPopupClose();
 	}
 	else
@@ -977,7 +1129,7 @@ function myag_ed_moveGroup(gid)
 	myag_ed_guiFindOfClassByAttribute('groupButton', 'groupId', gid).id = "currentlyMoved";
 	myag_ed_guiFindOfClassByAttribute('locatorWrapperGroup', 'groupId', gid).id = "currentlyMovedLocator";
 	myag_ed_guiSetMovingMode("group");
-	bmco_gui_actionMenuDelete();
+	myag_ed_guiActionMenuDelete();
 	myag_ed_guiBottomMenuSetMode("move");
 }
 
@@ -1009,6 +1161,7 @@ function myag_ed_createArtwork(awid)
 		return;
 	var aw = new Artwork(myag_makeAwid(), "", "", "", []);
 	myag_ed_guiEditorLoadArtwork(aw, true);
+	myag_av_showViewer();
 }
 
 /* Triggers a menu for editing an existing artwork.
@@ -1023,8 +1176,8 @@ function myag_ed_editArtwork(awid)
 			return;
 		myag_ed_guiEditorLoadArtwork(aw);	
 	});
-	bmco_gui_actionMenuDelete();
-	
+	myag_ed_guiActionMenuDelete();
+	myag_av_showViewer();
 }
 
 /* Asks the user if they really want to delete this artwork, then deletes it
@@ -1040,14 +1193,13 @@ function myag_ed_deleteArtwork(awid, confirmed=false)
 		myag_ed_xmlArtworkDelete(xmldoc, awid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiArtworkDivDelete(awid);
-		bmco_gui_popupClose();
-		bmco_gui_actionMenuDelete();
+		myag_ed_guiPopupClose();
+		myag_ed_guiActionMenuDelete();
 	}
 	else
 	{
-		bmco_gui_actionMenuDelete();
 		var text = "Do you really want to delete this artwork? This action can only be undone by refreshing the page, losing all work."
-		bmco_gui_popupConfirm(text, "myag_ed_deleteArtwork('"+awid+"', true)");
+		myag_ed_guiPopupThrowSelect(text, "No", "myag_ed_guiPopupClose()", "Yes", "myag_ed_deleteArtwork('"+awid+"', true)");
 	}
 }
 
@@ -1060,7 +1212,7 @@ function myag_ed_moveArtwork(awid)
 	myag_ed_guiFindOfClassByAttribute('artwork', 'artworkId', awid).id = "currentlyMoved";
 	myag_ed_guiFindOfClassByAttribute('locatorWrapperArtwork', 'artworkId', awid).id = "currentlyMovedLocator";
 	myag_ed_guiSetMovingMode("artwork");
-	bmco_gui_actionMenuDelete();
+	myag_ed_guiActionMenuDelete();
 	myag_ed_guiBottomMenuSetMode("move");
 }
 
@@ -1104,7 +1256,7 @@ return: none
 function myag_ed_showItemMenu(arg, event)
 {
 	if (GLOBAL_isMoving == "none")
-		bmco_gui_actionMenuAppend(arg, event.clientX, event.clientY);	
+		myag_ed_guiActionMenuAppend(arg, event.clientX, event.clientY);	
 }
 
 /* Displays a menu of XML-specific tools.

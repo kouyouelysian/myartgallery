@@ -5,7 +5,27 @@
 /*
 pre-import requirements:
 	none
+
+available functions:
+	bmco_replaceAllInString(arg, target, replace="")
+	bmco_HTMLEntitiesEncode(arg)
+	bmco_HTMLEntitiesDecode(arg)
+	bmco_arrayHas(array, item)
+	bmco_arrayRemoveValue(arr, value)
+	bmco_randString(n)
+	bmco_getParamRead(arg)
+	bmco_getParamWrite(param, value)
+	bmco_getParamDelete(arg)
+	bmco_setTitle(arg)
+	bmco_removeIfExists(id)
+	bmco_badcharsPresent(arg, badchars)
+	bmco_badcharsAsString(badchars)
+	bmco_timestamp()
+	bmco_makeIdBase()
+	bmco_urlOpen(url, blank=true)
+	bmco_parseIntSafe(arg)
 */
+
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
@@ -239,11 +259,111 @@ function bmco_badcharsAsString(badchars)
   return out;
 }
 
-/* Get a string of a 13-digit unix timestamp
+/* Get a string of a 13-digit unix UTC timestamp
 inputs: none
 return: <string> timestamp
 */
 function bmco_timestamp()
 {
-	return String(Date.now());
+	return String(new Date().getTime());
+}
+
+/* makes an id base string
+inputs: none
+outputs: id string base
+*/
+function bmco_makeIdBase()
+{
+  return bmco_timestamp()+"_"+bmco_randString(5);
+}
+
+/* open a url from string
+inputs: url <string> [valid URL to visit],
+		blank <bool> [true = in new tab, false = in this tab]
+return: none
+*/
+function bmco_urlOpen(url, blank=true)
+{
+	var a = document.createElement("a");
+	if (blank)
+		a.setAttribute("target", "_blank");
+	a.setAttribute("href", url);
+	document.body.appendChild(a);
+	a.click();
+	a.remove();
+}
+
+/* creates and submits a correct form. to be used with
+offline channel editors instead of copying raw xml to the buffer
+and opening the neocities file editors; the POST action is
+handled by the web app to upload all the user files and convert the
+stuff defined in post data into files and upload them too
+inputs: datafiles <array of dicts> [descriptions of files to be created from POST],
+		chid <string> [valid channel id string, used to return the user to the editor page
+					  offline editor template fills in this attr when rendered when POST is done]
+return: none
+*/
+function bmco_runUpdateForm(datafiles, chid=document.body.getAttribute('chid'))
+{
+	var form = document.createElement("form");
+	form.setAttribute("method", "POST");
+	form.setAttribute("action", "../m/"+chid); // 
+	document.body.appendChild(form);
+
+	var dataFilesInput = document.createElement("input");
+	dataFilesInput.setAttribute("name", "datafiles");
+	dataFilesInput.setAttribute("type", "hidden");
+	dataFilesInput.setAttribute("value", JSON.stringify(datafiles))
+	form.appendChild(dataFilesInput)
+
+	form.submit();
+}
+
+/*  safely parse a string into an integer
+inputs: arg <string> [integerlike string] 
+return: <integer> [parsed number] or <false>
+*/
+function bmco_parseIntSafe(arg)
+{
+	var ret = parseInt(arg);
+	if (isNaN(ret))
+		return 0;
+	return ret;
+}
+
+/* Removes some attribute from every DOM element of a class
+inputs: classname <string> [name of assigned class],
+		attribute <string> [name of the attribute to be removed]
+return: none
+*/
+function bmco_removeAttributeForAllElementsOfClass(classname, attribute)
+{
+	var targets = document.getElementsByClassName(classname);
+	for (var x = 0; x < targets.length; x++)
+		targets[x].removeAttribute(attribute);
+}
+
+/* Sets some attribute to a value for every DOM element of a class
+inputs: classname <string> [name of assigned class],
+		attribute <string> [name of the attribute to be added]
+		value <string> [value to assign attribute to for each element]
+return: none
+*/
+function bmco_setAttributeForAllElementsOfClass(classname, attribute, value)
+{
+
+	var targets = document.getElementsByClassName(classname);
+	for (var x = 0; x < targets.length; x++)
+		targets[x].setAttribute(attribute, value);
+}
+
+/* Removes every DOM element of a class
+inputs: classname <string> [name of assigned class],
+return: none
+*/
+function bmco_removeAllElementsOfClass(classname)
+{
+	var targets = document.getElementsByClassName(classname);
+	for (var x = 0; x < targets.length; x++)
+		targets[x].remove();
 }

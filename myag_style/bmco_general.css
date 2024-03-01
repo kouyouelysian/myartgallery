@@ -1,0 +1,201 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	botttom: 0;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+body {
+	/* vars go here */
+	--page-spacing: 24px;
+	--page-timing: 0.15s;
+
+	--col-background: #fab;
+	--col-body: #fff;
+	--col-dim: #eee;
+	--col-text: #222;
+	--col-accent: #fab;
+	--col-counterpick: #1fc;
+	--col-shadow: #bbc;
+
+	--font-big: 'arial';
+	--font-big-size: 32px;
+	--font-main: 'verdana';
+	--font-main-size: 18px;
+
+	--shadow: -4px 4px var(--col-shadow);
+
+	--border-width: 4px;
+	--buttons-height: 64px;
+
+	/* always display the scrollbar because the width-flickering annoys me to hell and back */
+	overflow-y: scroll;
+}
+
+body {
+	background: var(--col-background);
+}
+
+#mainWrapper {
+	position: relative;
+	display: block;
+	width: 80%;
+	margin: auto;
+	padding-top: 10%;
+	padding-bottom: 10%;
+	color: var(--col-text);
+	font-family: var(--font-main);
+	font-size: var(--font-main-size);
+	
+}
+
+h1 {
+	font-family: var(--font-big);
+	font-size: var(--font-big-size);
+	margin: 0;
+	padding-bottom: var(--page-spacing);
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline dotted var(--col-accent);
+}
+
+hr {
+	border-top: 0;
+	border-bottom: 2px dotted var(--col-background);
+	margin: 0;
+	margin-bottom: var(--page-spacing);
+	width: calc(100% + var(--page-spacing) + var(--page-spacing));
+	margin-left: calc(var(--page-spacing) * -1);
+}
+
+.section {
+	width: calc(100% - var(--page-spacing) - var(--page-spacing));
+	padding: var(--page-spacing);
+	margin: 0;
+	background-color: var(--col-body);
+	box-shadow: var(--shadow);
+}
+
+.section p {
+	margin: 0;
+	margin-bottom: var(--page-spacing);
+	width: 100%;
+}
+
+.section .error, .section .success {
+	width: fit-content;
+}
+
+.error, .success {
+	padding: 4px;
+	border-radius: 6px;
+	color: #fff;
+}
+
+.error {
+	background-color: #fd7d7d;
+}
+
+.success {
+	background-color: #7bffa2;
+}
+
+
+.button {
+	height: calc(var(--buttons-height) - 4px - 4px);
+	border: 4px solid var(--col-accent);
+	position: relative;
+	background-color: var(--col-accent);
+	color: var(--col-body);
+	transition: background-color 0.2s, color 0.2s;
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+	font-family: var(--font-big);
+	font-size: var(--font-big-size);
+	font-style: italic;
+	padding-left: 16px;
+	padding-right: 16px;
+	user-select: none;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: var(--col-body);
+	color: var(--col-accent);
+}
+
+
+form {
+	margin-top: var(--page-spacing);
+}
+
+form input, form .button, form select {
+	margin-bottom: var(--page-spacing);
+}
+
+form label {
+	margin-bottom: calc(var(--page-spacing) / 2);
+}
+
+form input, form label, form select {
+	display: block;
+}
+
+
+
+
+#loading {
+	width: 130px;
+	height: 130px;
+	border: 4px solid var(--col-body);
+	background-color: var(--col-accent);
+	box-shadow: 0px 0px 8px var(--col-shadow);
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 999;
+	transform: translate(-50%, -50%);
+	border-radius: 4px;
+}
+
+#loadingRing {
+	position: absolute;
+	width: calc(80% - 40px);
+	height: calc(80% - 40px);
+	left: 10%;
+	top: 10%;
+	background-color: transparent;
+	border-radius: 50%;
+	border: 20px solid var(--col-body);
+}
+
+#loadingSpinner {
+	width: 25px;
+	height: 42%;
+	background-color: var(--col-accent);
+	position: absolute;
+	left: 42.5px;
+	top: 10px;
+	transform-origin: 20px 55px;
+	animation-name: spinner;
+	animation-duration: 1.3s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	border-top: 30px solid var(--col-accent);
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-bottom: none;
+	height: 0;
+	background: transparent;
+}
+
+@keyframes spinner {
+  0%   {transform: rotate(0deg)}
+  100% {transform: rotate(360deg)}
+}

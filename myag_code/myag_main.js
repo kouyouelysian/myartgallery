@@ -74,6 +74,8 @@ return: bool
 */
 function myag_isEditor()
 {
+  if (document.body.getAttribute('isEditor') != null)
+    return true;
   if (window.location.toString().search("editor.html") != -1)
     return true;
   if (window.location.toString().split("/").reverse()[0] == "editor")
@@ -362,7 +364,7 @@ probably could be done using myag_getArtworkAll() to avoid repetition..
 async function myag_getArtworksInGroup(gid)
 {
   await myag_checkXmlLoaded();
-  var xmldoc = bmco_xml_xmldoc(GLOBAL_loadedData);
+  var xmldoc = bmco_xml_xmldocFromString(GLOBAL_loadedData);
   artworks = [];
   var xmlArtworks = xmldoc.getElementsByTagName('artwork');
   for (var t = 0; t < xmlArtworks.length; t++)
