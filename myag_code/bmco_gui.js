@@ -170,15 +170,20 @@ function bmco_gui_popupAlert(message, fn="bmco_gui_popupClose()", text="OK")
 /*  Throws a select prompt message on-screen that can disappears when
 the user chooses one of the two options.
 inputs: message <string> [select prompt text],
-		text1 <string> [text on the left button],
 		fn1 <string> [onclick to be executed by the left button],
+		text1 <string> [text on the left button],
+		fn2 <string> [onclick to be executed by the right button],
 		text2 <string> [text on the right button],
-		fn2 <string> [onclick to be executed by the right button]
+		addAutoClose <bool=True> [add a popup close function to the yes button onclick
+								  so that the menu closes on its own]
 return: <html element> [created popup div]
 */
-function bmco_gui_popupConfirm(message, fn1, text1="YES", fn2="bmco_gui_popupClose()", text2="NO")
+function bmco_gui_popupConfirm(message, fn1, text1="YES", fn2="bmco_gui_popupClose()", text2="NO", addAutoClose=true)
 {
 	bmco_gui_backdropCreate("bmco_gui_popupClose()");
+	if (addAutoClose)
+		fn1 += "; bmco_gui_popupClose()";
+	console.log(fn1);
 	var selectDiv = bmco_gui_popupCreatePopupBody(message, "popupSelect");
 	bmco_gui_popupAddButton(selectDiv, text1, fn1);
 	bmco_gui_popupAddButton(selectDiv, text2, fn2);
@@ -235,6 +240,7 @@ return: none
 */
 function bmco_gui_filloutShow(id)
 {
+	console.log("painis");
 	var target = document.getElementById(id);
 	if (target == undefined)
 		return;

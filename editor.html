@@ -18,42 +18,59 @@
 		<div id="navbar">
 			<p class="navbarOption" onclick="bmco_tab_switchTo('artworks', this)" id="navbarSelected">Artworks</p>
 			<p class="navbarOption" onclick="bmco_tab_switchTo('groups', this)">Groups</p>
+			<p class="navbarOption" onclick="bmco_tab_switchTo('tools', this)">Tools</p>
 			<p class="navbarOption" onclick="bmco_tab_switchTo('settings', this)">Settings</p>
 		</div>
 
-		<div class="tab section" id="artworks" style="display: block;">
+		<div class="tab section" id="artworks">
+			<h1>Manage artworks</h1>
 			<div id="artworksWrapper"></div>
 		</div>
 
-		<div class="tab section" id="groups" style="display: block;">
+		<div class="tab section" id="groups">
+			<h1>Manage groups</h1>
 			<div id="groupsWrapper"></div>
 		</div>
 
-		<div class="tab section" id="settings" style="display: block;">
+		<div class="tab section" id="tools">
+			<h1>Tools</h1>
+			<div id="toolsWrapper">
+			</div>
+		</div>
+
+		<div class="tab section" id="settings">
+			<h1>Settings</h1>
 			<p>No settings so far</p>
 		</div>
 	</div>
 
 
 	<form class="fillout" id="filloutArtwork">
-
+		<h1 id="filloutArtworkTitle"></h1>
 		<label for="inputName">Name</label>
 		<input type="text" name="inputName" id="inputName">
-		
 		<p>Description (optional)</p>
 		<textarea id="inputAbout"></textarea>
-
 		<label for="inputFilename">Filename (automatic, usually left as is)</label>
 		<input type="text" name="inputFilename" id="inputFilename">
-
 		<div id="filloutArtworkGroupCheckboxes">
 			<p>In groups:</p>
 		</div>
-
 		<input type="hidden" name="inputAwid" id="inputAwid">
 		<hr>
-
 		<div class="bottombar" id="filloutArtworkBottomBar"></div>
+	</form>
+
+	<form class="fillout" id="filloutGroup">
+		<h1 id="filloutGroupTitle"></h1>
+		<label for="inputName">Name</label>
+		<input type="text" name="inputGroupName" id="inputGroupName">
+		<p>Description (optional)</p>
+		<textarea id="inputGroupAbout"></textarea>
+		<input type="hidden" name="inputGid" id="inputGid">
+		<input type="hidden" name="inputGroupNameOld" id="inputGroupNameOld">
+		<hr>
+		<div class="bottombar" id="filloutGroupBottomBar"></div>
 	</form>
 
 
@@ -80,6 +97,7 @@
 
 
 	<script type="text/javascript">
+		SETTING_pagingIndex = "append";
 		bmco_tab_init("artworks");
 	</script>
 

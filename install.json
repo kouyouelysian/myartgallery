@@ -16,5 +16,10 @@
 		"- TODO.md",
 		"- insall.json"
 	],
-	"editor_page": "editor.offline"
+	"editor": {
+		"type": "template",
+		"file": "editor.html",
+		"lines": "offline_editor.json"
+	}
+	
 }

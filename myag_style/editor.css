@@ -390,3 +390,33 @@ div#currentlyMoved.groupButton {
 #currentlyMovedLocator {
 	display: none;
 }
+
+
+
+
+
+
+#toolsWrapper {
+
+}
+
+.toolDiv {
+	padding-top: calc(var(--page-spacing) / 2);
+	padding-bottom: calc(var(--page-spacing) / 2);
+	border-top: 1px dotted var(--col-accent);
+}
+
+.toolDiv:first-child {
+	padding-top: 0;
+	border-top: none;
+}
+
+.toolDiv:last-child {
+	padding-bottom: 0;
+}
+
+.section .toolDiv p {
+	display: inline-block;
+	margin-top: calc(var(--page-spacing) / 2);
+	margin-bottom: 0;
+}

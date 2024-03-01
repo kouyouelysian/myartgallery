@@ -24,6 +24,8 @@ available functions:
 	bmco_makeIdBase()
 	bmco_urlOpen(url, blank=true)
 	bmco_parseIntSafe(arg)
+	bmco_inputValueSet(id, val)
+	bmco_inputValueGet(id)
 */
 
 
@@ -366,4 +368,33 @@ function bmco_removeAllElementsOfClass(classname)
 	var targets = document.getElementsByClassName(classname);
 	for (var x = 0; x < targets.length; x++)
 		targets[x].remove();
+}
+
+
+/* Sets an input's value
+inputs: id <string> [id of the input field],
+		val <string> [value to set]
+return: <bool> successful or not
+*/
+function bmco_inputValueSet(id, val)
+{
+	var t = document.getElementById(id);
+	if (t == undefined)
+		return false;
+	t.value = val;
+	return true;
+}
+
+
+/* Gets an input's value. False if not found
+inputs: id <string> [id of the input field],
+		val <string> [value to set]
+return: <string> or <bool:False> if not found
+*/
+function bmco_inputValueGet(id)
+{
+	var t = document.getElementById(id);
+	if (t == undefined)
+		return false;
+	return t.value;
 }

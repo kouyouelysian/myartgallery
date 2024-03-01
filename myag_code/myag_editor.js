@@ -247,22 +247,33 @@ return: none
 */
 function myag_ed_guiEditorLoadGroup(g=Group("new group", ""), makeNew=false)
 {
-	target = document.getElementById("artworkViewer");
-	target.innerHTML = "";		
-	ce = [];
-	ce.push(myag_ed_guiInputGuideCreate("Name"));
-	ce.push(myag_ed_guiInputCreate("text", "inputName", g.name));
-	ce.push(myag_ed_guiInputGuideCreate("Description (optional)"));
-	ce.push(myag_ed_guiInputCreate("textarea", "inputAbout", g.about));
-	ce.push(document.createElement("hr"));
-	ce.push(myag_ed_guiCreateControlButton("Cancel", "myag_av_hideViewer()"));
+	bmco_gui_actionMenuDelete();
+
+	var gname = "";
+	var gabout = "";
+	var title = "Edit group details";
+	var nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutGroup')"]];
 	if (makeNew)
-		ce.push(myag_ed_guiCreateControlButton("Create", "myag_ed_actionGroup('create')"));
+	{
+		nameFnTuples.push(["Create", "myag_ed_actionGroup('create')"]);
+		title = "Add a new group";
+	}
 	else
-		ce.push(myag_ed_guiCreateControlButton("Update", "myag_ed_actionGroup('update')"));
-	ce.push(myag_ed_guiInputCreate("hidden", "inputNameOld", g.name));
-	ce.push(myag_ed_guiInputCreate("hidden", "inputGid", g.gid));
-	target.appendChild(myag_ed_guiArrayOfElementsToDiv(ce, "formWrapper"));
+	{
+		nameFnTuples.push(["Update", "myag_ed_actionGroup('update')"]);
+		gname = g.name;
+		gabout = g.about;
+	}
+
+	bmco_inputValueSet("inputGroupName",gname);
+	bmco_inputValueSet("inputGroupNameOld",bmco_inputValueGet("inputGroupName"));
+	bmco_inputValueSet("inputGroupAbout",gabout);
+	bmco_inputValueSet("inputGid", g.gid);
+	document.getElementById("filloutGroupTitle").innerHTML = title;
+	
+	bmco_gui_filloutShow("filloutGroup");
+	bmco_gui_bottomBarPopulate(nameFnTuples, "filloutGroupBottomBar");
+
 }
 
 /* Loads the artwork editor menu to formViewer. Used in conjunction with other stuff
@@ -273,29 +284,34 @@ return: none
 */
 function myag_ed_guiEditorLoadArtwork(aw, makeNew=false)
 {
-	
-	nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutArtwork')"]];
+	if (aw.awid == undefined)
+			aw.awid = myag_makeAwid();
+	var nameFnTuples = [["Cancel", "bmco_gui_filloutHide('filloutArtwork')"]];
+	var title = "Edit artwork details";
+	var name  ="";
+	var about = "";
+	var filename = "";
+
 	if (makeNew)
 	{
-		if (aw.awid == undefined)
-			aw.awid = myag_makeAwid();
-		nameFnTuples.push(["Add", "myag_ed_actionArtwork('create');"]);
-		document.getElementById("inputName").value = "";
-		document.getElementById("inputAbout").value = "";
-		document.getElementById("inputFilename").value = "";
+		nameFnTuples.push(["Add", "myag_ed_actionArtwork('create');"]);	
+		title = "Add a new artwork";
 	}
 	else
 	{
-		if (aw.awid == undefined)
-			return;
 		nameFnTuples.push(["Update", "myag_ed_actionArtwork('update')"]);
-		document.getElementById("inputName").value = aw.name;
-		document.getElementById("inputAbout").value = aw.about;
-		document.getElementById("inputFilename").value = aw.filename;
+		name = aw.name;
+		about = aw.about;
+		filename = aw.filename;
 	}
 
-	document.getElementById("inputAwid").value = aw.awid;
+	document.getElementById("filloutArtworkTitle").innerHTML = title;
+	bmco_inputValueSet("inputName", name);
+	bmco_inputValueSet("inputAbout", about);
+	bmco_inputValueSet("inputFilename", filename);
+	bmco_inputValueSet("inputAwid", aw.awid);
 
+	// generate checkboxes - probably should generate once and only check them here, but ehhh
 	var xmldoc = myag_ed_xmldoc();
 	var groups = xmldoc.getElementsByTagName('group');
 	groupCheckboxes = document.getElementById("filloutArtworkGroupCheckboxes");
@@ -447,11 +463,19 @@ function myag_ed_guiBottomMenuSetMode(mode)
 {
 	nameFnTuples = [];
 	if (mode == "default")
-	{
-		nameFnTuples.push(["Macro tools", "myag_ed_showMacroToolsMenu()"]);
-		nameFnTuples.push(["Update XML", "myag_ed_openWebXmlEditor()"]);	
-		nameFnTuples.push(["Upload Files", "myag_ed_openWebFileUpload()"]);	
-		nameFnTuples.push(["Copy Raw XML", "myag_ed_copyXml()"]);		
+	{	
+		if (document.body.getAttribute("isOffline") == "isOffline")
+		{
+			nameFnTuples.push(["Update channel", "myag_ed_neomanagerUpdate()"]);	
+
+		}
+		else
+		{
+			nameFnTuples.push(["Update XML", "myag_ed_openWebXmlEditor()"]);	
+			nameFnTuples.push(["Upload Files", "myag_ed_openWebFileUpload()"]);	
+			nameFnTuples.push(["Copy Raw XML", "myag_ed_copyXml()"]);
+		}
+				
 	}
 	else if (mode == "move")
 		nameFnTuples.push(["Cancel Moving", "myag_ed_stopMoving()"]);
@@ -565,7 +589,7 @@ function myag_ed_xmlGroupCreate(xmldoc, g)
 	children.push(new bmco_TagValuePair("name", g.name));
 	children.push(new bmco_TagValuePair("about", g.about));
 	children.push(new bmco_TagValuePair("gid", g.gid));
-	xmldoc.getElementsByTagName('groups')[0].prepend(bmco_xml_nodeConstruct(xmldoc, "group", children));
+	xmldoc.getElementsByTagName('groups')[0].prepend(bmco_xml_nodeAndChildrenWithTextConstruct(xmldoc, "group", children));
 }
 
 /* Updates a group node of some name with new info.
@@ -597,13 +621,13 @@ function myag_ed_xmlGroupDelete(xmldoc, gid)
 
 /* Picks a group of some name and puts it after another group in xmldoc (used for reordering)
 inputs: xmldoc <xml document object> [operational xml object],
-		movedGname <string> [moved group's name]
-		targetGname <string> [name of the group to put after]
+		movedGid <string> [moved group's gid]
+		targetGid <string> [gid of the group to put after]
 return: none
 */
-function myag_ed_xmlGroupPutAfter(xmldoc, movedGname, targetGname)
+function myag_ed_xmlGroupPutAfter(xmldoc, movedGid, targetGid)
 {
-	bmco_xml_nodePutAfter(xmldoc, "group", "gid", movedGname, targetGname);
+	bmco_xml_nodePutAfter(xmldoc, "group", "gid", movedGid, targetGid);
 }
 
 /* Creates a new artwork node with needed child nodes in xmldoc.
@@ -810,9 +834,9 @@ function myag_ed_actionGroup(action)
 {
 	var xmldoc = myag_ed_xmldoc();
 	var gid = myag_ed_guiInputRead('inputGid');
-	var oldName = myag_ed_guiInputRead('inputNameOld');
-	var name = myag_ed_guiInputRead('inputName');
-	var about = myag_ed_guiInputRead('inputAbout');
+	var oldName = myag_ed_guiInputRead('inputGroupNameOld');
+	var name = myag_ed_guiInputRead('inputGroupName');
+	var about = myag_ed_guiInputRead('inputGroupAbout');
 	var groupBadchars = ["<", ">"];
 
 	if (name.length > GLOBAL_maxLengthName)
@@ -854,7 +878,8 @@ function myag_ed_actionGroup(action)
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiGroupButtonCreate(g);
 	}
-	myag_av_hideViewer();
+	
+	bmco_gui_filloutHide("filloutGroup");
 }
 
 /* Triggered when a new artwork is being created or an existing one is being updated.
@@ -927,7 +952,6 @@ function myag_ed_createGroup()
 		return;
 	g = new Group("new group", "");
 	myag_ed_guiEditorLoadGroup(g, true);
-	myag_av_showViewer();
 }
 
 /* Triggers a menu for editing an existing group.
@@ -941,8 +965,7 @@ function myag_ed_editGroup(gid)
 	if (groupXml == null)
 		return;
 	myag_ed_guiEditorLoadGroup(myag_groupXmlToObject(groupXml));
-	bmco_gui_actionMenuDelete();
-	myag_av_showViewer();
+	
 }
 
 /* Asks the user if they really want to delete this group, then deletes it
@@ -958,13 +981,13 @@ function myag_ed_deleteGroup(gid, confirmed=false)
 		myag_ed_xmlGroupDelete(xmldoc, gid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiGroupButtonDelete(gid);
-		bmco_gui_actionMenuDelete();
-		myag_ed_guiPopupClose();
+		//myag_ed_guiPopupClose();
 	}
 	else
 	{
+		bmco_gui_actionMenuDelete();
 		var text = "Do you really want to delete this group? This action can only be undone by refreshing the page, losing all work.";
-		myag_ed_guiPopupThrowSelect(text, "No", "myag_ed_guiPopupClose()", "Yes", "myag_ed_deleteGroup('"+gid+"', true)");
+		bmco_gui_popupConfirm(text, "myag_ed_deleteGroup('"+gid+"', true)");
 	}
 }
 
@@ -1040,8 +1063,6 @@ function myag_ed_deleteArtwork(awid, confirmed=false)
 		myag_ed_xmlArtworkDelete(xmldoc, awid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiArtworkDivDelete(awid);
-		bmco_gui_popupClose();
-		bmco_gui_actionMenuDelete();
 	}
 	else
 	{
@@ -1107,6 +1128,36 @@ function myag_ed_showItemMenu(arg, event)
 		bmco_gui_actionMenuAppend(arg, event.clientX, event.clientY);	
 }
 
+function myag_ed_loadTools()
+{
+	var tools = [
+		{
+			name: "Reverse artworks",
+			about: "Completely inverts the order of the artworks",
+			function: "myag_ed_reverseArtworks()"
+		},
+		{
+			name: "Reverse Groups",
+			about: "Completely inverts the order of the groups",
+			function: "myag_ed_reverseGroups()"
+		}
+	];
+
+	var target = document.getElementById("toolsWrapper");
+	for (var x = 0; x < tools.length; x++)
+	{
+		var tool = tools[x];
+		var tdiv = document.createElement("div");
+		tdiv.classList.add("toolDiv");
+		var about = document.createElement("p");
+		about.innerHTML = tool['about'];
+		var fn = "bmco_gui_popupConfirm('Run "+tool['name']+"?', '"+tool['function']+"')";
+		tdiv.appendChild(bmco_gui_buttonCreate(tool['name'], fn));
+		tdiv.appendChild(about);
+		target.appendChild(tdiv);
+	}
+}
+
 /* Displays a menu of XML-specific tools.
 inputs: none
 return: none
@@ -1134,6 +1185,11 @@ function myag_ed_loadAllArtworks()
 	myag_ip_appendArworksRange(GLOBAL_loadedArtworks, GLOBAL_currentlyLoadedArtworks.length, GLOBAL_loadedArtworks.length, false);
 }
 
+function myag_ed_groupButtonNameRead(elem)
+{
+	return elem.childNodes[0].innerHTML;
+}
+
 /* Reverse the order of all existing groups.
 inputs: none
 return: none
@@ -1145,13 +1201,13 @@ function myag_ed_reverseGroups()
 	var groupsNum = document.getElementsByClassName('groupButton').length-1;
 	for (var x = 0; x < groupsNum; x++)
 	{
-		var gname = document.getElementsByClassName("groupButton")[groupsNum].getAttribute("groupName");
-		myag_ed_guiGroupButtonPutAfter(gname, target);
-		myag_ed_xmlGroupPutAfter(xmldoc, gname, target);
-		target = gname;
+		var gid = document.getElementsByClassName("groupButton")[groupsNum].getAttribute("groupid");
+		console.log(gid);
+		myag_ed_guiGroupButtonPutAfter(gid, target);
+		myag_ed_xmlGroupPutAfter(xmldoc, gid, target);
+		target = gid;
 	}
 	myag_ed_xmlUpdateLoadedData(xmldoc);
-	myag_ed_guiPopupClose();
 }
 
 /* Reverse the order of all existing artworks.
@@ -1173,7 +1229,6 @@ function myag_ed_reverseArtworks()
 		target = awid;
 	}
 	myag_ed_xmlUpdateLoadedData(xmldoc);
-	myag_ed_guiPopupClose();
 }
 
 /* Make a pretty, tabbed XML out of a minified string.
@@ -1271,6 +1326,7 @@ function myag_ed_startup()
 			myag_ed_guiPopupThrowAlert(text, "Update", "myag_ed_openWebXmlEditor()")
 		}
 	});
+	myag_ed_loadTools(); 
 }
 
 //==========================================================================//
