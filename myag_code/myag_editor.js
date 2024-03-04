@@ -217,7 +217,7 @@ return: none
 function myag_ed_guiGroupButtonCreate(g)
 {
 	var target = document.getElementById("buttonCreateNewGroup").nextSibling;
-	myag_ind_appendSingleGroupButton(g, target, 'insertAfter');
+	myag_appendSingleGroupButton(g, target, 'insertAfter');
 }
 
 /* Updates a group button with some name on it to display and operate with a newName instead.
@@ -772,7 +772,7 @@ function myag_ed_actionArtwork(action)
 		{
 			var file = {
 				tag: uploadTag.cloneNode(true),
-				remote_name: "myag_artworks/"+filename
+				remote_name: GLOBAL_artworksFolder+filename
 			} 
 			GLOBAL_uploads.push(file);
 		}
@@ -913,7 +913,7 @@ function myag_ed_deleteArtwork(awid, confirmed=false)
 	if (confirmed)
 	{
 		var xmldoc = myag_ed_xmldoc();	
-			GLOBAL_deletes.push("myag_artworks/"+bmco_xml_childTagRead(myag_ed_xmlArtworkByAwid(xmldoc, awid), "filename"));
+			GLOBAL_deletes.push(GLOBAL_artworksFolder+bmco_xml_childTagRead(myag_ed_xmlArtworkByAwid(xmldoc, awid), "filename"));
 
 		myag_ed_xmlArtworkDelete(xmldoc, awid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
@@ -1178,7 +1178,7 @@ function myag_ed_startup()
 	window.addEventListener("initialGroupsLoaded", (event) => {
 		var dummyG = new Group("start", "Add new...", "");
 		var target = document.getElementById("groupsWrapper");
-		var button = myag_ind_appendSingleGroupButton(dummyG, target, "prepend", "myag_ed_createGroup()");
+		var button = myag_appendSingleGroupButton(dummyG, target, "prepend", "myag_ed_createGroup()");
 		button.id = "buttonCreateNewGroup";
 	});
 	window.addEventListener("xmlFileLoaded", (event) => {

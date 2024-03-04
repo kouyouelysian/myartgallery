@@ -87,7 +87,7 @@ function myag_av_putToViewer(aw_id)
 		
 
 		var img = document.getElementById('artworkViewer');
-		img.style.backgroundImage = "url('./artworks/"+aw.filename+"')";
+		img.style.backgroundImage = "url('"+GLOBAL_artworksFolder+aw.filename+"')";
 		GLOBAL_viewerWrapperObject.setAttribute('awid', aw.awid);
 
 		bmco_getParamWrite('id', aw.awid); // put get param to URL so users can share an image directly

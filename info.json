@@ -1,0 +1,9 @@
+{
+    "database": "myag_files/data.xml",
+    "routines":
+    {
+    	"update": [
+    		"say_pingas.py"
+    	]
+    }
+}

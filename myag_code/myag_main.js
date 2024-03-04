@@ -14,6 +14,7 @@ pre-import requirements:
 
 GLOBAL_debug = true;
 GLOBAL_workingFile = "./myag_files/data.xml";
+GLOBAL_artworksFolder = "./myag_artworks/"
 GLOBAL_loadedData = undefined;
 GLOBAL_loadedArtworks = undefined;
 GLOBAL_currentlyLoadedArtworks = [];
@@ -38,12 +39,13 @@ class Group {
 }
 
 class Artwork {
-  constructor(awid, name, filename, about, groups) {
+  constructor(awid, name, filename, about, groups, thumbnail=undefined) {
     this.awid = awid;
     this.name = name;
     this.filename = filename;
     this.about = about;
     this.groups = groups;
+    this.thumbnail = thumbnail;
   }
 
   ingroup(gid) {
@@ -413,4 +415,97 @@ async function myag_getGroupById(gid)
   return null;
 }
 
+/*
+index page startup function
+inputs: none
+outputs: none
+*/
+function myag_startup(pagename)
+{
+  if (document.getElementById("groupsWrapper") != undefined)  
+    myag_makeGroupButtons();
 
+  myag_getArtworkAll().then(function(artworks) {
+    GLOBAL_loadedArtworks = artworks;
+    myag_ip_initArtworks(artworks, type=SETTING_pagingIndex); 
+  });
+  bmco_setTitle(SETTING_title);
+}
+
+/* Creates an appendable locator div based on an Group instance. Is needed
+for the XML editor page, unused in the main page itself.
+inputs: group <Group object> - group object to make the group locator after
+returns: <DOM element>
+*/
+function myag_generateGroupLocatorDiv(group)
+{
+  var locatorWrapper = document.createElement("div");
+  locatorWrapper.classList.add("locatorWrapper", "locatorWrapperGroup");
+  locatorWrapper.setAttribute("groupId", group.gid);
+
+  var locator = document.createElement("div");
+  locator.classList.add("locator");
+  locator.setAttribute("title", "Move group here")
+  if (group.name == "Add new...")
+    locator.setAttribute("onclick", "myag_ed_putGroupAfter('start')");
+  else
+    locator.setAttribute("onclick", "myag_ed_putGroupAfter('"+group.gid+"')");
+
+  locatorWrapper.appendChild(locator);
+
+  return locatorWrapper;
+}
+
+/* creates an html element for one group button.
+inputs: group <Group object> - group object to make the group button after
+return: "div" html group button element 
+*/
+function myag_generateGroupButton(group, action=undefined)
+{
+  var button = document.createElement('div');
+  button.classList.add('groupButton');
+  button.setAttribute("groupId", group.gid);
+
+  var onclick = action;
+  if (onclick==undefined)
+  {
+    onclick = "myag_ind_visitGroup('"+group.gid+"')";
+    if (myag_isEditor())
+      onclick = "myag_ed_showItemMenu('"+group.gid+"', event)";
+  }
+  
+  button.setAttribute('onclick', onclick);
+  var name = document.createElement('p');
+  name.innerHTML = group.name;
+  button.appendChild(name);
+
+  return button;
+}
+
+/* generates and appends a single group button to a target.
+inputs: group <Group object> - [group object], target <html element> [append target element],
+    mode <string> [append mode. 'appendChild' or 'insertAfter']
+return: freshly appended button <html element>
+*/
+function myag_appendSingleGroupButton(group, target, mode="appendChild", action=undefined)
+{
+  var button = myag_generateGroupButton(group, action);
+  var locator = myag_generateGroupLocatorDiv(group);
+  myag_appendToGridMode(button, locator, target, mode);
+  return button;
+}
+
+/*
+Looks up what groups exist and adds them as buttons
+inputs: id string of the target div to append buttons to
+outputs: none
+*/
+function myag_makeGroupButtons(id="groupsWrapper")
+{
+  myag_getGroups().then(function(groups) {
+    var target = document.getElementById(id);
+    for (var c = 0; c < groups.length; c++)
+      myag_appendSingleGroupButton(groups[c], target);
+    window.dispatchEvent(myag_ip_gLoaded);
+  });
+}

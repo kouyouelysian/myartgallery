@@ -32,23 +32,19 @@ function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
 
 	var onclick = action;
 	if (onclick == undefined)
-	{
-		var onclick = "myag_av_showViewer('"+aw.awid+"')";
-		if (myag_isEditor())
-			onclick = "myag_ed_showItemMenu('"+aw.awid+"', event)";
-	}
-
-	
-	
+		myag_isEditor() ? onclick = "myag_ed_showItemMenu('"+aw.awid+"', event)" : onclick = "myag_av_showViewer('"+aw.awid+"')";
 	div.setAttribute("onclick", onclick);
 	
-	if (aw.filename != undefined)
+	var displayFile = aw.thumbnail;
+	if (displayFile == undefined)
+		displayFile = aw.filename;
+	if (displayFile != undefined)
 	{
 		var img = document.createElement("img");
 		if (SETTING_remoteImageHost == null)
-			img.setAttribute("src", "./myag_artworks/"+aw.filename);
+			img.setAttribute("src", GLOBAL_artworksFolder+displayFile);
 		else
-			img.setAttribute("src", SETTING_remoteImageHost + "/myag_artworks/"+aw.filename);
+			img.setAttribute("src", SETTING_remoteImageHost + GLOBAL_artworksFolder+displayFile);
 		img.classList.add("artworkImg");
 		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);
@@ -90,7 +86,7 @@ function myag_ip_generateArtworkLocatorDiv(aw=undefined)
 	return locatorWrapper;
 }
 
-/* generates and appends a single group button to a target.
+/* generates and appends a single artwork to a target.
 inputs: aw <Artwork> [source Artwork instance], target <html element> [append target element],
 		mode <string> [append mode. 'appendChild', 'prepend' or 'insertAfter']
 return: appended artwork div <html element>

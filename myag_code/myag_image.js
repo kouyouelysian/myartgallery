@@ -96,7 +96,7 @@ function myag_im_download() {
 	// https://stackoverflow.com/questions/45831191/generate-and-download-file-from-js#45831280
 
     var element = document.createElement('a');
-    element.setAttribute('href', "./artworks/"+GLOBAL_fullArtwork.filename);
+    element.setAttribute('href', GLOBAL_artworksFolder+GLOBAL_fullArtwork.filename);
     element.setAttribute('download', GLOBAL_fullArtwork.filename);
     element.style.display = 'none';
     document.body.appendChild(element);
@@ -132,8 +132,10 @@ function myag_im_startup()
 
 
 		var img = document.getElementById('fullViewImage');
-		img.style.backgroundImage = "url('./artworks/"+GLOBAL_fullArtwork.filename+"')";
-
+		var file = "url('"+GLOBAL_artworksFolder+GLOBAL_fullArtwork.filename+"')";
+		console.log(file);
+		img.style.backgroundImage = file
+		
 		var name  = document.getElementById('fullViewTextName');
 		var about = document.getElementById('fullViewTextAbout');
 
