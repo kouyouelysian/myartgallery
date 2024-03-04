@@ -19,6 +19,8 @@ GLOBAL_newArtworksSpawned = 0;
 GLOBAL_maxLengthName = 64;
 GLOBAL_maxLengthFilename = 64;
 GLOBAL_isMoving = "none"; // "none", "group" or "artwork"
+GLOBAL_uploads = [];
+GLOBAL_deletes = [];
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
@@ -692,26 +694,14 @@ function myag_ed_actionGroup(action)
 	var groupBadchars = ["<", ">"];
 
 	if (name.length > GLOBAL_maxLengthName)
-	{
-		bmco_gui_popupAlert("Group name is too long. Please, keep it 32 symbols or less.");
-		return;
-	}
+		return bmco_gui_popupAlert("Group name is too long. Please, keep it 32 symbols or less.");
 	else if (name.trim() == "")
-	{
-		bmco_gui_popupAlert("Group name must not be an empty string. Input some name!");
-		return;
-	}
+		return bmco_gui_popupAlert("Group name must not be an empty string. Input some name!");
 	else if (bmco_badcharsPresent(name, groupBadchars))
-	{
-		bmco_gui_popupAlert("Please, do not use the following characters in the group name field:<br>"+bmco_badcharsAsString(groupBadchars));
-		return;
-	}
+		return bmco_gui_popupAlert("Please, do not use the following characters in the group name field:<br>"+bmco_badcharsAsString(groupBadchars));
 	else if (((name != oldName) || action=="create") && (myag_ed_xmlGroupCheckDupes(xmldoc, name)))
-	{
-		bmco_gui_popupAlert("Group name already taken - please, select a different one!");
-	   	return;
-	}
-
+		return bmco_gui_popupAlert("Group name already taken - please, select a different one!");
+	   	
 	if (action == ("update"))
 	{
 		if ((about != null) || (name != null))
@@ -748,27 +738,19 @@ function myag_ed_actionArtwork(action)
 	var filename = bmco_inputValueGet("inputFilename");
 	var fnameBadchars = ["<", ">", "/", "\\"];
 
-	if (name.length > GLOBAL_maxLengthName)
-	{
-		bmco_gui_popupAlert("Artwork name should be not longer than 64 characters!");
-		return;
-	}
-	else if (filename.length > GLOBAL_maxLengthFilename)
-	{
-		bmco_gui_popupAlert("File name should be not longer than 64 characters!");
-		return;
-	}
-	else if ((filename.length == 0) || (filename == ""))
-	{
-		bmco_gui_popupAlert("Please, provide a filename!")
-		return;
-	}
-	else if (bmco_badcharsPresent(filename, fnameBadchars))
-	{
-		bmco_gui_popupAlert("Please, do not use the following characters in the filename field:<br>"+bmco_badcharsAsString(fnameBadchars));
-		return;
-	}
+	var isOffline = bmco_bodyAttributeExists("isoffline");
 
+	if (name.length > GLOBAL_maxLengthName)
+		return bmco_gui_popupAlert("Artwork name should be not longer than 64 characters!");
+	else if (filename.length > GLOBAL_maxLengthFilename)
+		return bmco_gui_popupAlert("File name should be not longer than 64 characters!");
+	else if (!isOffline && ((filename.length == 0) || (filename == "")))
+		return bmco_gui_popupAlert("Please, provide a filename!");
+	else if (isOffline && action=="create" && !document.getElementById("inputFileUpload").value.length)
+		return bmco_gui_popupAlert("Please, select a file!");
+	else if (bmco_badcharsPresent(filename, fnameBadchars))
+		return bmco_gui_popupAlert("Please, do not use the following characters in the filename field:<br>"+bmco_badcharsAsString(fnameBadchars));
+		
 	ingroups = [];
 	groups = xmldoc.getElementsByTagName('group');
 	for (var t = 0; t < groups.length; t++)
@@ -778,6 +760,24 @@ function myag_ed_actionArtwork(action)
 		if (document.getElementById(cbxId).checked)
 			ingroups.push(gid);
 	}
+
+	if (bmco_bodyAttributeExists("isoffline"))
+	{
+		var uploadTag = document.getElementById("inputFileUpload");
+
+		if (action == "create")
+			filename = awid+"."+uploadTag.value.split(".").at(-1);
+
+		if (!(action=="update" && !uploadTag.value.length))
+		{
+			var file = {
+				tag: uploadTag.cloneNode(true),
+				remote_name: "myag_artworks/"+filename
+			} 
+			GLOBAL_uploads.push(file);
+		}
+	}
+
 	if (action == "update")
 	{
 		artworks = xmldoc.getElementsByTagName('artwork');
@@ -789,6 +789,7 @@ function myag_ed_actionArtwork(action)
 		myag_ed_xmlArtworkCreate(xmldoc, awid, name, filename, about, ingroups);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiArtworkDivCreate(new Artwork(awid, name, undefined, about, ingroups));
+
 	}	
 	bmco_gui_filloutHide('filloutArtwork');
 }
@@ -911,17 +912,20 @@ function myag_ed_deleteArtwork(awid, confirmed=false)
 {
 	if (confirmed)
 	{
-		var xmldoc = myag_ed_xmldoc();
+		var xmldoc = myag_ed_xmldoc();	
+			GLOBAL_deletes.push("myag_artworks/"+bmco_xml_childTagRead(myag_ed_xmlArtworkByAwid(xmldoc, awid), "filename"));
+
 		myag_ed_xmlArtworkDelete(xmldoc, awid);
 		myag_ed_xmlUpdateLoadedData(xmldoc);
 		myag_ed_guiArtworkDivDelete(awid);
+		if (bmco_bodyAttributeExists("isoffline"))
+		
+		return;
 	}
-	else
-	{
-		bmco_gui_actionMenuDelete();
-		var text = "Do you really want to delete this artwork? This action can only be undone by refreshing the page, losing all work."
-		bmco_gui_popupConfirm(text, "myag_ed_deleteArtwork('"+awid+"', true)");
-	}
+	bmco_gui_actionMenuDelete();
+	var text = "Do you really want to delete this artwork? This action can only be undone by refreshing the page, losing all work."
+	bmco_gui_popupConfirm(text, "myag_ed_deleteArtwork('"+awid+"', true)");
+	
 }
 
 /* Triggers the process of moving the artwork around.
@@ -1088,8 +1092,7 @@ function myag_ed_neomanagerUpdate()
 				contents: myag_ed_prepareXml()
 			}
 		];	
-	console.log(dataFiles);
-	bmco_runUpdateForm(dataFiles);
+	bmco_runUpdateForm(datafiles=dataFiles, uploads=GLOBAL_uploads, deletes=GLOBAL_deletes);
 }
 
 /* Make a pretty, tabbed XML out of a minified string.
@@ -1188,6 +1191,17 @@ function myag_ed_startup()
 		}
 	});
 	myag_ed_loadTools(); 
+	if (bmco_bodyAttributeExists("isoffline"))
+	{
+		var target = document.getElementById("inputFilename");
+		target.previousElementSibling.remove();
+		target.setAttribute("type", "hidden");
+		
+	}
+	else
+	{
+		document.getElementById("inputFileUpload").remove();
+	}
 }
 
 //==========================================================================//

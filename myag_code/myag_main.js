@@ -122,8 +122,8 @@ inputs: arg (anything) - to be displayed
 outputs: none
 */
 function db(arg) {
-	if (GLOBAL_debug)
-		console.log(arg);
+  if (GLOBAL_debug)
+    console.log(arg);
 }
 
 /* makes an id base string
@@ -214,11 +214,11 @@ outputs: none
 */
 async function myag_checkXmlLoaded() {
 
-	if (GLOBAL_loadedData == undefined)
+  if (GLOBAL_loadedData == undefined)
   {
-		await myag_waitForXml();
+    await myag_waitForXml();
   }
-	return;
+  return;
 }
 // part of myag_checkXmlLoaded - waits for the xhr to come back
 async function myag_waitForXml() {
@@ -249,7 +249,7 @@ async function myag_promiseXml()
         if (xhr.status >= 300)
           reject("Error, status code = " + xhr.status)
         else
-        	resolve(xhr.responseText);      
+          resolve(xhr.responseText);      
       }
     }
     xhr.open('GET', GLOBAL_workingFile, true)
