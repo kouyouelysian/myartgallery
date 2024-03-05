@@ -44,7 +44,7 @@ function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
 		if (SETTING_remoteImageHost == null)
 			img.setAttribute("src", GLOBAL_artworksFolder+displayFile);
 		else
-			img.setAttribute("src", SETTING_remoteImageHost + GLOBAL_artworksFolder+displayFile);
+			img.setAttribute("src", SETTING_remoteImageHost +"/"+ GLOBAL_artworksFolder+displayFile);
 		img.classList.add("artworkImg");
 		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);

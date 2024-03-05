@@ -18,6 +18,9 @@
 		"type": "template",
 		"file": "editor.html",
 		"chunks": "offline_editor.json"
-	}
+	},
+	"routines": [
+		"say_pingas"
+	]
 	
 }

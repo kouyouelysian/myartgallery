@@ -1169,6 +1169,7 @@ function myag_ed_startup()
 {
 	bmco_setTitle(SETTING_title + " / editor");
 	myag_ed_guiBottomMenuSetMode("default");
+
 	window.addEventListener("initialArtworksLoaded", (event) => {
 		var target = document.getElementById("artworksWrapper");
 		var dummyAw = new Artwork(undefined, undefined, undefined, undefined, undefined);
@@ -1190,7 +1191,9 @@ function myag_ed_startup()
 			myag_ed_guiPopupThrowAlert(text, "Update", "myag_ed_openWebXmlEditor()")
 		}
 	});
-	myag_ed_loadTools(); 
+
+	myag_ed_loadTools();
+
 	if (bmco_bodyAttributeExists("isoffline"))
 	{
 		var target = document.getElementById("inputFilename");
@@ -1199,9 +1202,10 @@ function myag_ed_startup()
 		
 	}
 	else
-	{
 		document.getElementById("inputFileUpload").remove();
-	}
+	
+
+	myag_startup();
 }
 
 //==========================================================================//

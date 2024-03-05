@@ -14,7 +14,7 @@ pre-import requirements:
 
 GLOBAL_debug = true;
 GLOBAL_workingFile = "./myag_files/data.xml";
-GLOBAL_artworksFolder = "./myag_artworks/"
+GLOBAL_artworksFolder = "myag_artworks/"
 GLOBAL_loadedData = undefined;
 GLOBAL_loadedArtworks = undefined;
 GLOBAL_currentlyLoadedArtworks = [];
@@ -24,6 +24,7 @@ GLOBAL_usedPaginationType = "none";
 GLOBAL_artworksPerPage = null;
 
 const myag_xmlLoaded = new CustomEvent("xmlFileLoaded");
+const myag_ip_gLoaded = new CustomEvent("myag_ip_gLoaded");
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
