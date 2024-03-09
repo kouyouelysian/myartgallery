@@ -1212,4 +1212,6 @@ function myag_ed_startup()
 //================================ STARTUP =================================//
 //==========================================================================//
 
-myag_ed_startup();
+if (!bmco_bodyAttributeExists('isOffline'))
+	myag_ed_startup();
+
