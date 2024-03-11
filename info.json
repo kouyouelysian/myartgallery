@@ -2,8 +2,9 @@
     "database": "myag_files/data.xml",
     "routines":
     {
-    	"update": [
-    		"say_painis.py"
-    	]
+        "location": "myag_py/routines",
+        "update": [
+            "makethumbs"
+        ]
     }
 }
