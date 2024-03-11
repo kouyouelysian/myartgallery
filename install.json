@@ -6,6 +6,7 @@
 		"- insall.json"
 	],
 	"items_local": [
+		"myag_code"
 		"myag_style/panel.css",
 		"myag_style/editor.css",
 		"myag_user/",
