@@ -24,7 +24,7 @@ GLOBAL_usedPaginationType = "none";
 GLOBAL_artworksPerPage = null;
 
 const myag_xmlLoaded = new CustomEvent("xmlFileLoaded");
-const myag_ip_gLoaded = new CustomEvent("myag_ip_gLoaded");
+//const myag_ip_gLoaded = new CustomEvent("myag_ip_gLoaded");
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
