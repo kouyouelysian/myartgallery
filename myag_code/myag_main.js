@@ -330,8 +330,9 @@ function myag_artworkXmlToObject(artworkXml)
   var n = bmco_xml_childTagRead(artworkXml, "name");
   var fn = bmco_xml_childTagRead(artworkXml, "filename");
   var a = bmco_xml_childTagRead(artworkXml, "about");
+  var thu = bmco_xml_childTagRead(artworkXml, "thumbnail");
   var ig = bmco_xml_childTagGetChildrenValues(artworkXml, "ingroups");
-  return new Artwork(aw, n, fn, a, ig);
+  return new Artwork(aw, n, fn, a, ig, thu);
 }
 
 

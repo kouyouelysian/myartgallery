@@ -35,8 +35,11 @@
 	"routines":
 	{
 		"location": "myag_py/routines",
-		"update": [
-			"makethumbs"
+		"update_start": [
+			"routine_thumbs_xml"
+		],
+		"update_end": [
+			"routine_thumbs_files"
 		]
 	}
 }
