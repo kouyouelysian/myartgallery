@@ -57,7 +57,7 @@ def routine_thumbs_delete(channel_instance, post_request, neocities):
 
 	for dname in json.loads(post_request.form['deletenames']):
 		thumb_name = thumb_by_filename(xml, os.path.basename(dname))
-		not thumb_name:
+		if not thumb_name:
 			continue
 		thumb_fullname = os.path.join(channel_instance.location, "myag_artworks", thumb_name)		
 		neocities.delete(thumb_fullname)

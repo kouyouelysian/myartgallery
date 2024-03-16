@@ -1003,6 +1003,14 @@ function myag_ed_loadTools()
 			function: "myag_ed_reverseGroups()"
 		}
 	];
+	if (bmco_bodyAttributeExists("isOffline"))
+	{
+		tools.push({
+			name: "Build thumbnails",
+			about: "If this is a pre-neomanager instance, this builds thumbnails for each artwork so the gallery loads faster. May take some time!",
+			function: "myag_ed_neomanagerUpdate()"
+		})
+	}
 
 	var target = document.getElementById("toolsWrapper");
 	for (var x = 0; x < tools.length; x++)
@@ -1092,6 +1100,7 @@ function myag_ed_neomanagerUpdate()
 				contents: myag_ed_prepareXml()
 			}
 		];	
+	bmco_gui_loadingSpinnerCreate();
 	bmco_runUpdateForm(datafiles=dataFiles, uploads=GLOBAL_uploads, deletes=GLOBAL_deletes);
 }
 
