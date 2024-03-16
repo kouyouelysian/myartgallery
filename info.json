@@ -36,10 +36,11 @@
 	{
 		"location": "myag_py/routines",
 		"update_start": [
-			"routine_thumbs_xml"
+			"routine_thumbs_xml",
+			"routine_thumbs_delete"
 		],
 		"update_end": [
-			"routine_thumbs_files"
+			"routine_thumbs_create"
 		]
 	}
 }
