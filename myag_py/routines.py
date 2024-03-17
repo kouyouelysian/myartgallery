@@ -8,9 +8,8 @@ import xml.dom as xmldom
 import nmfunctions as nm
 from math import floor
 from PIL import Image
-from urllib.request import urlopen
+import requests
 import os
-import io
 import bmco
 from werkzeug.utils import secure_filename
 
@@ -49,11 +48,12 @@ def routine_thumbs_delete(channel_instance, post_request, neocities):
 	# yes, this is not pretty, but this is the price of handling thumbnails entirely in here instead of
 	# adding this functionality to the package itself, which should be able to run without the neomanager backend
 
+
 	remote_folder = os.path.join(channel_instance.location, "myag_files").replace('./', '')
-	fd = urlopen(os.path.join("https://{}.neocities.org".format(nm.fetchSiteName(neocities.api_key)), remote_folder, "data.xml"))
-	xml_io = io.BytesIO(fd.read())
-	xml_wrapper = io.TextIOWrapper(xml_io, encoding='utf-8')
-	xml = xmlet.fromstring(xml_wrapper.read())
+	remote_db = os.path.join("https://{}.neocities.org".format(nm.fetchSiteName(neocities.api_key)),\
+		remote_folder, "data.xml")
+
+	xml = xmlet.fromstring(requests.get(remote_db).content)
 
 	for dname in json.loads(post_request.form['deletenames']):
 		thumb_name = thumb_by_filename(xml, os.path.basename(dname))
