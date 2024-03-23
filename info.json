@@ -44,6 +44,10 @@
 		],
 		"update_end": [
 			"routine_thumbs_create"
+		],
+
+		"thumbs_rebuild": [
+			"routine_thumbs_rebuild"	
 		]
 	}
 }

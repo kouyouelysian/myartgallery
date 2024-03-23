@@ -11,9 +11,6 @@ pre-import requirements:
 //================================ CONSTANTS ===============================//
 //==========================================================================//
 
-// used in other scripts like myag_editor.js to detect when the initial
-// set of stuff has been loaded
-const myag_ip_awLoaded = new CustomEvent("initialArtworksLoaded");
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//

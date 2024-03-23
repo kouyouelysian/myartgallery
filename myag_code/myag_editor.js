@@ -205,7 +205,7 @@ function myag_ed_guiGroupCheckboxCreate(g, checked=false)
 	d.appendChild(i);
 	d.appendChild(l);
 	d.classList.add("labelledCheckbox");
-	d.setAttribute("onclick", "myag_ed_guiCheckboxToggle('checkbox_"+g.gid+"')");
+	d.setAttribute("onclick", "bmco_gui_filloutCheckboxToggle('checkbox_"+g.gid+"')");
 
 	return d;
 }
@@ -1008,7 +1008,7 @@ function myag_ed_loadTools()
 		tools.push({
 			name: "Build thumbnails",
 			about: "If this is a pre-neomanager instance, this builds thumbnails for each artwork so the gallery loads faster. May take some time!",
-			function: "myag_ed_neomanagerUpdate()"
+			function: "bmco_runRoutineSectionForm(\"thumbs_rebuild\")"
 		})
 	}
 

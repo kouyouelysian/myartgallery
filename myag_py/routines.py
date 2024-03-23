@@ -1,5 +1,5 @@
 ### !!!!!
-SETTING_thumbSize = 300 #px
+SETTING_thumbSize = 200 #px
 
 
 import json
@@ -8,6 +8,7 @@ import xml.dom as xmldom
 import nmfunctions as nm
 from math import floor
 from PIL import Image
+from io import BytesIO
 import requests
 import os
 import bmco
@@ -63,14 +64,30 @@ def routine_thumbs_delete(channel_instance, post_request, neocities):
 		neocities.delete(thumb_fullname)
 
 
-def routine_thumbs_create(channel_instance, post_request, neocities):
+def routine_thumbs_rebuild(channel_instance, post_request, neocities):
+
+	remote_folder = os.path.join(channel_instance.location, "myag_artworks").replace('./', '')
+
+	remote_db_folder = os.path.join(channel_instance.location, "myag_files").replace('./', '')
+	remote_db = os.path.join("https://{}.neocities.org".format(nm.fetchSiteName(neocities.api_key)),\
+		remote_db_folder, "data.xml")
+	xml = xmlet.fromstring(requests.get(remote_db).content)
+	for aw in xml.find("artworks").findall("artwork"):
+		print("\n{} {}\n".format(aw.findtext("filename"), aw.findtext("awid")))
+		send_thumb(remote_folder, aw.findtext("filename"), aw.findtext("awid"), neocities, local=False)
+
+
+def routine_thumbs_create(channel_instance, post_request, neocities, target_awids = None):
+	global awids_without_thumbnails
+	if target_awids == None:
+		target_awids = awids_without_thumbnails
 	
 	remote_folder = os.path.join(channel_instance.location, "myag_artworks").replace('./', '')
 	remote_names = json.loads(post_request.form['uploadnames'])
 
 	# this checks AWIDs that were fixed in routine_thumbs_xml, and if any of them are not a fresh upload - make a thumb from remote image
 	xml = xmldoc(post_request)
-	for awid in awids_without_thumbnails:
+	for awid in target_awids:
 		if [upload for upload in remote_names if filename_noext(upload["remote_name"]) == awid] == []:
 			# we did not find this awid in new uploads
 			# this means it's an old artwork that has no thumb; grabbing image remotely
@@ -93,11 +110,14 @@ def send_thumb(remote_folder, file, awid, neocities, local=True):
 	if local:
 		image = Image.open(file)
 	else:
-		fd = urlopen(os.path.join("https://{}.neocities.org".format(nm.fetchSiteName(neocities.api_key)), remote_folder, file))
-		image_file = io.BytesIO(fd.read())
-		image = Image.open(image_file)
+		url = (os.path.join("https://{}.neocities.org".format(nm.fetchSiteName(neocities.api_key)), remote_folder, file))
+		rq = requests.get(url)
+		if not rq.status_code == 200:
+			return
+		image = Image.open(BytesIO(rq.content))
 
 	if not image:
+		print("PAINIS")
 		return
 
 	thumb = make_thumb(image)
@@ -116,7 +136,7 @@ def make_thumb(pil_image, thumb_bigger_side = SETTING_thumbSize):
 		return pil_image
 	ratio =  thumb_bigger_side/bigger_side
 	newsize = (floor(w*ratio), floor(h*ratio))
-	return pil_image.resize(newsize)
+	return pil_image.resize(newsize).convert('P', palette=Image.ADAPTIVE, colors=255, dither=Image.Dither.FLOYDSTEINBERG)
 
 
 def filename_noext(arg):
@@ -134,7 +154,6 @@ def filename_by_awid(xmldoc, awid):
 
 def thumb_by_filename(xmldoc, fname):
 	for aw in xmldoc.find("artworks").findall("artwork"):
-		print("\n\n\n{} - {}\n\n\n".format(aw.findtext("filename"), fname))
 		if aw.findtext("filename") == fname:
 			return aw.findtext("thumbnail")
 	return False
