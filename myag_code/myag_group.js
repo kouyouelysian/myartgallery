@@ -56,6 +56,18 @@ function myag_gr_startup()
 	});
 }
 
+
+/*
+group button press handler
+inputs: gid (string) - group id of the group to be viewed
+outputs: none
+*/
+function myag_ind_visitGroup(gid)
+{
+	window.location = "./group.html?g="+encodeURI(gid);
+}
+
+
 //==========================================================================//
 //================================ STARTUP =================================//
 //==========================================================================//

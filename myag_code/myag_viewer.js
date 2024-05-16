@@ -8,19 +8,21 @@ pre-import requirements:
 	myag_panel.js
 */
 
+myag.viewer = {
+
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
 //==========================================================================//
 
-GLOBAL_viewerWrapperObject = undefined;
-GLOBAL_viewerState         = false;
-GLOBAL_viewerToggleTimeout = undefined;
+wrapperObject: undefined,
+state:  false,
+toggleTimeout: undefined,
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-function myag_av_createArtworkViewer()
+createArtworkViewer: function()
 {
 
 
@@ -32,7 +34,7 @@ function myag_av_createArtworkViewer()
 		return null;
 	}
 
-	target.setAttribute("onclick", "myag_av_hideViewer();")
+	target.setAttribute("onclick", "myag.viewer.hideViewer();")
 
 	var p1 = document.createElement('p');
 	var p3 = document.createElement('p');
@@ -45,11 +47,11 @@ function myag_av_createArtworkViewer()
 
 	sidebarLeft.id = 'artworkViewerSidebar1';
 	sidebarLeft.classList.add('artworkViewerSidebar');
-	sidebarLeft.setAttribute('onclick', 'myag_av_jump(false);');
+	sidebarLeft.setAttribute('onclick', 'myag.viewer.jump(false);');
 	viewField.id = 'artworkViewer';
 	sidebarRight.id = 'artworkViewerSidebar2';
 	sidebarRight.classList.add('artworkViewerSidebar');
-	sidebarRight.setAttribute('onclick', 'myag_av_jump(true);');
+	sidebarRight.setAttribute('onclick', 'myag.viewer.jump(true);');
 
 	sidebarLeft.appendChild(p1);
 	sidebarRight.appendChild(p3);
@@ -62,12 +64,12 @@ function myag_av_createArtworkViewer()
 	about.style.display = "none"; // make it initially invisible so that there is no flickering on first load
 	about.setAttribute("onclick", "event.stopPropagation()")
 
-	if (SETTING_fullButton)
+	if (myag.settings.fullButton)
 	{
 		full = document.createElement('p');
 		full.id = "artworkViewerFull";
 		full.innerHTML = "fullsize view";
-		full.setAttribute("onclick", "myag_av_openFullView()");
+		full.setAttribute("onclick", "myag.viewer.openFullView()");
 		viewField.appendChild(full)
 	}
 
@@ -77,101 +79,75 @@ function myag_av_createArtworkViewer()
 	target.appendChild(about);
 
 	return target;
-}
+},
 
 
-function myag_av_putToViewer(aw_id)
+putToViewer: function(aw_id)
 {
-	myag_getArtworkById(aw_id).then(function(aw) {
-			
-		
+	var aw = myag.getArtworkById(aw_id)
+	var img = document.getElementById('artworkViewer');
+	img.style.backgroundImage = `url('${myag.artworksFolder+aw.filename}')`;
+	myag.viewer.wrapperObject.setAttribute('awid', aw.awid);
+	bmco.getParamWrite('id', aw.awid); // put get param to URL so users can share an image directly
+	var a = document.getElementById('artworkViewerAbout');
+	if (myag.settings.about)
+	{
+		html = "";
 
-		var img = document.getElementById('artworkViewer');
-		img.style.backgroundImage = "url('"+GLOBAL_artworksFolder+aw.filename+"')";
-		GLOBAL_viewerWrapperObject.setAttribute('awid', aw.awid);
-
-		bmco_getParamWrite('id', aw.awid); // put get param to URL so users can share an image directly
-
-		var a = document.getElementById('artworkViewerAbout');
-
-		if (SETTING_about)
-		{
-			html = "";
-
-			if (aw.name != "")
-			{
-				html += "<span class='artworkViewerAboutName'>"+aw.name+"</span><br><br>"
-			}
-
-			html += aw.about;
-
-			a.innerHTML = html;
-
-				
-			if (aw.about.length != 0)
-			{
-				a.style.display = "block";
-
-			}
-			else
-			{
-				a.style.display = "none";
-			}	
-		}
-		else
-		{
-			a.style.display = "none";
-		}
-
-		
-
-	});	
-}
+		if (aw.name != "")
+			html += "<span class='artworkViewerAboutName'>"+aw.name+"</span><br><br>"
+		html += aw.about;
+		a.innerHTML = html;			
+		aw.about.length != 0? a.style.display = "block" : a.style.display = "none";
+	}
+	else
+		a.style.display = "none";
+},
 
 /*shows artwork by an artwork id */
-function myag_av_showViewer(aw_id)
+showViewer: function(aw_id)
 {
-	if (!GLOBAL_viewerState)
+	if (!myag.viewer.state)
 	{
-		if (GLOBAL_viewerWrapperObject == undefined)
+		if (myag.viewer.wrapperObject == undefined)
 				return null;
 
-		clearTimeout(GLOBAL_viewerToggleTimeout);	
-		GLOBAL_viewerWrapperObject.style.display = "block";
-		GLOBAL_viewerToggleTimeout = setTimeout(() => {
-		  GLOBAL_viewerWrapperObject.style.opacity = 1;	
+		clearTimeout(myag.viewer.toggleTimeout);	
+		myag.viewer.wrapperObject.style.display = "block";
+		myag.viewer.toggleTimeout = setTimeout(() => {
+		  myag.viewer.wrapperObject.style.opacity = 1;	
 		}, 50) // yes, a js clutch, what did you expect :D
 
-		GLOBAL_viewerState = true;
+		myag.viewer.state = true;
 		if (aw_id != null)
-			myag_av_putToViewer(aw_id);
+			myag.viewer.putToViewer(aw_id);
 			
 	}
-}
+},
 
-function myag_av_jump(dir)
+jump: function(dir)
 {
-	var target = GLOBAL_viewerWrapperObject.getAttribute('awid');
+	var target = myag.viewer.wrapperObject.getAttribute('awid');
 	if (target == null)
 	return null; // this means there's nothing loaded at all (non soosible)
 	aw = undefined;
-	for (var t = 0; t < GLOBAL_currentlyLoadedArtworks.length; t++)
+	for (var t = 0; t < myag.artworks.length; t++)
 	{
 
-		if (GLOBAL_currentlyLoadedArtworks[t].awid == target) // we found current artwork...
+		if (myag.artworks[t].awid == target) // we found current artwork...
 		{
 			if (dir) // fwd
 			{
 				t += 1;
-				if (t == GLOBAL_currentlyLoadedArtworks.length)
+				if (t == myag.artworks.length)
 				{
 					t = 0;  //wrap around
-					if (SETTING_nextPageOnWrap && SETTING_pagingIndex == "pages")
+					if (myag.settings.nextPageOnWrap && myag.settings.pagingIndex == "pages")
 					{
-						GLOBAL_currentPage += 1;
-						if (GLOBAL_currentPage == GLOBAL_pagesTotal)
-							GLOBAL_currentPage = 0;
-						myag_ip_goto(GLOBAL_currentPage);
+						currentPage += 1;
+						if (currentPage == pagesTotal)
+							currentPage = 0;
+						myag.ip.goto(currentPage);
 					}
 				}
 				
@@ -181,85 +157,85 @@ function myag_av_jump(dir)
 				t -= 1;
 				if (t == -1)
 				{
-					t = GLOBAL_currentlyLoadedArtworks.length-1; //wrap around
-					if (SETTING_nextPageOnWrap && SETTING_pagingIndex == "pages")
+					t = myag.artworks.length-1; //wrap around
+					if (myag.settings.nextPageOnWrap && myag.settings.pagingIndex == "pages")
 					{
-						GLOBAL_currentPage -= 1;
-						if (GLOBAL_currentPage == -1)
-							GLOBAL_currentPage = GLOBAL_pagesTotal - 1;
-						myag_ip_goto(GLOBAL_currentPage);
-						t = GLOBAL_currentlyLoadedArtworks.length-1; // redo
+						currentPage -= 1;
+						if (currentPage == -1)
+							currentPage = pagesTotal - 1;
+						myag.ip.goto(currentPage);
+						t = myag.artworks.length-1; // redo
 					}
 				}
 				
 			}
-			aw = GLOBAL_currentlyLoadedArtworks[t];
+			aw = myag.artworks[t];
 			break;
 		}
 	}
-	myag_av_putToViewer(aw.awid);
+	myag.viewer.putToViewer(aw.awid);
 	
-}
+},
 
 /*
 button handler to hide the image viewer
 inputs: none
 output: none
 */
-function myag_av_hideViewer()
+hideViewer: function()
 {
-	if (GLOBAL_viewerState)
+	if (myag.viewer.state)
 	{
-		clearTimeout(GLOBAL_viewerToggleTimeout);
-		GLOBAL_viewerWrapperObject.style.opacity = 0;	
-		GLOBAL_viewerToggleTimeout = setTimeout(() => {
+		clearTimeout(myag.viewer.toggleTimeout);
+		myag.viewer.wrapperObject.style.opacity = 0;	
+		myag.viewer.toggleTimeout = setTimeout(() => {
 		  
-			GLOBAL_viewerWrapperObject.style.display = "none";
+			myag.viewer.wrapperObject.style.display = "none";
 		}, 300) // aaand another one
-		bmco_getParamDelete('id'); // delete the artwork GET field
-		GLOBAL_viewerState = false;
+		bmco.getParamDelete('id'); // delete the artwork GET field
+		myag.viewer.state = false;
 	}
-}
+},
 
 /*
 'full' button handler. goes to a full image view with correct GET params
 inputs: none
 output: none
 */
-function myag_av_openFullView()
+openFullView: function()
 {
-	if (GLOBAL_viewerWrapperObject == undefined)
+	if (myag.viewer.wrapperObject == undefined)
 		return null; // do nothing if the viewer has nothing loaded up
 
-	url = "./image.html?id="+GLOBAL_viewerWrapperObject.getAttribute('awid');
+	url = "./image.html?id="+myag.viewer.wrapperObject.getAttribute('awid');
 	window.location = url;
-}
+},
 
 /*
 startup function that executes on every page with a viewer enabled (index and group by default)
 inputs: none
 outputs: none
 */
-function myag_av_startup(){
+startup: function(){
 
-	GLOBAL_viewerWrapperObject = myag_av_createArtworkViewer();	
-	GLOBAL_viewerWrapperObject.style.opacity = 0;
-	GLOBAL_viewerWrapperObject.style.display = "none";
-	GLOBAL_viewerWrapperObject.setAttribute('awid', null); // stores curent artwork's id
+	myag.viewer.wrapperObject = myag.viewer.createArtworkViewer();	
+	myag.viewer.wrapperObject.style.opacity = 0;
+	myag.viewer.wrapperObject.style.display = "none";
+	myag.viewer.wrapperObject.setAttribute('awid', null); // stores curent artwork's id
 														   // as an html tag attribute.
 														   // yes i am a good programmer :D
-	var awid = bmco_getParamRead('id');
+	var awid = bmco.getParamRead('id');
 	if (awid != null)
 	{
-		myag_av_showViewer(awid);
+		myag.viewer.showViewer(awid);
 	}
 }
 
-
 //==========================================================================//
-//================================ STARTUP =================================//
+//=============================== LIBRARY END ==============================//
 //==========================================================================//
 
-myag_av_startup();
+}
 
+myag.viewer.startup();
 

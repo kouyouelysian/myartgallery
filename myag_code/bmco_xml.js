@@ -4,34 +4,35 @@
 
 /*
 pre-import requirements:
-	bmco_general.js
-
-available functions:
-	bmco_xml_xmldocFromString(text)
-	bmco_xml_xmldocToString(xmldoc) 
-	bmco_xml_xmldocTextToClipboard(xmldoc, gui=true)
-	bmco_xml_awaitXmlFromFile(fname)
-	bmco_xml_httpRequest(fname)
-	bmco_xml_nodeTextCreate(xmldoc, elem, text="")
-	bmco_xml_nodeTextWrite(xmldoc, node, text)
-	bmco_xml_nodeTextRead(node, emptyStringOnFail=true)
-	bmco_xml_childTagExists(node, tag)
-	bmco_xml_childTagGetChildren(node, tag)
-	bmco_xml_childTagGetChildrenValues(node, tag)
-	bmco_xml_childTagRead(node, tag)
-	bmco_xml_ChildTagWrite(xmldoc, node, tag, text)
-	bmco_xml_nodeGetFirstOfTag(xmldoc, nodeTag)
-	bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
-	bmco_xml_nodeAndChildrenWithTextConstruct(xmldoc, nodeTag, childTagValuePairs)
-	bmco_xml_nodeDeleteByChildTagText(xmldoc, nodeTag, childTag, value)
-	bmco_xml_nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, position)
-	bmco_xml_nodePutBefore(xmldoc, nodeTag, childTag, movedValue, targetValue)
-	bmco_xml_nodePutAfter(xmldoc, nodeTag, childTag, movedValue, targetValue)
-	bmco_xml_nodePutAtStart(xmldoc, nodeTag, childTag, movedValue)
+	bmco.js
 
 available classes:
-	bmco_TagValuePair
+	bmco.xml.TagValuePair
+
+available functions:
+	bmco.xml.xmldocFromString(text)
+	bmco.xml.xmldocToString(xmldoc) 
+	bmco.xml.xmldocTextToClipboard(xmldoc, gui=true)
+	bmco.xml.awaitXmlFromFile(fname)
+	bmco.xml.nodeTextCreate(xmldoc, elem, text="")
+	bmco.xml.nodeTextWrite(xmldoc, node, text)
+	bmco.xml.nodeTextRead(node, emptyStringOnFail=true)
+	bmco.xml.childTagExists(node, tag)
+	bmco.xml.childTagGetChildren(node, tag)
+	bmco.xml.childTagGetChildrenValues(node, tag)
+	bmco.xml.childTagRead(node, tag)
+	bmco.xml.ChildTagWrite(xmldoc, node, tag, text)
+	bmco.xml.nodeGetFirstOfTag(xmldoc, nodeTag)
+	bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
+	bmco.xml.nodeAndChildrenWithTextConstruct(xmldoc, nodeTag, childTagValuePairs)
+	bmco.xml.nodeDeleteByChildTagText(xmldoc, nodeTag, childTag, value)
+	bmco.xml.nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, position)
+	bmco.xml.nodePutBefore(xmldoc, nodeTag, childTag, movedValue, targetValue)
+	bmco.xml.nodePutAfter(xmldoc, nodeTag, childTag, movedValue, targetValue)
+	bmco.xml.nodePutAtStart(xmldoc, nodeTag, childTag, movedValue)
 */
+
+bmco.xml = {
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
@@ -41,17 +42,17 @@ available classes:
 params: tag <string> tag name
 		value <string> or <array of xml elements> tag value
 */
-class bmco_TagValuePair {
-  constructor(tag, value) {
-	this.tag = tag;
-	this.value = value;
-  }
+TagValuePair: class {
+	constructor(tag, value) {
+		this.tag = tag;
+		this.value = value;
+	}
 
-  toXmlElement(xmldoc) {
+	toXmlElement(xmldoc) {
 	var e = xmldoc.createElement(this.tag);
 	if (typeof(this.value) == "string")
 	{
-		bmco_xml_nodeTextWrite(xmldoc, e, this.value);
+		bmco.xml.nodeTextWrite(xmldoc, e, this.value);
 		return e;
 	}
 	try
@@ -64,8 +65,8 @@ class bmco_TagValuePair {
 	{
 		return null;
 	}
-  }
-}
+	}
+},
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
@@ -74,30 +75,30 @@ class bmco_TagValuePair {
 /*  Creates an XML document out of some valid text
 inputs: text <string> [text of a valid xml document]
 return: <xml document object>
- */
-function bmco_xml_xmldocFromString(text)
+*/
+xmldocFromString: function(text)
 {
 	var parser = new DOMParser();
 	var xmldoc = parser.parseFromString(text, "text/xml");
 	return xmldoc;
-}
+},
 
 /*  returns the contents of an xml document object as a string
 inputs: xmldoc <xml document object> [source xml]
 return: string;
 */
-function bmco_xml_xmldocToString(xmldoc)
+xmldocToString: function(xmldoc)
 {
 	return new XMLSerializer().serializeToString(xmldoc.documentElement);
-}
+},
 
 /*  Puts the current XML text to user's text clipboard.
 inputs: none
 outputs: <bool> [success or not]
 */
-function bmco_xml_xmldocTextToClipboard(xmldoc, gui=true)
+xmldocTextToClipboard: function(xmldoc, gui=true)
 {
-	var xml = bmco_xml_xmldocToString(xmldoc);
+	var xml = bmco.xml.xmldocToString(xmldoc);
 
 	navigator.clipboard.writeText(xml).then(() => {
 		return true;
@@ -105,51 +106,26 @@ function bmco_xml_xmldocTextToClipboard(xmldoc, gui=true)
 	.catch(err => {
 		return false;
 	});
-}
+},
 
 /*  Reads XML data from a file, returns a ready-to-use xmldoc object
 inputs: fname <string> [relative path to a file somewhere on the same server]
 return: <xml document>
 */
-async function bmco_xml_awaitXmlFromFile(fname) {
+
+awaitXmlFromFile: async function(fname) {
 	try
 	{
-		let xmlText = await bmco_xml_httpRequest(fname);
+		let xmlText = await bmco.httpRequest(fname);
 		xmlText = xmlText.replace(/>\s*/g, '>');  // Replace "> " with ">"
 		xmlText = xmlText.replace(/\s*</g, '<');  // Replace "< " with "<"
-		return bmco_xml_xmldocFromString(bmco_replaceAllInString(xmlText, /[\n\r\t]/g));
+		return bmco.xml.xmldocFromString(bmco.replaceAllInString(xmlText, /[\n\r\t]/g));
 	} 
 	catch (err)
 	{
 		console.log(err)
 	}
-}
-
-/*  Sends an http request for a file, returns its contents as a string
-inputs: fname <string> [relative path to a file somewhere on the same server]
-return: <string>
-*/
-async function bmco_xml_httpRequest(fname)
-{
-	// thank you Blunt Jackson
-	// https://overclocked.medium.com/truly-understanding-javascript-promises-await-and-async-f3f51e283554
-	var xhr = new XMLHttpRequest();
-	return new Promise(function(resolve, reject)
-	{
-		xhr.onreadystatechange = function()
-		{
-			if (xhr.readyState == 4)
-			{
-			if (xhr.status >= 300)
-				reject("Error, status code = " + xhr.status)
-			else
-				resolve(xhr.responseText);      
-			}
-		}
-		xhr.open('GET', fname, true)
-		xhr.send();
-	});
-}
+},
 
 /*  Creates an xml node with some text inside of it.
 inputs: xmldoc <xml document object> [operational xml object],
@@ -157,12 +133,12 @@ inputs: xmldoc <xml document object> [operational xml object],
 		text <string> [text to be put into its insides' text node]
 return: <xml element> [tag with some text in its insides]
 */
-function bmco_xml_nodeTextCreate(xmldoc, elem, text="")
+nodeTextCreate: function(xmldoc, elem, text="")
 {
 	var e = xmldoc.createElement(elem);
 	e.appendChild(xmldoc.createTextNode(text));
 	return e;
-}
+},
 
 /*  Writes to an xml node's insides' text
 inputs: xmldoc <xml document object> [operational xml object],
@@ -170,21 +146,21 @@ inputs: xmldoc <xml document object> [operational xml object],
 		text <string> [text to write]
 return: none
 */
-function bmco_xml_nodeTextWrite(xmldoc, node, text)
+nodeTextWrite: function(xmldoc, node, text)
 {
 	if (node.firstChild == undefined)
 	{
-		node.appendChild(xmldoc.createTextNode(bmco_HTMLEntitiesEncode(text)));
+		node.appendChild(xmldoc.createTextNode(bmco.HTMLEntitiesEncode(text)));
 		return;
 	}
-	node.firstChild.nodeValue = bmco_HTMLEntitiesEncode(text);
-}
+	node.firstChild.nodeValue = bmco.HTMLEntitiesEncode(text);
+},
 
 /*  reads from an xml node's insides' text
 inputs: node <xml element> [node to read from]
 return: <string> [node insides' text value or "" if no insides with text]
 */
-function bmco_xml_nodeTextRead(node, emptyStringOnFail=true)
+nodeTextRead: function(node, emptyStringOnFail=true)
 {
 	if (node.childNodes[0] == undefined)
 	{
@@ -194,54 +170,54 @@ function bmco_xml_nodeTextRead(node, emptyStringOnFail=true)
 			return null;
 	}
 	var text = node.childNodes[0].nodeValue;
-	return bmco_HTMLEntitiesDecode(text);
-}
+	return bmco.HTMLEntitiesDecode(text);
+},
 
 /*  tries to find the first child tag of a particular name in a parent
 node, reports the result. is used to check for fields of artwork, group, etc.
 inputs: node <xml element> [node to search children of],
 		tag <string> [name of the tag to search for]
 return: <bool> [tag exists or not]
- */
- function bmco_xml_childTagExists(node, tag)
- {
+*/
+childTagExists: function(node, tag)
+{
 	childrenOfTagName = node.getElementsByTagName(tag);
 	if (childrenOfTagName.length == 0)
 		return false;
 	return true;
- }
+},
 
- /*  tries to get children of the first child tag of a particular name in a parent
+/*  tries to get children of the first child tag of a particular name in a parent
 node, reports the result. is used to check for fields of artwork, group, etc.
 inputs: node <xml element> [node to search children of],
 		tag <string> [name of the tag to search for]
 return: <array of xml elements> or null if tag not found
- */
- function bmco_xml_childTagGetChildren(node, tag)
- {
+*/
+childTagGetChildren: function(node, tag)
+{
 	childrenOfTagName = node.getElementsByTagName(tag);
 	if (childrenOfTagName.length == 0)
 		return null;
 	return childrenOfTagName[0].childNodes;
- }
+},
 
- /*  tries to get children of the first child tag of a particular name in a parent
+/*  tries to get children of the first child tag of a particular name in a parent
 node, reports the result. is used to check for fields of artwork, group, etc.
 inputs: node <xml element> [node to search children of],
 		tag <string> [name of the tag to search for]
 return: <array of xml elements> or null if tag not found
- */
- function bmco_xml_childTagGetChildrenValues(node, tag)
- {
+*/
+childTagGetChildrenValues: function(node, tag)
+{
 	childrenOfTagName = node.getElementsByTagName(tag);
 	if (childrenOfTagName.length == 0)
 		return null;
 	var children = childrenOfTagName[0].childNodes;
 	var values = [];
 	for (var x = 0; x < children.length; x++)
-		values.push(bmco_xml_nodeTextRead(children[x]));
+		values.push(bmco.xml.nodeTextRead(children[x]));
 	return values;
- }
+},
 
 
 /*  tries to find and read the first child tag of a particular name in a parent
@@ -249,44 +225,44 @@ node. null on fail. is used to access fields of artwork, group, etc.
 inputs: node <xml element> [node to search children of],
 		tag <string> [name of the tag to search for]
 return: <string> [tag's text contents] or null [if no tag]
- */
- function bmco_xml_childTagRead(node, tag)
- {
+*/
+childTagRead: function(node, tag)
+{
 	childrenOfTagName = node.getElementsByTagName(tag);
 	if (childrenOfTagName.length == 0)
 		return null;
-	return bmco_xml_nodeTextRead(childrenOfTagName[0]);
- }
+	return bmco.xml.nodeTextRead(childrenOfTagName[0]);
+},
 
- /*  tries to find and write to the first child tag of a particular name in a parent
+/*  tries to find and write to the first child tag of a particular name in a parent
 node. null on fail. is used to alter fields of artwork, group, etc.
 inputs: xmldoc <xml document> [operated xml document object],
 		node <xml element> [node to search children of],
 		tag <string> [name of the tag to search for],
 		text <string> [text to be written into specified node child tag insides]
 return: none
- */
- function bmco_xml_ChildTagWrite(xmldoc, node, tag, text)
- {
+*/
+ChildTagWrite: function(xmldoc, node, tag, text)
+{
 	childrenOfTagName = node.getElementsByTagName(tag);
 	if (childrenOfTagName.length == 0)
 		return null;
 	target = childrenOfTagName[0];
-	bmco_xml_nodeTextWrite(xmldoc, target, text);
- }
+	bmco.xml.nodeTextWrite(xmldoc, target, text);
+},
 
 /*  Fetches the first found instance of a given tag in an xml document
 inputs: xmldoc <xml document object> [operational xml object],
 		nodeTag <string> [name of the target parent tag]
 return: <xml element> or null if not found
 */
-function bmco_xml_nodeGetFirstOfTag(xmldoc, nodeTag)
+nodeGetFirstOfTag: function(xmldoc, nodeTag)
 {
 	var tags = xmldoc.getElementsByTagName(nodeTag);
 	if (!tags)
 		return null;
 	return tags[0];
-}
+},
 
 /*  Fetches the first found instance of a tag in an xml document which has
 a child tag with some particular inner text value. Null on fail.
@@ -296,31 +272,31 @@ inputs: xmldoc <xml document object> [operational xml object],
 		value <string> [value of childTag to match for]
 return: <xml element> or null if not found
 */
-function bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
+nodeGetByChildTagValue: function(xmldoc, nodeTag, childTag, value)
 {
 	var tags = xmldoc.getElementsByTagName(nodeTag);
 	for (var t = 0; t < tags.length; t++)
 	{
-		if (bmco_xml_childTagRead(tags[t], childTag) == value)
+		if (bmco.xml.childTagRead(tags[t], childTag) == value)
 			return tags[t];
 	}
 	return null;
-}
+},
 
 /*  Constructs an XML node with child nodes filled with some values
 inputs: xmldoc <xml document object> [operational xml object],
 		nodeTag <string> [name of the returned tag],
-		childTagValuePairs <array of bmco_TagValuePair instances> [descriptions of 
+		childTagValuePairs <array of bmco.xml.TagValuePair instances> [descriptions of 
 			child nodes to be appended]
 return: <xml element> nodeTag node with specified child nodes appended
 */
-function bmco_xml_nodeAndChildrenWithTextConstruct(xmldoc, nodeTag, childTagValuePairs)
+nodeAndChildrenWithTextConstruct: function(xmldoc, nodeTag, childTagValuePairs)
 {
 	var node = xmldoc.createElement(nodeTag);
 	for (var x = 0; x < childTagValuePairs.length; x++)
 		node.appendChild(childTagValuePairs[x].toXmlElement(xmldoc));
 	return node;
-}
+},
 
 /*  Delete the first found instance of a tag in an xml document which has
 a child tag with some particular inner text value.
@@ -330,11 +306,11 @@ inputs: xmldoc <xml document object> [operational xml object],
 		value <string> [value of childTag to match for]
 return: none
 */
-function bmco_xml_nodeDeleteByChildTagText(xmldoc, nodeTag, childTag, value)
+nodeDeleteByChildTagText: function(xmldoc, nodeTag, childTag, value)
 {
-	var target = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value);
+	var target = bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value);
 	target.parentNode.removeChild(target);
-}
+},
 
 /*  Used for reordering tags of the same name inside a parent tag. Moves one tag of some name
 before or after another of the same name, locating by their child tags' values.
@@ -346,22 +322,22 @@ inputs: xmldoc <xml document object> [operational xml object],
 		position <string "before" or "after"> [desired position relative to target tag]
 return: none
 */
-function bmco_xml_nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, position)
+nodePutTo: function(xmldoc, nodeTag, childTag, movedValue, targetValue, position)
 {
 	if (targetValue == "start")
-		bmco_xml_nodePutAtStart(xmldoc, nodeTag, childTag, movedValue);
+		bmco.xml.nodePutAtStart(xmldoc, nodeTag, childTag, movedValue);
 	else
 	{
-		var moved = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
-		var target = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, targetValue);
+		var moved = bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
+		var target = bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, targetValue);
 		if (position == "after")
 			moved.parentNode.insertBefore(moved, target.nextSibling);
 		else if (position == "before")
 			moved.parentNode.insertBefore(moved, target);
 	}	
-}
+},
 
-/*  "after" bmco_xml_nodePutTo wrapper
+/*  "after" bmco.xml.nodePutTo wrapper
 inputs: xmldoc <xml document object> [operational xml object],
 		nodeTag <string> [name of the target parent tag]
 		childTag <string> [name of the child tags whose value are being considered],
@@ -369,12 +345,12 @@ inputs: xmldoc <xml document object> [operational xml object],
 		targetValue <string> [value of childTag belonging to the nodeTag we're putting the other one after]
 return: none
 */
-function bmco_xml_nodePutAfter(xmldoc, nodeTag, childTag, movedValue, targetValue)
+nodePutAfter: function(xmldoc, nodeTag, childTag, movedValue, targetValue)
 {
-	bmco_xml_nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, "after");
-}
+	bmco.xml.nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, "after");
+},
 
-/*  "before" bmco_xml_nodePutTo wrapper
+/*  "before" bmco.xml.nodePutTo wrapper
 inputs: xmldoc <xml document object> [operational xml object],
 		nodeTag <string> [name of the target parent tag]
 		childTag <string> [name of the child tags whose value are being considered],
@@ -382,10 +358,10 @@ inputs: xmldoc <xml document object> [operational xml object],
 		targetValue <string> [value of childTag belonging to the nodeTag we're putting the other one after]
 return: none
 */
-function bmco_xml_nodePutBefore(xmldoc, nodeTag, childTag, movedValue, targetValue)
+nodePutBefore: function(xmldoc, nodeTag, childTag, movedValue, targetValue)
 {
-	bmco_xml_nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, "before");
-}
+	bmco.xml.nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, "before");
+},
 
 /*  Used for reordering tags of the same name inside a parent tag. Moves a tag of some name
 	to the beginning of its parent tag (before all its other children).
@@ -395,11 +371,11 @@ inputs: xmldoc <xml document object> [operational xml object],
 		movedValue <string> [value of childTag belonging to the moved nodeTag]
 return: none
 */
-function bmco_xml_nodePutAtStart(xmldoc, nodeTag, childTag, movedValue)
+nodePutAtStart: function(xmldoc, nodeTag, childTag, movedValue)
 {
-	var moved = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
+	var moved = bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
 	moved.parentNode.prepend(moved);
-}
+},
 
 /*  Used for reordering tags of the same name inside a parent tag. Moves a tag of some name
 	to the end of its parent tag (after all its other children).
@@ -409,11 +385,17 @@ inputs: xmldoc <xml document object> [operational xml object],
 		movedValue <string> [value of childTag belonging to the moved nodeTag]
 return: none
 */
-function bmco_xml_nodePutAtEnd(xmldoc, nodeTag, childTag, movedValue)
+nodePutAtEnd: function(xmldoc, nodeTag, childTag, movedValue)
 {
-	var moved = bmco_xml_nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
+	var moved = bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, movedValue);
 	moved.parentNode.append(moved);
-}
+},
+
+//==========================================================================//
+//=============================== LIBRARY END ==============================//
+//==========================================================================//
+
+};
 
 
 

@@ -5,158 +5,32 @@
 /*
 pre-import requirements:
   myag_main.js
+  settings.js (in myag_user/)
 */
 
-//==========================================================================//
-//================================ CONSTANTS ===============================//
-//==========================================================================//
-
+myag.panel = {
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-
-/* Creates an appendable div based on an Artwork instance
-inputs: aw <Artwork> [an Artwork class instance to be visualized]
-returns: <DOM element>
-*/
-function myag_ip_generateArtworkDiv(aw, action=undefined, overlayText=undefined)
-{
-	var div = document.createElement("div");
-	div.classList.add("artwork");
-	div.setAttribute("artworkId", aw.awid);
-
-	var onclick = action;
-	if (onclick == undefined)
-		myag_isEditor() ? onclick = "myag_ed_showItemMenu('"+aw.awid+"', event)" : onclick = "myag_av_showViewer('"+aw.awid+"')";
-	div.setAttribute("onclick", onclick);
-	
-	var displayFile = aw.thumbnail;
-	if (displayFile == undefined)
-		displayFile = aw.filename;
-	if (displayFile != undefined)
-	{
-		var img = document.createElement("img");
-		if (SETTING_remoteImageHost == null)
-			img.setAttribute("src", GLOBAL_artworksFolder+displayFile);
-		else
-			img.setAttribute("src", SETTING_remoteImageHost +"/"+ GLOBAL_artworksFolder+displayFile);
-		img.classList.add("artworkImg");
-		//img.setAttribute("onclick", onclick);
-		div.appendChild(img);
-	}
-
-	if (overlayText != undefined)
-	{
-		var para = document.createElement("p");
-		para.innerHTML = overlayText;
-		div.appendChild(para);
-	}
-	
-
-	return div;
-}
-
-/* Creates an appendable locator div based on an Artwork instance. Is needed
-for the XML editor page, unused in the main page itself.
-inputs: aw <Artwork> [an Artwork class instance to be visualized]
-returns: <DOM element>
-*/
-function myag_ip_generateArtworkLocatorDiv(aw=undefined)
-{
-	var locatorWrapper = document.createElement("div");
-	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperArtwork");
-	locatorWrapper.setAttribute("artworkId", aw.awid);
-
-
-	var locator = document.createElement("div");
-	locator.classList.add("locator");
-	locator.setAttribute("title", "Insert artwork here")
-	if (aw.awid==undefined)
-		locator.setAttribute("onclick", "myag_ed_putArtworkAfter('start')");
-	else
-		locator.setAttribute("onclick", "myag_ed_putArtworkAfter('"+aw.awid+"')");
-
-	locatorWrapper.appendChild(locator);
-
-	return locatorWrapper;
-}
-
-/* generates and appends a single artwork to a target.
-inputs: aw <Artwork> [source Artwork instance], target <html element> [append target element],
-		mode <string> [append mode. 'appendChild', 'prepend' or 'insertAfter']
-return: appended artwork div <html element>
-*/
-function myag_ip_appendSingleArtwork(aw, target, mode="appendChild", action=undefined, text=undefined)
-{
-	var artwork = myag_ip_generateArtworkDiv(aw, action, text);
-	var locator = myag_ip_generateArtworkLocatorDiv(aw);
-	myag_appendToGridMode(artwork, locator, target, mode);
-	return artwork;
-}
-
-/* processes an array of Artwork class instances and appends them to the target div wrapper
-inputs: as <array of Artwork objects>
-		start <int> [start loading from this 'as' index]
-		end <int> [stop loading when this 'as' index encountered]
-		renew <bool> [true=rebuild GLOBAL_currentlyLoadedArtworks, false=add to GLOBAL_currentlyLoadedArtworks]
-		target <string> [target div id]
-return: none
-*/
-function myag_ip_appendArworksRange(as, start, end, renew=true, target="artworksWrapper")
-{
-	// validate start/end
-	if ((start < 0) || (start > as.length) || (end <= start))
-	{
-		db("invalid start/end args: "+String(start)+","+String(end))
-	}
-   
-	if (end > as.length) // end more than length is OK - gets clipped
-		end = as.length;
-
-	// find and validate append target
-	var t = document.getElementById(target);
-
-	if (t == undefined)
-	{
-		db("myag_ip_appendArworksRange: no target "+target+" found");
-		return;
-	}
-
-	if (renew)
-	{
-		displayedArtworks = document.getElementsByClassName("artwork");
-		while(displayedArtworks.length > 0){
-        	displayedArtworks[0].parentNode.removeChild(displayedArtworks[0]);
-    	}
-    	GLOBAL_currentlyLoadedArtworks = as.slice(start,end);
-	}
-	else
-		GLOBAL_currentlyLoadedArtworks = GLOBAL_currentlyLoadedArtworks.concat(as.slice(start,end))
-	
-
-	for (var c = start; c < end; c++)	 
-		myag_ip_appendSingleArtwork(as[c], t);
-}
-
-/* pagination-type-minding wrapper for myag_ip_appendArworksRange.
+/* pagination-type-minding wrapper for myag.ip.appendArworksRange.
 inputs: as <Artwork object array> [array of loaded Artwork objects], 
 		type <string> [pagination type -- either "none", "append" or "pages"]
 		reverse <bool> [should the artworks be loaded up in reverse order or not]
 		target <string> [parent to append pagination to]
 return: whatever the called functions return (supposed none) */
-function myag_ip_appendArworks(as, type="none", reverse=false, target="artworksWrapper")
+appendArworks: function(as, type="none", reverse=false, target="artworksWrapper")
 {
 	if (type == "none")
-		return myag_ip_appendArworksRange(as, 0, as.length, true, target)
+		return myag.ip.appendArworksRange(as, 0, as.length, true, target)
 	else if (type == "append")
-		return myag_ip_appendArworksRange(as, 0, as.length, false, target)
+		return myag.ip.appendArworksRange(as, 0, as.length, false, target)
 	else if (type == "pages")
-		return myag_ip_appendArworksRange(as, GLOBAL_currentPage*GLOBAL_artworksPerPage, (GLOBAL_currentPage+1)*GLOBAL_artworksPerPage, true, target)
-}
+		return myag.ip.appendArworksRange(as, myag.currentPage*myag.artworksPerPage, (myag.currentPage+1)*myag.artworksPerPage, true, target)
+},
 
-/* 'switch function' to initialize the panel. called from myag_index.js and myag_group.js
+/* 'switch function' to initialize the panel. called from myag.index.js and myag.group.js
 to start things up.
 inputs: artworks <Artwork object array> [array of loaded Artwork objects],
 		type <string> [pagination type -- either "none", "append" or "pages"]
@@ -164,16 +38,16 @@ inputs: artworks <Artwork object array> [array of loaded Artwork objects],
 		target <string> [parent to append pagination to]
 return: whatever the called functions return (supposed none)
 */
-function myag_ip_initArtworks(as, type="none", reverse=false, target="artworksWrapper")
+initArtworks: function(as, type="none", reverse=false, target="artworksWrapper")
 {
 	if (type == "none")
-		return myag_ip_appendArworksRange(as, 0, as.length, true, target);
+		return myag.ip.appendArworksRange(as, 0, as.length, true, target);
 	else
 	{
-		GLOBAL_artworksPerPage = SETTING_rowsPerPage * myag_ip_getArtworksPerRow();
-		return myag_ip_addPagination(as, type);
+		myag.artworksPerPage = myag.settings.rowsPerPage * myag.ip.getArtworksPerRow();
+		return myag.ip.addPagination(as, type);
 	}
-}
+},
 
 /* 'switch function' to generate the selected pagination type elements and so on
 inputs: artworks <Artwork object array> [array of loaded Artwork objects],
@@ -181,7 +55,7 @@ inputs: artworks <Artwork object array> [array of loaded Artwork objects],
 		target <string> [parent to append pagination to]
 return: none
 */
-function myag_ip_addPagination(artworks, type, target="artworksWrapper")
+addPagination: function(artworks, type, target="artworksWrapper")
 {
   if (type == "none")
     return
@@ -191,30 +65,30 @@ function myag_ip_addPagination(artworks, type, target="artworksWrapper")
     t = document.getElementById(target);
     if (t == null)
     {
-      db("myag_addPagination: target div "+target+" not found");
+      db("myag.addPagination: target div "+target+" not found");
       return;
     }
 
-    GLOBAL_pagesTotal = Math.ceil(artworks.length / GLOBAL_artworksPerPage);
+    myag.pagesTotal = Math.ceil(artworks.length / myag.artworksPerPage);
 
     if (type == "pages")
-    	myag_ip_makePaginationPages(artworks, t);
+    	myag.ip.makePaginationPages(artworks, t);
     else if (type == "append")
-		myag_ip_makePaginationAppend(artworks, t);
+		myag.ip.makePaginationAppend(artworks, t);
 
-    GLOBAL_usedPaginationType = type;
+    myag.usedPaginationType = type;
 
-    window.dispatchEvent(myag_ip_awLoaded);
+    window.dispatchEvent(myag.ip.awLoaded);
 
   }
-}
+},
 
 /* generates the page-style pagination (tumblr-style default option) and loads up the first page
 inputs: artworks <Artwork object array> [array of loaded Artwork objects]
 		parent <DOM element> [parent to append pagination to]
 return: none
 */
-function myag_ip_makePaginationPages(artworks, parent)
+makePaginationPages: function(artworks, parent)
 {
     pagination = document.createElement("div");
     pagination.id = "paginationPages";
@@ -222,20 +96,20 @@ function myag_ip_makePaginationPages(artworks, parent)
     prev = document.createElement("p");
     prev.innerHTML = "&lt;";
     prev.classList.add("paginationArrow");
-    prev.setAttribute("onclick", "myag_ip_prev()");
+    prev.setAttribute("onclick", "myag.ip.prev()");
     next = document.createElement("p");
     next.innerHTML = "&gt;";
     next.classList.add("paginationArrow");
-    next.setAttribute("onclick", "myag_ip_next()");
+    next.setAttribute("onclick", "myag.ip.next()");
       
 
     pagination.appendChild(prev);
-    for (x=0; x<GLOBAL_pagesTotal; x++)
+    for (x=0; x<myag.pagesTotal; x++)
     {
     	var temp = document.createElement("p");
     	temp.innerHTML = String(x+1);
     	temp.classList.add("paginationPageLink");
-    	temp.setAttribute("onclick", "myag_ip_goto("+String(x)+")");
+    	temp.setAttribute("onclick", "myag.ip.goto("+String(x)+")");
     	pagination.appendChild(temp);
     }
     pagination.appendChild(next);
@@ -244,47 +118,47 @@ function myag_ip_makePaginationPages(artworks, parent)
 
     getPage = bmco_getParamRead("page");
     if (getPage == null)
-    	myag_ip_goto(0, generateGetParam=false);
+    	myag.ip.goto(0, generateGetParam=false);
     else
     {
     	getPage = parseInt(getPage);
      	if (getPage == NaN)
-      		myag_ip_goto(0, generateGetParam=false);
+      		myag.ip.goto(0, generateGetParam=false);
     	else
-    		myag_ip_goto(getPage);
+    		myag.ip.goto(getPage);
     }
-}
+},
 
 /* Function to load Nth page for 'pages' style pagination
 inputs: n <int> [page number, gets validated inside the function]
 		generateGetParam <bool> [if the function should update url's GET to contian the page number]
 return: none
 */
-function myag_ip_goto(n, generateGetParam=true)
+goto: function(n, generateGetParam=true)
 {
 
  	// validate stuff
- 	if ((n < 0) || (n > GLOBAL_pagesTotal))
+ 	if ((n < 0) || (n > myag.pagesTotal))
  	{
-		db("myag_ip_goto: page number "+String(n)+" out of bounds");
+		db("myag.ip.goto: page number "+String(n)+" out of bounds");
     	return;
 	}
 
 	page = parseInt(n);
 	if (page == NaN)
 	{
-		db("myag_ip_goto: page number arg "+String(n)+" is not integer");
+		db("myag.ip.goto: page number arg "+String(n)+" is not integer");
 		return;
 	}
 
-	GLOBAL_currentPage = page; 
-	myag_ip_appendArworks(GLOBAL_loadedArtworks, type="pages");	
+	myag.currentPage = page; 
+	myag.ip.appendArworks(myag.loadedArtworks, type="pages");	
 
  	pageLinks = document.getElementsByClassName("paginationPageLink");
 
 	for (x=0; x<pageLinks.length; x++)
 	{
-		if (x == GLOBAL_currentPage)
+		if (x == myag.currentPage)
 			pageLinks[x].classList.add("paginationPageSelected");
 		else
 			pageLinks[x].classList.remove("paginationPageSelected");
@@ -293,60 +167,60 @@ function myag_ip_goto(n, generateGetParam=true)
 	arrows = document.getElementsByClassName("paginationArrow");
 	arrows[0].style.removeProperty("color");
 	arrows[1].style.removeProperty("color");
-	if (GLOBAL_currentPage == 0)
+	if (myag.currentPage == 0)
 		arrows[0].style.color = "var(--col-body)";
-	if (GLOBAL_currentPage == GLOBAL_pagesTotal - 1)
+	if (myag.currentPage == myag.pagesTotal - 1)
 		arrows[1].style.color = "var(--col-body)";
 
 
 	if (generateGetParam)
-		bmco_getParamWrite("page", GLOBAL_currentPage);
+		bmco_getParamWrite("page", myag.currentPage);
   
-}
+},
 
-/* special case of myag_ip_goto() - go to next page relatively to the currently loaded one
+/* special case of myag.ip.goto() - go to next page relatively to the currently loaded one
 inputs: none
 return: none 
 */
-function myag_ip_next()
+next: function()
 {
-	if (GLOBAL_currentPage + 1 == GLOBAL_pagesTotal)
+	if (myag.currentPage + 1 == myag.pagesTotal)
 		return;
-	myag_ip_goto(GLOBAL_currentPage + 1);
-}
+	myag.ip.goto(myag.currentPage + 1);
+},
 
-/* special case of myag_ip_goto() - go to previous page relatively to the currently loaded one
+/* special case of myag.ip.goto() - go to previous page relatively to the currently loaded one
 inputs: none
 return: none 
 */
-function myag_ip_prev()
+prev: function()
 {
-	if (GLOBAL_currentPage == 0)
+	if (myag.currentPage == 0)
 		return;
-	myag_ip_goto(GLOBAL_currentPage - 1);
+	myag.ip.goto(myag.currentPage - 1);
 
-}
+},
 
 /* create pagination for a twitter-style manually-appending pagination
 inputs: artworks <Artwork object array> [array of loaded Artwork objects]
 		parent <DOM element> [parent to append pagination to]
 return: none
 */
-function myag_ip_makePaginationAppend(artworks, parent)
+makePaginationAppend: function(artworks, parent)
 {
 	button = document.createElement("div");
 	button.id = "paginationMoreTrigger";
 	parent.parentNode.insertBefore(button, parent.nextSibling);
 
-	myag_ip_appendArworksRange(artworks, 0, GLOBAL_artworksPerPage, true);
+	myag.ip.appendArworksRange(artworks, 0, myag.artworksPerPage, true);
 
-	document.addEventListener('scroll', myag_ip_loadMore);
-	const t = setTimeout(myag_ip_loadMore, 100); // prevents a "screen with one row stuck forever" cornercase
+	document.addEventListener('scroll', myag.ip.loadMore);
+	const t = setTimeout(myag.ip.loadMore, 100); // prevents a "screen with one row stuck forever" cornercase
 												 // a bit crutchy... i will figure a better way someday.
 
-}
+},
 
-function myag_ip_loadAllowed()
+loadAllowed: function()
 {
 	target = document.getElementById("paginationMoreTrigger");
 	if (window.scrollY+window.innerHeight-250 >= target.getBoundingClientRect().top)
@@ -354,32 +228,38 @@ function myag_ip_loadAllowed()
 	if (target.getBoundingClientRect().top <= window.innerHeight)
 		return true;
 	return false;
-}
+},
 
 /* append another "page" of artworks to the already loaded ones.
 inputs: none
 return: none
 */
-function myag_ip_loadMore()
+loadMore: function()
 {
 	
-	if (myag_ip_loadAllowed())
+	if (myag.ip.loadAllowed())
 	{
-		GLOBAL_currentPage += 1;
-		myag_ip_appendArworksRange(GLOBAL_loadedArtworks, GLOBAL_currentPage*GLOBAL_artworksPerPage, (GLOBAL_currentPage+1)*GLOBAL_artworksPerPage, false);
-		if (GLOBAL_currentPage >= GLOBAL_pagesTotal-1) // remove the button if we loaded everything
+		myag.currentPage += 1;
+		myag.ip.appendArworksRange(myag.loadedArtworks, myag.currentPage*myag.artworksPerPage, (myag.currentPage+1)*myag.artworksPerPage, false);
+		if (myag.currentPage >= myag.pagesTotal-1) // remove the button if we loaded everything
 		{
-			document.removeEventListener('scroll', myag_ip_loadMore);
+			document.removeEventListener('scroll', myag.ip.loadMore);
 			document.getElementById("paginationMoreTrigger").remove();
 		}
 	}
-}
+},
 
 /* get the user-set number of artworks per row, now using a less dirty hack
 inputs: none
 return: <integer> int-parsed value of the --artworks-per-row CSS variable
 */
-function myag_ip_getArtworksPerRow()
+getArtworksPerRow: function()
 {
 	return parseInt(getComputedStyle(document.body).getPropertyValue('--artworks-per-row'));
+},
+
+//==========================================================================//
+//=============================== LIBRARY END ==============================//
+//==========================================================================//
+
 }

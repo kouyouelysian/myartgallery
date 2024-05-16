@@ -4,61 +4,104 @@
 
 /*
 pre-import requirements:
-  bmco_general.js
-  bmco_xml.js
+	bmco.js
+	bmco_xml.js
 */
+
+var myag = {
 
 //==========================================================================//
 //================================ GLOBAL VARS =============================//
 //==========================================================================//
 
-GLOBAL_debug = true;
-GLOBAL_workingFile = "./myag_files/data.xml";
-GLOBAL_artworksFolder = "myag_artworks/"
-GLOBAL_loadedData = undefined;
-GLOBAL_loadedArtworks = undefined;
-GLOBAL_currentlyLoadedArtworks = [];
-GLOBAL_currentPage = 0;
-GLOBAL_pagesTotal = null;
-GLOBAL_usedPaginationType = "none";
-GLOBAL_artworksPerPage = null;
-
-const myag_xmlLoaded = new CustomEvent("xmlFileLoaded");
-const myag_ip_gLoaded = new CustomEvent("myag_ip_gLoaded");
-const myag_ip_awLoaded = new CustomEvent("initialArtworksLoaded");
+debug: true,
+workingFile: "myag_files/data.xml",
+artworksFolder: "myag_artworks/",
+loadedData: undefined,
+loadedArtworks: undefined,
+isEditor: bmco.bodyAttributeExists("isEditor"),
+navigation: {
+	mode: "none",
+	page: 0,
+	pagesTotal: undefined,
+	artworksPerPage: undefined
+},
+events: {
+	xmlLoaded: new CustomEvent("xmlFileLoaded"),
+	panelGroupsLoaded: new CustomEvent("groupsLoaded"),
+	panelArtworksLoaded: new CustomEvent("artworksLoaded"),
+},
 
 //==========================================================================//
 //=============================== CLASSES ==================================//
 //==========================================================================//
 
 
-class Group {
-  constructor(gid, name, about) {
-    this.gid = gid;
-    this.name = name;
-    this.about = about;
-  }
-}
+Group: class{
+	constructor(gid=undefined, name=undefined, about=undefined) {
+		this.gid = gid;
+		this.name = name;
+		this.about = about;
+	}
 
-class Artwork {
-  constructor(awid, name, filename, about, groups, thumbnail=undefined) {
-    this.awid = awid;
-    this.name = name;
-    this.filename = filename;
-    this.about = about;
-    this.groups = groups;
-    this.thumbnail = thumbnail;
-  }
+	fillFromXmlTag(tag) {
+		this.gid = bmco.xml.childTagRead(tag, "gid");;
+		this.name = bmco.xml.childTagRead(tag, "name");;
+		this.about = bmco.xml.childTagRead(tag, "about");;
 
-  ingroup(gid) {
-    for (var x = 0; x < this.groups.length; x++)
-    {
-      if (this.groups[x] == gid)
-        return true;
-    }
-    return false;
-  }
-}
+	}
+
+	toXmlTag(xmldoc) {
+		var gElement = xmldoc.createElement("artwork");
+		gElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "gid", this.gid));
+		gElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "name", this.name));
+		gElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "about", this.about));
+		return gElement;
+	}
+},
+
+Artwork: class{
+	constructor(awid=undefined, name=undefined, filename=undefined, about=undefined, groups=[], thumbnail=undefined) {
+		this.awid = awid;
+		this.name = name;
+		this.filename = filename;
+		this.about = about;
+		this.groups = groups;
+		this.thumbnail = thumbnail;
+	}
+
+	fillFromXmlTag(tag) {
+		this.awid = bmco.xml.childTagRead(tag, "awid");
+		this.name = bmco.xml.childTagRead(tag, "name");
+		this.filename = bmco.xml.childTagRead(tag, "filename");
+		this.about = bmco.xml.childTagRead(tag, "about");
+		this.thumbnail = bmco.xml.childTagRead(tag, "thumbnail");
+		var ingroups = bmco.xml.childTagGetChildren(tag, "ingroups");
+		for (var g of ingroups)
+			this.groups.push(bmco.xml.nodeTextRead(g));
+	}
+
+	toXmlTag(xmldoc) {
+		var awElement = xmldoc.createElement("artwork");
+		awElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "awid", this.awid));
+		awElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "name", this.name));
+		awElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "filename", this.filename));
+		awElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "about", this.about));
+		awElement.appendChild(bmco.xml.nodeTextCreate(xmldoc, "groups", this.groups));
+		return awElement;
+	}
+
+	isInGroup(gid) {
+		if (!this.groups)
+			return false;
+		for (var x = 0; x < this.groups.length; x++)
+		{
+			if (this.groups[x] == gid)
+				return true;
+		}
+		return false;
+	}
+},
 
 
 //==========================================================================//
@@ -67,276 +110,162 @@ class Artwork {
 
 /* Literally what it says. Is used in some hover-blocking shenanigans.
 */
-function myag_doNothing()
+doNothing: function()
 {
-  return;
-}
+	return;
+},
 
-/* Lazy check if the current location is index.html to alter load-ups
-inputs: none
-return: bool
-*/
-function myag_isEditor()
-{
-  if (document.body.getAttribute('isEditor') != null)
-    return true;
-  if (window.location.toString().search("editor.html") != -1)
-    return true;
-  if (window.location.toString().split("/").reverse()[0] == "editor")
-    return true;
-  return false;
-}
+
+
 
 /* Appends a div to target, another one after it if the editor is open.
 Is a base function for stuff in panel and index script files.
 inputs: elem <html element> [element to add in all cases],
-        elemIfEditor <html element> [element to add if page is editor.html],
-        target <html element> [target element],
-        mode <string = "appendChild", "insertAfter" or "prepend"> [function mode]
+				elemIfEditor <html element> [element to add if page is editor.html],
+				target <html element> [target element],
+				mode <string = "appendChild", "insertAfter" or "prepend"> [function mode]
 return: none
 */
-function myag_appendToGridMode(elem, elemIfEditor, target, mode)
+appendToGridMode: function(elem, elemIfEditor, target, mode)
 {
-  if (mode == "appendChild")
-  {
-    target.appendChild(elem);
-    if (myag_isEditor())
-      target.appendChild(elemIfEditor);
-  }
-  else if (mode == "insertAfter")
-  {
-    target.parentNode.insertBefore(elem, target.nextSibling);
-    if (myag_isEditor())
-      target.parentNode.insertBefore(elemIfEditor, target.nextSibling.nextSibling);
-  }
-  else if (mode == "prepend")
-  {
-    
-    if (myag_isEditor())
-      target.prepend(elemIfEditor);
-    target.prepend(elem);
-  }
-}
+	if (mode == "appendChild")
+	{
+		target.appendChild(elem);
+		if (myag.isEditor)
+			target.appendChild(elemIfEditor);
+	}
+	else if (mode == "insertAfter")
+	{
+		target.parentNode.insertBefore(elem, target.nextSibling);
+		if (myag.isEditor)
+			target.parentNode.insertBefore(elemIfEditor, target.nextSibling.nextSibling);
+	}
+	else if (mode == "prepend")
+	{
+		
+		if (myag.isEditor)
+			target.prepend(elemIfEditor);
+		target.prepend(elem);
+	}
+},
 
 
 /*
-debug logger function. set GLOBAL_debug to true if you want some console garbage.
+debug logger function. set myag.debug to true if you want some console garbage.
 handy for building stuff.
 inputs: arg (anything) - to be displayed
 outputs: none
 */
-function db(arg) {
-  if (GLOBAL_debug)
-    console.log(arg);
-}
+db: function(arg) {
+	if (myag.debug)
+		console.log(arg);
+},
 
 /* makes an id base string
 inputs: none
 outputs: id string base
 */
-function myag_makeIdBase()
+makeIdBase: function()
 {
-  return bmco_timestamp()+"_"+bmco_randString(5);
-}
+	return bmco.timestamp()+"_"+bmco.randString(5);
+},
 
 /*
 makes an artwork id (awid) string
 inputs: none
 output: correct awid
 */
-function myag_makeAwid()
+makeAwid: function()
 {
-  return "aw_"+String(Date.now())+"_"+bmco_randString(5);
-}
+	return "aw_"+String(Date.now())+"_"+bmco.randString(5);
+},
 
 /*
 makes a group id string
 inputs: none
 output: correct gid 
 */
-function myag_makeGid()
+makeGid: function()
 {
-  return "g_"+String(Date.now())+"_"+bmco_randString(5);
-}
+	return "g_"+String(Date.now())+"_"+bmco.randString(5);
+},
 
 
 /* tells if the provided string is a valid id string base
 inputs: arg <string> [string to test]
 output: <bool> [if it is a valid id base]
 */
-function myag_isIdBase(arg)
+isIdBase: function(arg)
 {
-  var timestamp = arg.substr(0,13);
-  var underscore = arg.substr(13,1);
-  var rands = arg.substr(14); 
+	var timestamp = arg.substr(0,13);
+	var underscore = arg.substr(13,1);
+	var rands = arg.substr(14); 
 
-  if (isNaN(timestamp))
-    return false;
-  if (underscore != "_")
-    return false;
-  if (rands.length != 5)
-    return false;
+	if (isNaN(timestamp))
+		return false;
+	if (underscore != "_")
+		return false;
+	if (rands.length != 5)
+		return false;
 
-  return true;
-}
+	return true;
+},
 
 /* tells if the provided string is a valid awid
 inputs: awid <string> [string to test]
 output: <bool> [if it is a valid artwork id]
 */
-function myag_isAwid(awid)
+isAwid: function(awid)
 {
-  var header = awid.substr(0,3);
-  var base = awid.substr(3);
-  if (header != "aw_")
-    return false;
-  if (!myag_isIdBase(base))
-    return false;
-  return true;
-}
+	var header = awid.substr(0,3);
+	var base = awid.substr(3);
+	if (header != "aw_")
+		return false;
+	if (!myag.isIdBase(base))
+		return false;
+	return true;
+},
 
 /* tells if the provided string is a valid gid
 inputs: gid <string> [string to test]
 output: <bool> [if it is a valid group id]
 */
-function myag_isGid(gid)
+isGid: function(gid)
 {
-  var header = gid.substr(0,2);
-  var base = gid.substr(2);
-  if (header != "g_")
-    return false;
-  if (!myag_isIdBase(base))
-    return false;
-  return true;
-}
-
-/*
-checks if GLOBAL_loadedData is undefined. If it is - loads the XML data file.
-you have to WAIT FOR THIS FUNCTION in other functions!!! (welcome to async hell)
-inputs: none
-outputs: none
-*/
-async function myag_checkXmlLoaded() {
-
-  if (GLOBAL_loadedData == undefined)
-  {
-    await myag_waitForXml();
-  }
-  return;
-}
-// part of myag_checkXmlLoaded - waits for the xhr to come back
-async function myag_waitForXml() {
-
-  try {
-    let xmlText = await myag_promiseXml()
-    xmlText = xmlText.replace(/>\s*/g, '>');  // Replace "> " with ">"
-    xmlText = xmlText.replace(/\s*</g, '<');  // Replace "< " with "<"
-    GLOBAL_loadedData = bmco_replaceAllInString(xmlText, /[\n\r\t]/g);
-    window.dispatchEvent(myag_xmlLoaded);
-    return;
-  } catch (err) {
-    console.log(err)
-  }
-}
-// part of myag_checkXmlLoaded - sends an xhr and promises to myag_waitForXml it will come back
-// thank you Blunt Jackson
-// https://overclocked.medium.com/truly-understanding-javascript-promises-await-and-async-f3f51e283554
-async function myag_promiseXml()
-{
-  var xhr = new XMLHttpRequest();
-  return new Promise(function(resolve, reject)
-  {
-   xhr.onreadystatechange = function()
-   {
-      if (xhr.readyState == 4)
-      {
-        if (xhr.status >= 300)
-          reject("Error, status code = " + xhr.status)
-        else
-          resolve(xhr.responseText);      
-      }
-    }
-    xhr.open('GET', GLOBAL_workingFile, true)
-    xhr.send();
-  });
-}
-
+	var header = gid.substr(0,2);
+	var base = gid.substr(2);
+	if (header != "g_")
+		return false;
+	if (!myag.isIdBase(base))
+		return false;
+	return true;
+},
 
 /*
 fetches Group class instances as by the xml file. very async. :C
 inputs: none
 outputs: Groups (array of Group instances)
 */
-async function myag_getGroups()
+xmlExtractObjects: function(tagName, classPointer)
 {
-  await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
-
-  var parser = new DOMParser();
-  var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
-  var xmlGroups = xmldoc.getElementsByTagName('group');
-  var groups = [];
-  for (var t = 0; t < xmlGroups.length; t++)  
-    groups.push(myag_groupXmlToObject(xmlGroups[t]));
-  
-  return groups;
-}
-
-/*
-fetches a Group class instance by its name as by the xml file. very async. :C
-inputs: targetName (string) - target group name
-outputs: Groups (array of Group instances or null if not found)
-*/
-/*
-async function myag_getGroupByName(targetName)
+	var xmlObjects = myag.loadedData.getElementsByTagName(tagName);
+	var objects = [];
+	for (var xmlTag of xmlObjects)  
+	{
+		var obj = new classPointer();
+		obj.fillFromXmlTag(xmlTag);
+		objects.push(obj);
+	}
+	return objects;
+},
+xmlExtractGroups: function()
 {
-  await myag_checkXmlLoaded(); // it's like now i have to say 'await' before every fuckin function
-
-  var parser = new DOMParser();
-  var xmldoc = parser.parseFromString(GLOBAL_loadedData, "text/xml");
-  var xmlGroups = xmldoc.getElementsByTagName('group');
-  var groups = [];
-  for (var t = 0; t < xmlGroups.length; t++)
-  {
-    var xmlGroupName = xmlGroups[t].childNodes[0];
-    var xmlGroupAbout = xmlGroups[t].childNodes[1];
-    var xmlGroupId = xmlGroups[t].childNodes[2];
-    var g = new Group(undefined, undefined);
-    g.name = xmlGroupName.childNodes[0].nodeValue;
-    try 
-      {g.about = xmlGroupAbout.childNodes[0].nodeValue;}
-    catch
-      {g.about = "";}
-
-
-    if (g.name == targetName)
-      return g;
-
-  }
-  return null;
-}
-*/
-
-function myag_groupXmlToObject(groupXml)
+	return myag.xmlExtractObjects("group", myag.Group);
+},
+xmlExtractArtworks: function()
 {
-  var g = bmco_xml_childTagRead(groupXml, "gid");
-  var n = bmco_xml_childTagRead(groupXml, "name");
-  var a = bmco_xml_childTagRead(groupXml, "about");
-  var out = new Group(g, n, a);
-  return out;
-}
-
-function myag_artworkXmlToObject(artworkXml)
-{
-  var aw = bmco_xml_childTagRead(artworkXml, "awid");
-  var n = bmco_xml_childTagRead(artworkXml, "name");
-  var fn = bmco_xml_childTagRead(artworkXml, "filename");
-  var a = bmco_xml_childTagRead(artworkXml, "about");
-  var thu = bmco_xml_childTagRead(artworkXml, "thumbnail");
-  var ig = bmco_xml_childTagGetChildrenValues(artworkXml, "ingroups");
-  return new Artwork(aw, n, fn, a, ig, thu);
-}
-
-
+	return myag.xmlExtractObjects("artwork", myag.Artwork);
+},
 
 /*
 My super secret (and (forreal) absolutely harmless) function to check
@@ -344,171 +273,291 @@ if the user has gone through my scary javascript! delete if spotted.
 inputs: none
 output: none
 */
-function auberysSuperSecretBackdoor()
+auberysSuperSecretBackdoor: function()
 {
-  alert("this user didn't go through the page's javascript!");
-}
+	alert("this user didn't go through the page's javascript!");
+},
+
+
 
 /*
-fetches Artwork class instances based on the xml file artwork entries
-inputs: none
-outputs: artworks (array of Artwork class instances)
-*/
-async function myag_getArtworkAll()
-{
-  return myag_getArtworksInGroup("any");
-}
-
-/*
-fetches Artwork class instances of a particular group based on the xml file artwork entries
-inputs: none
-outputs: artworks (array of Artwork class instances)
-
-probably could be done using myag_getArtworkAll() to avoid repetition..
-*/
-async function myag_getArtworksInGroup(gid)
-{
-  await myag_checkXmlLoaded();
-  var xmldoc = bmco_xml_xmldocFromString(GLOBAL_loadedData);
-  artworks = [];
-  var xmlArtworks = xmldoc.getElementsByTagName('artwork');
-  for (var t = 0; t < xmlArtworks.length; t++)
-  {
-    var aw = myag_artworkXmlToObject(xmlArtworks[t]);
-    if ((aw.ingroup(gid)) || (gid == "any"))
-      artworks.push(aw);
-  }
-  return artworks;
-    
-}
-
-/*
-fetches Artwork class instances based on the xml file artwork entries
+fetches Artwork class instances based on the loaded Artwork instances
 inputs: awid (string) - awid field value of artwork class instance
-output: (Artwork class instance) the class instance searched for
+output: (Artwork class instance) the class instance searched for, or null if not found
 */
-async function myag_getArtworkById(awid)
+getArtworkById: function(awid)
 {
-  var allArtworks = await myag_getArtworkAll();
-  for (var t = 0; t < allArtworks.length; t++)
-  {
-    if (allArtworks[t].awid == awid)
-    {
-      return allArtworks[t];
-    }
-  }
-  return null;
-}
+	for (var aw of myag.loadedArtworks)
+		if (aw.awid == awid) {return aw;}
+	return null;
+},
 
 /*
-fetches Group class instances based on the xml file artwork entries
-inputs: gid (string) - gid field value of group class instance
-output: (Group class instance) the class instance searched for
+fetches group id string by group name. if two groups are named the same, first match is used
+inputs: name (string) - group name searched
+output: (string) group id, or null if not found
 */
-async function myag_getGroupById(gid)
+groupIdByName: function(name)
 {
-  var allGroups = await myag_getGroups();
-  for (var t = 0; t < allGroups.length; t++)
-  {
-    if (allGroups[t].gid == gid)
-    {
-      return allGroups[t];
-    }
-  }
-  return null;
-}
+	for (var g of myag.groups)
+		if (g.name == name) {return g.gid}
+	return null;		
+},
 
 /*
 index page startup function
 inputs: none
 outputs: none
 */
-function myag_startup(pagename)
+startup: function(pagename)
 {
-  if (document.getElementById("groupsWrapper") != undefined)  
-    myag_makeGroupButtons();
+	bmco.xml.awaitXmlFromFile(myag.workingFile).then((xmldoc) => {
+		myag.loadedData = xmldoc;
+		myag.loadedArtworks = myag.xmlExtractArtworks();
+		myag.groups = myag.xmlExtractGroups();
 
-  myag_getArtworkAll().then(function(artworks) {
-    GLOBAL_loadedArtworks = artworks;
-    myag_ip_initArtworks(artworks, type=SETTING_pagingIndex); 
-  });
-  bmco_setTitle(SETTING_title);
-}
+
+		myag.displayGroups();
+		myag.displayArtworks();
+
+	});
+},
+
+displayGroups: function(artworksWrapperClass="myag_groupsWrapper") {
+	var groupsWrappers = document.getElementsByClassName(artworksWrapperClass);
+	if (groupsWrappers.length == 0)
+		return;
+	myag.appendGroupButtons(groupsWrappers[0]);
+	window.dispatchEvent(myag.events.panelGroupsLoaded);
+},
+
+displayArtworks: function(artworksWrapperClass="myag_artworksWrapper") {
+
+	var artworksWrappers = document.getElementsByClassName(artworksWrapperClass);
+	if (artworksWrappers.length == 0)
+		return;
+	for (var wrapper of artworksWrappers)
+		myag.appendArtworks(wrapper);
+	window.dispatchEvent(myag.events.panelArtworksLoaded);
+},
+
+/*
+Looks up what groups exist and adds them as buttons
+inputs:  targetElem element to add buttons to
+outputs: none
+*/
+appendGroupButtons: function(targetElem)
+{
+	for (var group of myag.groups)
+	{
+		targetElem.appendChild(myag.generateGroupButton(group, "alert(1)"));
+		if (myag.isEditor)
+			targetElem.appendChild(myag.generateGroupLocatorDiv(group));
+	}	
+},
+
+
+appendArtworks: function(targetElem)
+{
+	var groupFilterId = "any";
+	if (bmco.elementAttributeExists(targetElem, "group"))
+		groupFilterId = myag.groupIdByName(targetElem.getAttribute("group"));
+
+	
+
+	for (var aw of myag.loadedArtworks)
+	{
+		if (groupFilterId == "any" || aw.isInGroup(groupFilterId))
+			targetElem.appendChild(myag.generateArtworkDiv(aw))
+	}
+},
 
 /* Creates an appendable locator div based on an Group instance. Is needed
 for the XML editor page, unused in the main page itself.
 inputs: group <Group object> - group object to make the group locator after
 returns: <DOM element>
 */
-function myag_generateGroupLocatorDiv(group)
+generateGroupLocatorDiv: function(group)
 {
-  var locatorWrapper = document.createElement("div");
-  locatorWrapper.classList.add("locatorWrapper", "locatorWrapperGroup");
-  locatorWrapper.setAttribute("groupId", group.gid);
+	var locatorWrapper = document.createElement("div");
+	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperGroup");
+	locatorWrapper.setAttribute("groupId", group.gid);
 
-  var locator = document.createElement("div");
-  locator.classList.add("locator");
-  locator.setAttribute("title", "Move group here")
-  if (group.name == "Add new...")
-    locator.setAttribute("onclick", "myag_ed_putGroupAfter('start')");
-  else
-    locator.setAttribute("onclick", "myag_ed_putGroupAfter('"+group.gid+"')");
+	var locator = document.createElement("div");
+	locator.classList.add("locator");
+	locator.setAttribute("title", "Move group here")
+	if (group.name == "Add new...")
+		locator.setAttribute("onclick", "myag.ed.putGroupAfter('start')");
+	else
+		locator.setAttribute("onclick", "myag.ed.putGroupAfter('"+group.gid+"')");
 
-  locatorWrapper.appendChild(locator);
+	locatorWrapper.appendChild(locator);
 
-  return locatorWrapper;
-}
+	return locatorWrapper;
+},
 
 /* creates an html element for one group button.
 inputs: group <Group object> - group object to make the group button after
 return: "div" html group button element 
 */
-function myag_generateGroupButton(group, action=undefined)
+generateGroupButton: function(group, action=undefined)
 {
-  var button = document.createElement('div');
-  button.classList.add('groupButton');
-  button.setAttribute("groupId", group.gid);
+	var button = document.createElement('div');
+	button.classList.add('groupButton');
+	button.setAttribute("groupId", group.gid);
 
-  var onclick = action;
-  if (onclick==undefined)
-  {
-    onclick = "myag_ind_visitGroup('"+group.gid+"')";
-    if (myag_isEditor())
-      onclick = "myag_ed_showItemMenu('"+group.gid+"', event)";
-  }
-  
-  button.setAttribute('onclick', onclick);
-  var name = document.createElement('p');
-  name.innerHTML = group.name;
-  button.appendChild(name);
+	var onclick = action;
+	if (onclick==undefined)
+	{
+		onclick = "myag.ind.visitGroup('"+group.gid+"')";
+		if (myag.isEditor)
+			onclick = "myag.ed.showItemMenu('"+group.gid+"', event)";
+	}
+	
+	button.setAttribute('onclick', onclick);
+	var name = document.createElement('p');
+	name.innerHTML = group.name;
+	button.appendChild(name);
 
-  return button;
-}
+	return button;
+},
 
-/* generates and appends a single group button to a target.
-inputs: group <Group object> - [group object], target <html element> [append target element],
-    mode <string> [append mode. 'appendChild' or 'insertAfter']
-return: freshly appended button <html element>
+
+
+
+/* Creates an appendable div based on an Artwork instance
+inputs: aw <Artwork> [an Artwork class instance to be visualized]
+returns: <DOM element>
 */
-function myag_appendSingleGroupButton(group, target, mode="appendChild", action=undefined)
+generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 {
-  var button = myag_generateGroupButton(group, action);
-  var locator = myag_generateGroupLocatorDiv(group);
-  myag_appendToGridMode(button, locator, target, mode);
-  return button;
-}
+	var div = document.createElement("div");
+	div.classList.add("artwork");
+	div.setAttribute("artworkId", aw.awid);
+
+	var onclick = action;
+	if (onclick == undefined)
+		myag.isEditor? onclick = "myag.ed.showItemMenu('"+aw.awid+"', event)" : onclick = "myag.viewer.showViewer('"+aw.awid+"')";
+	div.setAttribute("onclick", onclick);
+	
+	var displayFile = aw.thumbnail;
+	if (displayFile == undefined)
+		displayFile = aw.filename;
+	if (displayFile != undefined)
+	{
+		var img = document.createElement("img");
+		if (myag.settings.remoteImageHost == null)
+			img.setAttribute("src", myag.artworksFolder+displayFile);
+		else
+			img.setAttribute("src", myag.settings.remoteImageHost +"/"+ myag.artworksFolder+displayFile);
+		img.classList.add("artworkImg");
+		//img.setAttribute("onclick", onclick);
+		div.appendChild(img);
+	}
+
+	if (overlayText != undefined)
+	{
+		var para = document.createElement("p");
+		para.innerHTML = overlayText;
+		div.appendChild(para);
+	}
+	
+
+	return div;
+},
+
+/* Creates an appendable locator div based on an Artwork instance. Is needed
+for the XML editor page, unused in the main page itself.
+inputs: aw <Artwork> [an Artwork class instance to be visualized]
+returns: <DOM element>
+*/
+generateArtworkLocatorDiv: function(aw=undefined)
+{
+	var locatorWrapper = document.createElement("div");
+	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperArtwork");
+	locatorWrapper.setAttribute("artworkId", aw.awid);
+	var locator = document.createElement("div");
+	locator.classList.add("locator");
+	locator.setAttribute("title", "Insert artwork here")
+	if (aw.awid==undefined)
+		locator.setAttribute("onclick", "myag.ed.putArtworkAfter('start')");
+	else
+		locator.setAttribute("onclick", "myag.ed.putArtworkAfter('"+aw.awid+"')");
+
+	locatorWrapper.appendChild(locator);
+
+	return locatorWrapper;
+},
+
+/* generates and appends a single artwork to a target.
+inputs: aw <Artwork> [source Artwork instance], target <html element> [append target element],
+		mode <string> [append mode. 'appendChild', 'prepend' or 'insertAfter']
+return: appended artwork div <html element>
+*/
+appendSingleArtwork: function(aw, target, mode="appendChild", action=undefined, text=undefined)
+{
+	var artwork = myag.ip.generateArtworkDiv(aw, action, text);
+	var locator = myag.ip.generateArtworkLocatorDiv(aw);
+	myag.appendToGridMode(artwork, locator, target, mode);
+	return artwork;
+},
+
+/* processes an array of Artwork class instances and appends them to the target div wrapper
+inputs: as <array of Artwork objects>
+		start <int> [start loading from this 'as' index]
+		end <int> [stop loading when this 'as' index encountered]
+		renew <bool> [true=rebuild myag.loadedArtworks, false=add to myag.loadedArtworks]
+		target <string> [target div id]
+return: none
+*/
+appendArworksRange: function(as, start, end, renew=true, target="artworksWrapper")
+{
+	// validate start/end
+	if ((start < 0) || (start > as.length) || (end <= start))
+	{
+		db("invalid start/end args: "+String(start)+","+String(end))
+	}
+   
+	if (end > as.length) // end more than length is OK - gets clipped
+		end = as.length;
+
+	// find and validate append target
+	var t = document.getElementById(target);
+
+	if (t == undefined)
+	{
+		db("myag.ip.appendArworksRange: no target "+target+" found");
+		return;
+	}
+
+	if (renew)
+	{
+		displayedArtworks = document.getElementsByClassName("artwork");
+		while(displayedArtworks.length > 0){
+        	displayedArtworks[0].parentNode.removeChild(displayedArtworks[0]);
+    	}
+    	myag.loadedArtworks = as.slice(start,end);
+	}
+	else
+		myag.loadedArtworks = myag.loadedArtworks.concat(as.slice(start,end))
+	
+
+	for (var c = start; c < end; c++)	 
+		myag.ip.appendSingleArtwork(as[c], t);
+},
 
 /*
-Looks up what groups exist and adds them as buttons
-inputs: id string of the target div to append buttons to
-outputs: none
+for neocities-only version: opens editor in new tab
 */
-function myag_makeGroupButtons(id="groupsWrapper")
+webOpenEditor: function()
 {
-  myag_getGroups().then(function(groups) {
-    var target = document.getElementById(id);
-    for (var c = 0; c < groups.length; c++)
-      myag_appendSingleGroupButton(groups[c], target);
-    window.dispatchEvent(myag_ip_gLoaded);
-  });
+	window.open("./editor.html", target="_blank");
 }
+
+//==========================================================================//
+//=============================== LIBRARY END ==============================//
+//==========================================================================//
+
+}
+
+addEventListener("DOMContentLoaded", (event) => { myag.startup() });
