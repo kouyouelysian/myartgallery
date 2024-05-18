@@ -15,21 +15,24 @@ var myag = {
 //==========================================================================//
 
 debug: true,
+isEditor: bmco.bodyAttributeExists("isEditor"),
 workingFile: "myag_files/data.xml",
 artworksFolder: "myag_artworks/",
-loadedData: undefined,
-loadedArtworks: undefined,
-isEditor: bmco.bodyAttributeExists("isEditor"),
+data: {
+	xml: undefined,
+	artworks: undefined,
+	groups: undefined
+},
 navigation: {
 	mode: "none",
 	page: 0,
+	counter: 0,
 	pagesTotal: undefined,
-	artworksPerPage: undefined
 },
 events: {
-	xmlLoaded: new CustomEvent("xmlFileLoaded"),
-	panelGroupsLoaded: new CustomEvent("groupsLoaded"),
-	panelArtworksLoaded: new CustomEvent("artworksLoaded"),
+	xmlLoaded: new Event("xmlLoaded"),
+	groupsLoaded: new Event("groupsLoaded"),
+	artworksLoaded: new Event("artworksLoaded"),
 },
 
 //==========================================================================//
@@ -38,13 +41,13 @@ events: {
 
 
 Group: class{
-	constructor(gid=undefined, name=undefined, about=undefined) {
+	constructor(gid=myag.makeGid(), name=undefined, about=undefined) {
 		this.gid = gid;
 		this.name = name;
 		this.about = about;
 	}
 
-	fillFromXmlTag(tag) {
+	fromXmlTag(tag) {
 		this.gid = bmco.xml.childTagRead(tag, "gid");;
 		this.name = bmco.xml.childTagRead(tag, "name");;
 		this.about = bmco.xml.childTagRead(tag, "about");;
@@ -61,7 +64,7 @@ Group: class{
 },
 
 Artwork: class{
-	constructor(awid=undefined, name=undefined, filename=undefined, about=undefined, groups=[], thumbnail=undefined) {
+	constructor(awid=myag.makeAwid(), name=undefined, filename=undefined, about=undefined, groups=[], thumbnail=undefined) {
 		this.awid = awid;
 		this.name = name;
 		this.filename = filename;
@@ -70,7 +73,7 @@ Artwork: class{
 		this.thumbnail = thumbnail;
 	}
 
-	fillFromXmlTag(tag) {
+	fromXmlTag(tag) {
 		this.awid = bmco.xml.childTagRead(tag, "awid");
 		this.name = bmco.xml.childTagRead(tag, "name");
 		this.filename = bmco.xml.childTagRead(tag, "filename");
@@ -248,12 +251,12 @@ outputs: Groups (array of Group instances)
 */
 xmlExtractObjects: function(tagName, classPointer)
 {
-	var xmlObjects = myag.loadedData.getElementsByTagName(tagName);
+	var xmlObjects = myag.data.xml.getElementsByTagName(tagName);
 	var objects = [];
 	for (var xmlTag of xmlObjects)  
 	{
 		var obj = new classPointer();
-		obj.fillFromXmlTag(xmlTag);
+		obj.fromXmlTag(xmlTag);
 		objects.push(obj);
 	}
 	return objects;
@@ -287,7 +290,7 @@ output: (Artwork class instance) the class instance searched for, or null if not
 */
 getArtworkById: function(awid)
 {
-	for (var aw of myag.loadedArtworks)
+	for (var aw of myag.data.artworks)
 		if (aw.awid == awid) {return aw;}
 	return null;
 },
@@ -297,11 +300,18 @@ fetches group id string by group name. if two groups are named the same, first m
 inputs: name (string) - group name searched
 output: (string) group id, or null if not found
 */
-groupIdByName: function(name)
+gidByName: function(name)
 {
-	for (var g of myag.groups)
+	for (var g of myag.data.groups)
 		if (g.name == name) {return g.gid}
 	return null;		
+},
+
+groupById: function(gid)
+{
+	for (var g of myag.data.groups)
+		if (g.gid == gid) {return g}
+	return null;	
 },
 
 /*
@@ -312,11 +322,13 @@ outputs: none
 startup: function(pagename)
 {
 	bmco.xml.awaitXmlFromFile(myag.workingFile).then((xmldoc) => {
-		myag.loadedData = xmldoc;
-		myag.loadedArtworks = myag.xmlExtractArtworks();
-		myag.groups = myag.xmlExtractGroups();
-
-
+		window.dispatchEvent(myag.events.xmlLoaded);
+		myag.data.xml = xmldoc;
+		myag.data.artworks = myag.xmlExtractArtworks();
+		window.dispatchEvent(myag.events.artworksLoaded);
+		myag.data.groups = myag.xmlExtractGroups();
+		myag.navigation.pagesTotal = Math.ceil(myag.data.artworks.length / myag.settings.artworksPerPage);
+		window.dispatchEvent(myag.events.groupsLoaded);
 		myag.displayGroups();
 		myag.displayArtworks();
 
@@ -328,7 +340,6 @@ displayGroups: function(artworksWrapperClass="myag_groupsWrapper") {
 	if (groupsWrappers.length == 0)
 		return;
 	myag.appendGroupButtons(groupsWrappers[0]);
-	window.dispatchEvent(myag.events.panelGroupsLoaded);
 },
 
 displayArtworks: function(artworksWrapperClass="myag_artworksWrapper") {
@@ -337,8 +348,19 @@ displayArtworks: function(artworksWrapperClass="myag_artworksWrapper") {
 	if (artworksWrappers.length == 0)
 		return;
 	for (var wrapper of artworksWrappers)
+	{
 		myag.appendArtworks(wrapper);
-	window.dispatchEvent(myag.events.panelArtworksLoaded);
+		myag.pages.addPagination(wrapper);
+		myag.wrapperSerArtworksPerRow(wrapper);
+		
+	}
+},
+
+wrapperSerArtworksPerRow(wrapperElem) {
+	var artworksPerRow = parseInt(wrapperElem.getAttribute("artworksPerRow"));
+	if (isNaN(artworksPerRow))
+		artworksPerRow = myag.settings.artworksPerRow;
+	wrapperElem.setAttribute("style", `--artworks-per-row: ${artworksPerRow}`);
 },
 
 /*
@@ -348,9 +370,9 @@ outputs: none
 */
 appendGroupButtons: function(targetElem)
 {
-	for (var group of myag.groups)
+	for (var group of myag.data.groups)
 	{
-		targetElem.appendChild(myag.generateGroupButton(group, "alert(1)"));
+		targetElem.appendChild(myag.generateGroupDiv(group));
 		if (myag.isEditor)
 			targetElem.appendChild(myag.generateGroupLocatorDiv(group));
 	}	
@@ -361,11 +383,13 @@ appendArtworks: function(targetElem)
 {
 	var groupFilterId = "any";
 	if (bmco.elementAttributeExists(targetElem, "group"))
-		groupFilterId = myag.groupIdByName(targetElem.getAttribute("group"));
+	{
+		groupFilterId = targetElem.getAttribute("group");
+		if (!myag.isGid(groupFilterId))
+			groupFilterId = myag.gidByName(groupFilterId);
+	}	
 
-	
-
-	for (var aw of myag.loadedArtworks)
+	for (var aw of myag.data.artworks)
 	{
 		if (groupFilterId == "any" || aw.isInGroup(groupFilterId))
 			targetElem.appendChild(myag.generateArtworkDiv(aw))
@@ -381,7 +405,7 @@ generateGroupLocatorDiv: function(group)
 {
 	var locatorWrapper = document.createElement("div");
 	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperGroup");
-	locatorWrapper.setAttribute("groupId", group.gid);
+	locatorWrapper.setAttribute("gid", group.gid);
 
 	var locator = document.createElement("div");
 	locator.classList.add("locator");
@@ -400,30 +424,21 @@ generateGroupLocatorDiv: function(group)
 inputs: group <Group object> - group object to make the group button after
 return: "div" html group button element 
 */
-generateGroupButton: function(group, action=undefined)
+generateGroupDiv: function(group, action=undefined, forcedText=undefined)
 {
 	var button = document.createElement('div');
 	button.classList.add('groupButton');
-	button.setAttribute("groupId", group.gid);
-
+	button.setAttribute("gid", group.gid);
 	var onclick = action;
 	if (onclick==undefined)
-	{
-		onclick = "myag.ind.visitGroup('"+group.gid+"')";
-		if (myag.isEditor)
-			onclick = "myag.ed.showItemMenu('"+group.gid+"', event)";
-	}
-	
+		myag.isEditor? onclick = `myag.ed.showItemMenu('${group.gid}', event)` : onclick = `myag.visitGroup('${group.gid}')`;
 	button.setAttribute('onclick', onclick);
 	var name = document.createElement('p');
-	name.innerHTML = group.name;
+	forcedText===undefined? name.innerHTML = group.name : name.innerHTML = forcedText;
 	button.appendChild(name);
 
 	return button;
 },
-
-
-
 
 /* Creates an appendable div based on an Artwork instance
 inputs: aw <Artwork> [an Artwork class instance to be visualized]
@@ -433,7 +448,7 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 {
 	var div = document.createElement("div");
 	div.classList.add("artwork");
-	div.setAttribute("artworkId", aw.awid);
+	div.setAttribute("awid", aw.awid);
 
 	var onclick = action;
 	if (onclick == undefined)
@@ -443,7 +458,7 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 	var displayFile = aw.thumbnail;
 	if (displayFile == undefined)
 		displayFile = aw.filename;
-	if (displayFile != undefined)
+	if (displayFile != undefined && displayFile != "")
 	{
 		var img = document.createElement("img");
 		if (myag.settings.remoteImageHost == null)
@@ -462,9 +477,22 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 		div.appendChild(para);
 	}
 	
-
 	return div;
 },
+
+
+/*
+group button press handler
+inputs: gid (string) - group id of the group to be viewed
+outputs: none
+*/
+visitGroup: function(gid)
+{
+	window.location = "./group.html?g="+encodeURI(gid);
+},
+
+
+
 
 /* Creates an appendable locator div based on an Artwork instance. Is needed
 for the XML editor page, unused in the main page itself.
@@ -475,7 +503,7 @@ generateArtworkLocatorDiv: function(aw=undefined)
 {
 	var locatorWrapper = document.createElement("div");
 	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperArtwork");
-	locatorWrapper.setAttribute("artworkId", aw.awid);
+	locatorWrapper.setAttribute("awid", aw.awid);
 	var locator = document.createElement("div");
 	locator.classList.add("locator");
 	locator.setAttribute("title", "Insert artwork here")
@@ -489,62 +517,6 @@ generateArtworkLocatorDiv: function(aw=undefined)
 	return locatorWrapper;
 },
 
-/* generates and appends a single artwork to a target.
-inputs: aw <Artwork> [source Artwork instance], target <html element> [append target element],
-		mode <string> [append mode. 'appendChild', 'prepend' or 'insertAfter']
-return: appended artwork div <html element>
-*/
-appendSingleArtwork: function(aw, target, mode="appendChild", action=undefined, text=undefined)
-{
-	var artwork = myag.ip.generateArtworkDiv(aw, action, text);
-	var locator = myag.ip.generateArtworkLocatorDiv(aw);
-	myag.appendToGridMode(artwork, locator, target, mode);
-	return artwork;
-},
-
-/* processes an array of Artwork class instances and appends them to the target div wrapper
-inputs: as <array of Artwork objects>
-		start <int> [start loading from this 'as' index]
-		end <int> [stop loading when this 'as' index encountered]
-		renew <bool> [true=rebuild myag.loadedArtworks, false=add to myag.loadedArtworks]
-		target <string> [target div id]
-return: none
-*/
-appendArworksRange: function(as, start, end, renew=true, target="artworksWrapper")
-{
-	// validate start/end
-	if ((start < 0) || (start > as.length) || (end <= start))
-	{
-		db("invalid start/end args: "+String(start)+","+String(end))
-	}
-   
-	if (end > as.length) // end more than length is OK - gets clipped
-		end = as.length;
-
-	// find and validate append target
-	var t = document.getElementById(target);
-
-	if (t == undefined)
-	{
-		db("myag.ip.appendArworksRange: no target "+target+" found");
-		return;
-	}
-
-	if (renew)
-	{
-		displayedArtworks = document.getElementsByClassName("artwork");
-		while(displayedArtworks.length > 0){
-        	displayedArtworks[0].parentNode.removeChild(displayedArtworks[0]);
-    	}
-    	myag.loadedArtworks = as.slice(start,end);
-	}
-	else
-		myag.loadedArtworks = myag.loadedArtworks.concat(as.slice(start,end))
-	
-
-	for (var c = start; c < end; c++)	 
-		myag.ip.appendSingleArtwork(as[c], t);
-},
 
 /*
 for neocities-only version: opens editor in new tab
@@ -555,7 +527,7 @@ webOpenEditor: function()
 }
 
 //==========================================================================//
-//=============================== LIBRARY END ==============================//
+//================================ STARTUP =================================//
 //==========================================================================//
 
 }

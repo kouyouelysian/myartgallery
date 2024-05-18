@@ -95,6 +95,10 @@
 	cursor: pointer;
 }
 
+.artwork.invisible {
+	display: none;
+}
+
 .artwork img {
 	max-width: 100%;
 	max-height: 100%;

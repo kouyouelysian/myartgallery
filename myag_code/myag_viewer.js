@@ -131,15 +131,15 @@ jump: function(dir)
 	if (target == null)
 	return null; // this means there's nothing loaded at all (non soosible)
 	aw = undefined;
-	for (var t = 0; t < myag.artworks.length; t++)
+	for (var t = 0; t < myag.data.artworks.length; t++)
 	{
 
-		if (myag.artworks[t].awid == target) // we found current artwork...
+		if (myag.data.artworks[t].awid == target) // we found current artwork...
 		{
 			if (dir) // fwd
 			{
 				t += 1;
-				if (t == myag.artworks.length)
+				if (t == myag.data.artworks.length)
 				{
 					t = 0;  //wrap around
 					if (myag.settings.nextPageOnWrap && myag.settings.pagingIndex == "pages")
@@ -157,19 +157,19 @@ jump: function(dir)
 				t -= 1;
 				if (t == -1)
 				{
-					t = myag.artworks.length-1; //wrap around
+					t = myag.data.artworks.length-1; //wrap around
 					if (myag.settings.nextPageOnWrap && myag.settings.pagingIndex == "pages")
 					{
 						currentPage -= 1;
 						if (currentPage == -1)
 							currentPage = pagesTotal - 1;
 						myag.ip.goto(currentPage);
-						t = myag.artworks.length-1; // redo
+						t = myag.data.artworks.length-1; // redo
 					}
 				}
 				
 			}
-			aw = myag.artworks[t];
+			aw = myag.data.artworks[t];
 			break;
 		}
 	}

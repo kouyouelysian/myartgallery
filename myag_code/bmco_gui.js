@@ -57,7 +57,7 @@ hideAny: function()
 inputs: none
 return: created HTML element
 */
-backdropCreate(onclick="bmco.gui.hideAny: function()", backdropId="guiBackdrop", opacity=null)
+backdropCreate(onclick="bmco.gui.hideAny()", backdropId="guiBackdrop", opacity=null)
 {
 	if (document.getElementById(backdropId) != undefined)
 		return;
@@ -244,7 +244,7 @@ filloutShow: function(id)
 	var target = document.getElementById(id);
 	if (target == undefined)
 		return;
-	bmco.gui.backdropCreate();
+	bmco.gui.backdropCreate("bmco.gui.filloutHide();");
 	target.style.display = "block";
 },
 
@@ -252,13 +252,19 @@ filloutShow: function(id)
 inputs: id <string> [id of a .fillout class div]
 return: none
 */
-filloutHide: function(id)
+filloutHide: function(id=null)
 {
-	var target = document.getElementById(id);
-	if (target == undefined)
-		return;
-	bmco.gui.backdropRemove();
-	target.removeAttribute("style");
+	if (id === null)
+		bmco.ofClassRemoveAttribute("fillout", "style");
+	else
+	{
+		var target = document.getElementById(id);
+		if (target)
+			target.removeAttribute("style");
+	}
+	bmco.gui.backdropRemove();	
+	
+	
 },
 
 /*-------------------------------- action menu --------------------------------*/
@@ -266,33 +272,33 @@ filloutHide: function(id)
 /* Creates and appends an action selection menu to the screen. Is called when the artwork or group
 has been pressed to present options like edit, delete and move. Also creates the invisible backdrop
 that allows to close the menu by clicking elsewhere.
-inputs: arg <string> [a group name or an artwork id of a present group/artwork],
+inputs: buttonDescriptions <obj> [object with buttonName: buttonAction pairs],
 		mouseX <int> [X position of the mouse at the moment of call],
 		mouseY <int> [Y position of the mouse at the moment of call]
 return: none
 */
-actionMenuAppend: function(arg, mouseX, mouseY)
+actionMenuAppend: function(buttonDescriptions, mouseX, mouseY)
 {
-	buttonNames = ["Edit", "Move", "Delete"];
-	buttonFunctions = [];
-	target = undefined;
+	/*
+	buttDescrs = {
+		"Edit":   `myag.ed.editArtwork('${arg}')`,
+		"Move":   `myag.ed.moveArtwork('${arg}')`,
+		"Delete": `myag.ed.deleteArtwork('${arg}')`,
+	}; // for artwork context menu
 
-	if (myag_isAwid(arg))
-	{
-		buttonFunctions = ["myag_ed_editArtwork('"+arg+"')", "myag_ed_moveArtwork('"+arg+"')", "myag_ed_deleteArtwork('"+arg+"')"];
-		target = bmco.firstElementOfClassByAttribute("artwork", "artworkId", arg);
-	}
-	else if (myag_isGid(arg))
-	{
-		buttonFunctions = ["myag_ed_editGroup('"+arg+"')", "myag_ed_moveGroup('"+arg+"')", "myag_ed_deleteGroup('"+arg+"')"];
-		target = bmco.firstElementOfClassByAttribute("groupButton", "groupId", arg);
-	}
+	buttDescrs = {
+		"Edit":   `myag.ed.editGroup('${arg}')`,
+		"Move":   `myag.ed.moveGroup('${arg}')`,
+		"Delete": `myag.ed.deleteGroup('${arg}')`,
+	}; // for group context menu
+	*/
+
 	if (target == undefined)
 		return;
 
 	ce = [];
-	for (var x = 0; x < buttonNames.length; x++)
-		ce.push(bmco.gui.buttonCreate(buttonNames[x], buttonFunctions[x]));
+	for (var buttonName in buttonDescriptions)
+		ce.push(bmco.gui.buttonCreate(buttonName, buttonDescriptions[buttonName]));
 
 	var menu = bmco.gui.arrayOfElementsToDiv(ce, "actionMenu");
 	var offset = 40;
@@ -301,12 +307,6 @@ actionMenuAppend: function(arg, mouseX, mouseY)
 	document.body.prepend(menu);
 
 	bmco.gui.backdropCreate("bmco.gui.actionMenuDelete()", "guiBackdrop", opacity = 0);
-	/*
-	var bd = document.createElement("div");
-	bd.id = "actionMenuBackdrop";
-	bd.setAttribute("onclick", "myag_ed_guiActionMenuDelete()");
-	document.body.prepend(bd);
-	*/
 },
 
 /* Removes the action selection menu and its backdrop from the screen.

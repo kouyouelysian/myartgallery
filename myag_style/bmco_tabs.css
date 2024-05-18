@@ -4,7 +4,7 @@ body {
 }
 
 
-#navbar {
+nav {
 	height: var(--navbar-height);
 	box-shadow: var(--shadow);
 	width: fit-content;
@@ -12,7 +12,7 @@ body {
 
 }
 
-#navbar p {
+nav p {
 	font-size: var(--font-main-size);
 	padding-left: 8px;
 	padding-right: 8px;
@@ -31,24 +31,28 @@ body {
 
 }
 
-#navbar p:hover {
-	height: calc(100% + var(--navbar-drag-length));
-	margin-top: calc(var(--navbar-drag-length) * -1);
-
-}
-
-#navbar #navbarSelected {
+nav p.tabNavOptionActive {
 	background-color: var(--col-body);
 	color: var(--col-text);
 	cursor: default;
 }
 
-#navbar #navbarSelected:hover {
+nav p:hover {
+	height: calc(100% + var(--navbar-drag-length));
+	margin-top: calc(var(--navbar-drag-length) * -1);
+}
+
+nav p.tabNavOptionActive:hover {
 	height: 100%;
 	margin-top: 0;
 }
 
-.tab {
+
+
+section {
 	display: none;
 }
 
+section.tabActive {
+	display: block;
+}

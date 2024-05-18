@@ -52,7 +52,6 @@ body {
 	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
-	--artworks-per-row:       4; 	  /* how many artworks to display per row. integer. suggested 3-6 */
 	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
 	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); do not use if you have a bunch of strange outter shape transparency images */	
 

@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="myag_style/panel.css">
 	<link rel="stylesheet" type="text/css" href="myag_style/editor.css">
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_general.css" />
-	<link rel="stylesheet" type="text/css" href="myag_style/bmco_pagetabs.css" />
+	<link rel="stylesheet" type="text/css" href="myag_style/bmco_tabs.css" />
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_gui.css" />
 	<!--*endchunk*-->
 </head>
@@ -18,35 +18,37 @@
 
 	<div id="artworkViewerWrapper"></div>
 	
-	<div id="mainWrapper">
-		<div id="navbar">
-			<p class="navbarOption" onclick="bmco_tab_switchTo('artworks', this)" id="navbarSelected">Artworks</p>
-			<p class="navbarOption" onclick="bmco_tab_switchTo('groups', this)">Groups</p>
-			<p class="navbarOption" onclick="bmco_tab_switchTo('tools', this)">Tools</p>
-			<p class="navbarOption" onclick="bmco_tab_switchTo('settings', this)">Settings</p>
-		</div>
+	<main id="mainWrapper">
 
-		<div class="tab section" id="artworks">
+		<nav class="tabNav">
+			<p onclick="tab.switchTo(this)" tab="artworks">Artworks</p>
+			<p onclick="tab.switchTo(this)" tab="groups">Groups</p>
+			<p onclick="tab.switchTo(this)" tab="tools">Tools</p>
+			<p onclick="tab.switchTo(this)" tab="settings">Settings</p>
+		</nav>
+
+		<section id="artworks">
 			<h1>Manage artworks</h1>
-			<div id="artworksWrapper"></div>
-		</div>
+			<div class="myag_artworksWrapper"></div>
+		</section>
 
-		<div class="tab section" id="groups">
+		<section id="groups">
 			<h1>Manage groups</h1>
-			<div id="groupsWrapper"></div>
-		</div>
+			<div class="myag_groupsWrapper"></div>
+		</section>
 
-		<div class="tab section" id="tools">
+		<section id="tools">
 			<h1>Tools</h1>
 			<div id="toolsWrapper">
 			</div>
-		</div>
+		</section>
 
-		<div class="tab section" id="settings">
+		<section id="settings">
 			<h1>Settings</h1>
 			<p>No settings so far</p>
-		</div>
-	</div>
+		</section>
+
+	</main>
 
 
 	<form class="fillout" id="filloutArtwork">
@@ -87,21 +89,21 @@
 
 
 	<!--*chunk scripts*-->
-	<script type="text/javascript" src="myag_code/bmco_general.js"></script>
+	<script type="text/javascript" src="myag_code/bmco.js"></script>
 	<script type="text/javascript" src="myag_code/bmco_gui.js" ></script>
-	<script type="text/javascript" src="myag_code/bmco_pagetabs.js" ></script>
+	<script type="text/javascript" src="myag_code/bmco_tabs.js" ></script>
 	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
-	<script type="text/javascript" src="myag_user/settings.js"></script>
 	<script type="text/javascript" src="myag_code/myag_main.js"></script>
-	<script type="text/javascript" src="myag_code/myag_panel.js"></script>
+	<script type="text/javascript" src="myag_user/settings.js"></script>
+	<script type="text/javascript" src="myag_code/myag_pages.js"></script>
 	<script type="text/javascript" src="myag_code/myag_index.js"></script>
 	<script type="text/javascript" src="myag_code/plugin_vkbeautify.js"></script>
-	<script type="text/javascript" src="myag_code/myag_viewer.js"></script>
 	<script type="text/javascript" src="myag_code/myag_editor.js"></script>
 	<script type="text/javascript">
-		SETTING_pagingIndex = "append";
-		bmco_tab_init("artworks");
+		myag.navigation.mode = "append";
+		var tab = new bmco.tabs.TabHandler({ firstTabId: "artworks", mode: "semantic", inNeomanager:true });
 	</script>
+
 	<!--*endchunk*-->
 
 </body>

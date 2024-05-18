@@ -21,7 +21,7 @@ available functions:
 	bmco.xml.childTagGetChildren(node, tag)
 	bmco.xml.childTagGetChildrenValues(node, tag)
 	bmco.xml.childTagRead(node, tag)
-	bmco.xml.ChildTagWrite(xmldoc, node, tag, text)
+	bmco.xml.childTagWrite(xmldoc, node, tag, text)
 	bmco.xml.nodeGetFirstOfTag(xmldoc, nodeTag)
 	bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
 	bmco.xml.nodeAndChildrenWithTextConstruct(xmldoc, nodeTag, childTagValuePairs)
@@ -242,7 +242,7 @@ inputs: xmldoc <xml document> [operated xml document object],
 		text <string> [text to be written into specified node child tag insides]
 return: none
 */
-ChildTagWrite: function(xmldoc, node, tag, text)
+childTagWrite: function(xmldoc, node, tag, text)
 {
 	childrenOfTagName = node.getElementsByTagName(tag);
 	if (childrenOfTagName.length == 0)

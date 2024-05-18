@@ -30,7 +30,9 @@ available functions:
 	bmco.removeClassForAllTagsNamed(tagname, classToRemove)
 	bmco.inputValueSet(id, val)
 	bmco.inputValueGet(id)
-	bmco.firstElementOfClassByAttribute: function(classname, attribute, value)
+	bmco.firstElementOfByAttribute(getterFunction, getterArgument, attribute, value) 
+	bmco.firstElementOfClassByAttribute(classname, attribute, value)
+	bmco.firstElementOfTagByAttribute(tagname, attribute, value)
 	bmco.ofClassAddClass: function(haveClass, otherClass, remove)
 	bmco.ofClassRemoveClass: function(haveClass, removeClass)
 	bmco.forceCssToSheet: function(typeAndClass, sheetIndex, newRule, newValue)
@@ -462,6 +464,8 @@ inputValueSet: function(id, val)
 	var t = document.getElementById(id);
 	if (t == undefined)
 		return false;
+	if (val == undefined)
+		return false;
 	t.value = val;
 	return true;
 },
@@ -480,9 +484,36 @@ inputValueGet: function(id)
 	return t.value;
 },
 
+/* Finds the first instance with property = value in an array of same class instances
+inputs: array <array[object, ...]> [array with objects to search in],
+		property <string> [name of the property to filter by],
+		value <any> [value the property shoud be]
+*/
+firstInArrayWithProperty(array, property, value, index=false) {
+	for (var counter in array)
+		{if (array[counter][property] == value) return (index? parseInt(counter) : array[counter]);}
+	return undefined;
+},
 
-/* Finds the first element of class 'classname'  which has
-the 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
+
+/* Finds the first element in an array of elements acquired via elemGetterFunction
+with 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
+inputs: parentDocument <object> [parent document in which to search for elements],
+		getterFunction <function> [function to execute that generates the array],
+		getterArgument <any> [one argument provided to the function],
+		attribute <string> [attribute name to look for],
+		value <string> [attribute value to match]
+return: <html element> or <undefined> on fail
+*/
+firstElementOfByAttribute: function(parentDocument, getterFunction, getterArgument, attribute, value) {
+	var items = parentDocument[getterFunction](getterArgument);
+	for (var i of items)
+		{if (i.getAttribute(attribute) == value) return i;}
+	return undefined;
+},
+
+
+/* firstElementOfByAttribute wrapper for class name
 inputs: classname <string> [elements of this class will get searched up]
 		attribute <string> [attribute name to look for]
 		value <string> [attribute value to match]
@@ -490,17 +521,19 @@ return: <html element> or <undefined> on fail
 */
 firstElementOfClassByAttribute: function(classname, attribute, value)
 {
-	var classItems = document.getElementsByClassName(classname);
-	for (var x = 0; x < classItems.length; x++)
-	{
-		var target = classItems[x];
-		if (target.getAttribute(attribute) == value)
-		{
-			return target;
-			break;
-		}
-	}
-	return undefined;
+	return bmco.firstElementOfByAttribute(document, "getElementsByClassName", classname, attribute, value);
+},
+
+/* firstElementOfByAttribute for tag name
+the 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
+inputs: tagname <string> [elements of this class will get searched up]
+		attribute <string> [attribute name to look for]
+		value <string> [attribute value to match]
+return: <html element> or <undefined> on fail
+*/
+firstElementOfTagByAttribute: function(tagname, attribute, value)
+{
+	return bmco.firstElementOfByAttribute(document, "getElementsByTagName", tagname, attribute, value);
 },
 
 /*  */
@@ -538,6 +571,12 @@ return: none
 ofClassRemoveClass: function(haveClass, removeClass)
 {
 	bmco.ofClassAddClass(haveClass, removeClass, true)
+},
+
+ofClassRemoveAttribute: function(className, attribName)
+{
+	for (elem of document.getElementsByClassName(className))
+		elem.removeAttribute(attribName);
 },
 
 /* Changes a line for an existing rule in one of the loaded CSS sheets
@@ -643,6 +682,13 @@ elementAttributeExists: function(elem, attribName) {
 
 bodyAttributeExists: function(attribName) {
 	return bmco.elementAttributeExists(document.body, attribName)	
+},
+
+randomColor: function()
+{
+	colors = ["f9c", "fc9", "cf9", "c9f", "9fc", "9cf"];
+	var color = colors[Math.floor(Math.random()*colors.length)];
+	return `#${color}`;
 }
 
 

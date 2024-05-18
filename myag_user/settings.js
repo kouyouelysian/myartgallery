@@ -39,6 +39,7 @@ pagingIndex: "pages",
 pagingGroup: "none",
 
 // rows of artworks per page, integer. effective if pagination is used.
+artworksPerRow: 4,
 rowsPerPage: 1, 
 
 // if "pages" is the pagination method, "true" means next page will get loaded
@@ -50,7 +51,10 @@ nextPageOnWrap: true,
 // this should be set if the package is being run as an editor-only instance
 // within neomanager. it's set automatically under normal conditions!
 // 'null' is normal for standalone, no-localhost-manager operation.
-remoteImageHost: null
+remoteImageHost: null,
 
-// settings end
-}
+};
+
+// settings end, autocalculated stuff follows - do not change
+myag.settings.artworksPerPage = myag.settings.artworksPerRow * myag.settings.rowsPerPage;
+myag.navigation.mode = myag.settings.pagingIndex;

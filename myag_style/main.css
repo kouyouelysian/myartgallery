@@ -23,6 +23,7 @@ body {
 	font-family: var(--font-main);
 	font-size: var(--font-main-size);
 	color: var(--col-text);
+	--artworks-per-row: 4; /* fallback */
 }
 
 h1 {
