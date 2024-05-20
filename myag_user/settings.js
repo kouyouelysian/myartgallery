@@ -23,7 +23,7 @@ title: "MyArtGallery",
 fullButton: true, 
 
 // if artwork has a name or an about-it -- display it in overlay image viewer
-about: true,
+viewerSideInfo: true,
 
 // type of pagination used -- "none", "pages" or "append". set for main and
 // group display separately. 

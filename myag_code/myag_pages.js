@@ -24,7 +24,7 @@ addPagination: function(targetElem)
 {
 	if (!targetElem)
 		return;
-	myag.pagesTotal = Math.ceil(myag.data.artworks.length / myag.settings.artworksPerPage);
+	myag.pagesTotal = Math.ceil(myag.data.artworks.items.length / myag.settings.artworksPerPage);
 	switch (myag.navigation.mode)
 	{
 		case "none": return;
@@ -39,56 +39,55 @@ return: none
 */
 makePaginationPages: function(parent)
 {
-			
-		var makeNavArrow = function(content, action) {
-			arrow = document.createElement("p");
-			arrow.innerHTML = content;
-			arrow.classList.add("paginationArrow");
-			arrow.setAttribute("onclick", action);
-			return arrow;
-		}
 
-		pagination = document.createElement("div");
-		pagination.id = "paginationPages";
+	var makeNavArrow = function(content, action) {
+		arrow = document.createElement("p");
+		arrow.innerHTML = content;
+		arrow.classList.add("paginationArrow");
+		arrow.setAttribute("onclick", action);
+		return arrow;
+	}
 
-		pagination.appendChild(makeNavArrow("&lt;", "myag.pages.pagePrev()"));
-		
-		for (x=0; x<myag.pagesTotal; x++)
-		{
-			var pageMarker = document.createElement("p");
-			pageMarker.innerHTML = String(x+1);
-			pageMarker.classList.add("paginationPageLink");
-			pageMarker.setAttribute("onclick", "myag.pages.pageJump("+String(x)+")");
-			pagination.appendChild(pageMarker);
-		}
+	pagination = document.createElement("div");
+	pagination.id = "paginationPages";
 
-		pagination.appendChild(makeNavArrow("&gt;", "myag.pages.pageNext()"));
-		parent.parentNode.insertBefore(pagination, parent.nextSibling);
+	pagination.appendChild(makeNavArrow("&lt;", "myag.pages.pagePrev()"));
+	
+	for (x=0; x<myag.pagesTotal; x++)
+	{
+		var pageMarker = document.createElement("p");
+		pageMarker.innerHTML = String(x+1);
+		pageMarker.classList.add("paginationPageLink");
+		pageMarker.setAttribute("onclick", "myag.pages.pageJump("+String(x)+")");
+		pagination.appendChild(pageMarker);
+	}
 
-		getPage = bmco.getParamRead("page");
-		if (getPage == null)
-		{
-			getPage = parseInt(getPage);	
-			if (!isNaN(getPage))
-				return myag.pages.pageJump(getPage);
-		}
-		return myag.pages.pageJump(0, generateGetParam=false);
+	pagination.appendChild(makeNavArrow("&gt;", "myag.pages.pageNext()"));
+	parent.parentNode.insertBefore(pagination, parent.nextSibling);
+
+	getPage = bmco.getParamRead("page");
+	if (getPage == null)
+	{
+		getPage = parseInt(getPage);	
+		if (!isNaN(getPage))
+			return myag.pages.pageJump(getPage);
+	}
+	return myag.pages.pageJump(0, generateGetParam=false);
 },
 
-pageVisible: function(n, visible=true)
+pageVisible: function(n)
 {
-	var elems = document.getElementsByClassName("artwork");
 	var start = 0;
-	var end = elems.length;
+	var end = myag.data.artworks.items.length;
 	if (n != "all")
 	{
 		start = myag.settings.artworksPerPage*n;
 		end = start + myag.settings.artworksPerPage;
-		if (end > elems.length)
-			end = elems.length;
+		if (end > myag.data.artworks.items.length)
+			end = myag.data.artworks.items.length;
 	}
-	for (var x = start; x < end; x++)
-		visible? elems[x].classList.remove("invisible") : elems[x].classList.add("invisible");
+	hideOthers = myag.navigation.mode == "pages";
+	myag.data.artworks.htmlItemsVisible(start, end, hideOthers);
 },
 
 /* Function to load Nth page for 'pages' style pagination
@@ -104,9 +103,9 @@ pageJump: function(n, writeGetParam=true)
 	if (page == NaN)
 		return;
 
-	myag.navigation.counter = page; 	
-	myag.pages.pageVisible("all", false);
-	myag.pages.pageVisible(myag.navigation.counter, true);	
+	myag.navigation.counter = page; 
+	myag.data.artworks.htmlItemsVisible	
+	myag.pages.pageVisible(myag.navigation.counter);	
 
 	pageMarkers = document.getElementsByClassName("paginationPageLink");
 	bmco.ofClassRemoveClass("paginationPageLink", "paginationPageSelected");
@@ -172,6 +171,8 @@ makePaginationAppend: function(parent)
 loadAllowed: function()
 {
 	target = document.getElementById("paginationMoreTrigger");
+	if (!target)
+		return false
 	if (window.scrollY+window.innerHeight-250 >= target.getBoundingClientRect().top)
 		return true;
 	if (target.getBoundingClientRect().top <= window.innerHeight)

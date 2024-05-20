@@ -22,15 +22,15 @@
 		<hr id="postAboutHr">
 
 		<div id='fullViewSidebarButtonsWrapper'>
-			<div class="groupButton" onclick="myag_im_download();">
+			<div class="groupButton" onclick="myag.image.download();">
 				<p>Download</p>
 			</div>
 			<br>
-			<div class="groupButton" onclick="myag_im_share();">
+			<div class="groupButton" onclick="myag.image.share();">
 				<p id="shareText">Share</p>
 			</div>
 			<br>
-			<div class="groupButton" onclick="myag_im_back();">
+			<div class="groupButton" onclick="myag.image.back();">
 				<p>Back</p>
 			</div>
 			<br>
@@ -38,10 +38,11 @@
 	</div>
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<!--scripts start-->
-	<script type="text/javascript" src="./myag_user/settings.js"></script>
-	<script type="text/javascript" src="./myag_code/bmco_general.js"></script>
+	<script type="text/javascript" src="./myag_code/bmco.js"></script>
 	<script type="text/javascript" src="./myag_code/bmco_xml.js"></script>
+	<script type="text/javascript" src="./myag_code/bmco_infra.js"></script>
 	<script type="text/javascript" src="./myag_code/myag_main.js"></script>
+	<script type="text/javascript" src="./myag_user/settings.js"></script>
 	<script type="text/javascript" src="./myag_code/myag_image.js"></script>
 	<!--scripts end-->
 </body>

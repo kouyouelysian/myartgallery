@@ -14,6 +14,8 @@ myag.viewer = {
 //================================ GLOBAL VARS =============================//
 //==========================================================================//
 
+displayedArtwork: undefined,
+
 wrapperObject: undefined,
 state:  false,
 toggleTimeout: undefined,
@@ -82,23 +84,25 @@ createArtworkViewer: function()
 },
 
 
-putToViewer: function(aw_id)
+putToViewer: function(awid)
 {
-	var aw = myag.getArtworkById(aw_id)
+	myag.viewer.displayedArtwork = awid
+	bmco.getParamWrite('id', awid); // put get param to URL so users can share an image directly
 	var img = document.getElementById('artworkViewer');
+	var aw = myag.data.artworks.itemById(awid);
 	img.style.backgroundImage = `url('${myag.artworksFolder+aw.filename}')`;
-	myag.viewer.wrapperObject.setAttribute('awid', aw.awid);
-	bmco.getParamWrite('id', aw.awid); // put get param to URL so users can share an image directly
 	var a = document.getElementById('artworkViewerAbout');
-	if (myag.settings.about)
+	if (myag.settings.viewerSideInfo)
 	{
+		if ((!aw.name || aw.name == "") && (!aw.about || aw.about == ""))
+			return a.style.display = "none";
 		html = "";
-
 		if (aw.name != "")
 			html += "<span class='artworkViewerAboutName'>"+aw.name+"</span><br><br>"
-		html += aw.about;
+		if (aw.about != "")
+			html += aw.about;
 		a.innerHTML = html;			
-		aw.about.length != 0? a.style.display = "block" : a.style.display = "none";
+		a.style.display = "block";
 	}
 	else
 		a.style.display = "none";
@@ -127,53 +131,13 @@ showViewer: function(aw_id)
 
 jump: function(dir)
 {
-	var target = myag.viewer.wrapperObject.getAttribute('awid');
-	if (target == null)
-	return null; // this means there's nothing loaded at all (non soosible)
-	aw = undefined;
-	for (var t = 0; t < myag.data.artworks.length; t++)
-	{
-
-		if (myag.data.artworks[t].awid == target) // we found current artwork...
-		{
-			if (dir) // fwd
-			{
-				t += 1;
-				if (t == myag.data.artworks.length)
-				{
-					t = 0;  //wrap around
-					if (myag.settings.nextPageOnWrap && myag.settings.pagingIndex == "pages")
-					{
-						currentPage += 1;
-						if (currentPage == pagesTotal)
-							currentPage = 0;
-						myag.ip.goto(currentPage);
-					}
-				}
-				
-			}
-			else  // bwd
-			{
-				t -= 1;
-				if (t == -1)
-				{
-					t = myag.data.artworks.length-1; //wrap around
-					if (myag.settings.nextPageOnWrap && myag.settings.pagingIndex == "pages")
-					{
-						currentPage -= 1;
-						if (currentPage == -1)
-							currentPage = pagesTotal - 1;
-						myag.ip.goto(currentPage);
-						t = myag.data.artworks.length-1; // redo
-					}
-				}
-				
-			}
-			aw = myag.data.artworks[t];
-			break;
-		}
-	}
-	myag.viewer.putToViewer(aw.awid);
+	var index = myag.data.artworks.indexById(myag.viewer.displayedArtwork);
+	dir? index++ : index--;
+	if (index < 0)
+		index = myag.data.artworks.items.length - 1;
+	else if (index == myag.data.artworks.items.length)
+		index = 0;
+	myag.viewer.putToViewer(myag.data.artworks.items[index].id);
 	
 },
 
@@ -207,7 +171,7 @@ openFullView: function()
 	if (myag.viewer.wrapperObject == undefined)
 		return null; // do nothing if the viewer has nothing loaded up
 
-	url = "./image.html?id="+myag.viewer.wrapperObject.getAttribute('awid');
+	url = "./image.html?id="+myag.viewer.displayedArtwork;
 	window.location = url;
 },
 

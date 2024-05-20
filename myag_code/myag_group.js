@@ -23,7 +23,7 @@ setupWrapperAttribute: function() {
 },
 
 setupPageElements: function() {
-	var gObj = myag.groupById(bmco.getParamRead("g"));
+	var gObj = myag.data.groups.itemById(bmco.getParamRead("g"));
 	document.getElementById("groupAbout").innerHTML = gObj.about;
 	document.getElementById("groupName").innerHTML = gObj.name;
 }
@@ -35,5 +35,5 @@ setupPageElements: function() {
 }
 
 myag.group.setupWrapperAttribute();
-window.addEventListener("groupsLoaded", (event) => { myag.group.setupPageElements() });
+window.addEventListener("artworksLoaded", (event) => { myag.group.setupPageElements() });
 myag.navigation.mode = myag.settings.pagingGroup;

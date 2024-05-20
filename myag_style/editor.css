@@ -7,7 +7,6 @@ body {
 	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
-	--artworks-per-row:       6; 	  /* how many artworks to display per row. integer. suggested 3-6 */
 	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
 	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
 	--artwork-drop-shadow:    none;   /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
@@ -21,22 +20,8 @@ want your editor page to suddenly turn into a piece of crap.. it's barely holdin
 as is, as far as i can see :'D
 */
 
-#mainWrapper {
-	margin-bottom: calc(var(--page-margin) * 2);
-}
-
 #header {
 	height: auto;
-}
-
-#shortInfo {
-	margin-left: 0;
-	position: unset;
-	width: calc(100% - var(--page-spacing) - var(--page-spacing));
-}
-
-#username {
-	margin-bottom: calc(var(--page-spacing) / 2);
 }
 
 #artworkViewer {
@@ -61,6 +46,7 @@ as is, as far as i can see :'D
 	width: 50%;
 	left: 25%;
 	height: 60px;
+	z-index: 100;
 	text-align: center;
 	display: table;
 	box-shadow: 0px 0px 10px RGBA(0,0,0,0.3);
@@ -155,16 +141,69 @@ as is, as far as i can see :'D
 	margin-left: 0;
 }
 
-/* these have to be separate because editor.js modifies these independently */
-.artwork {
-	margin-right: 0;
-	margin-left: var(--page-spacing);
+
+
+
+
+
+
+
+
+.inactive {
+	pointer-events: none;
 }
 
-.groupButton {
-	margin-right: 0;
-	margin-left: var(--page-spacing);
+.placeMarker.invisible {
+	display: none;
 }
+
+
+.artworkPlaceMarker {
+	background-color: var(--col-body);
+	color: var(--col-accent);
+	transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+	width: 72px;
+	margin-right: -80px;
+	margin-left: 0;
+	z-index: 10;
+	left: -52px;
+	padding-top: 72px;
+	border: 4px dashed var(--col-accent);
+	border-radius: var(--page-spacing);
+}
+
+.artworkPlaceMarker:hover {
+	background-color: var(--col-accent);
+	border-color: var(--col-body);
+	color: var(--col-body);
+}
+
+.artworkPlaceMarker > p {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 18px;
+	font-family: 'Arial';
+	font-weight: bold;
+	width: 100%;
+	text-align: center;
+	margin: 0;
+	color: inherit;
+	font-style: italic;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 #formWrapper input[type="text"], #formWrapper textarea {
 	display: block;
@@ -257,9 +296,6 @@ as is, as far as i can see :'D
 }
 
 
-.artwork:first-child, .groupButton:first-child {
-	margin-left: var(--page-spacing);
-}
 
 
 

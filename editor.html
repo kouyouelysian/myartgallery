@@ -15,10 +15,8 @@
 <!--*chunk bodytag*-->
 <body isEditor="isEditor">
 <!--*endchunk*-->
-
-	<div id="artworkViewerWrapper"></div>
 	
-	<main id="mainWrapper">
+	<main>
 
 		<nav class="tabNav">
 			<p onclick="tab.switchTo(this)" tab="artworks">Artworks</p>
@@ -52,47 +50,54 @@
 
 
 	<form class="fillout" id="filloutArtwork">
+
 		<h1 id="filloutArtworkTitle"></h1>
-		<label for="inputName">Name</label>
-		<input type="text" name="inputName" id="inputName">
+
+		<label for="inputArtworkName">Name</label>
+		<input type="text" name="inputArtworkName" id="inputArtworkName">
+
 		<p>Description (optional)</p>
-		<textarea id="inputAbout"></textarea>
+		<textarea id="inputArtworkAbout"></textarea>
 		
-		<label for="inputFilename">Filename (automatic, usually left as is)</label>
-		<input type="text" name="inputFilename" id="inputFilename">
+		<label for="inputArtworkFilename">Filename (automatic, usually left as is)</label>
+		<input type="text" name="inputArtworkFilename" id="inputArtworkFilename">
 
 		<label for="inputFileUpload">New file:</label>
 		<input type="file" name="inputFileUpload" id="inputFileUpload">
 		<hr>
-		<div id="filloutArtworkGroupCheckboxes">
+		<div id="inputArtworkIngroups">
 			<p>In groups:</p>
 		</div>
-		<input type="hidden" name="inputAwid" id="inputAwid">
+		<input type="hidden" name="inputArtworkId" id="inputArtworkId">
 		<hr>
 		<div class="bottombar" id="filloutArtworkBottomBar"></div>
 	</form>
 
 	<form class="fillout" id="filloutGroup">
+
 		<h1 id="filloutGroupTitle"></h1>
-		<label for="inputName">Name</label>
+
+		<label for="inputGroupName">Name</label>
 		<input type="text" name="inputGroupName" id="inputGroupName">
+
 		<p>Description (optional)</p>
 		<textarea id="inputGroupAbout"></textarea>
-		<input type="hidden" name="inputGid" id="inputGid">
-		<input type="hidden" name="inputGroupNameOld" id="inputGroupNameOld">
+		
+		<input type="hidden" name="inputGroupId" id="inputGroupId">
 		<hr>
 		<div class="bottombar" id="filloutGroupBottomBar"></div>
 	</form>
 
-	<div class="bottombar" id="bottomButtonWrapper">
-	</div>	
+	<footer class="bottombar" id="bottomButtonWrapper">
+	</footer>	
 
 
 	<!--*chunk scripts*-->
 	<script type="text/javascript" src="myag_code/bmco.js"></script>
+	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
 	<script type="text/javascript" src="myag_code/bmco_gui.js" ></script>
 	<script type="text/javascript" src="myag_code/bmco_tabs.js" ></script>
-	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
+	<script type="text/javascript" src="myag_code/bmco_infra.js"></script>
 	<script type="text/javascript" src="myag_code/myag_main.js"></script>
 	<script type="text/javascript" src="myag_user/settings.js"></script>
 	<script type="text/javascript" src="myag_code/myag_pages.js"></script>

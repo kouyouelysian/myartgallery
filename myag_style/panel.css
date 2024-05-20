@@ -69,17 +69,15 @@
 /*                               ARTWORKS PANEL                               */
 /*============================================================================*/
 
-#artworksWrapper {
-	margin: var(--page-spacing);
-	width: calc(100% - var(--page-spacing));
+.myag_artworksWrapper {
+	width: calc(100% + var(--page-spacing));
 	margin-bottom: 0;
 	margin-right: 0;
-	vertical-align: middle;
 	user-select: none;
 	-webkit-user-select: none;
 }
 
-.artwork {
+.artwork, .artworkPlaceMarker {
 
 	width: calc(100% / var(--artworks-per-row) - var(--page-spacing));
 	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));

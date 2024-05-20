@@ -154,6 +154,19 @@ arrayRemoveValue: function(arr, value)
 	});
 },
 
+
+arrayMoveValue: function(arr, fromIndex, toIndex) {
+	// thank you https://stackoverflow.com/users/802435/steak-overflow
+	if (fromIndex < 0 || toIndex < 0)
+		return false;
+	if (fromIndex > arr.length-1 || toIndex > arr.length-1)
+		return false;
+    var element = arr[fromIndex];
+    arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, element);
+},
+
+
 /* returns random string of lowercase characters and numbers of length n
 inputs: n <integer> [length of the resulting string]
 return: <string> random string
@@ -489,12 +502,18 @@ inputs: array <array[object, ...]> [array with objects to search in],
 		property <string> [name of the property to filter by],
 		value <any> [value the property shoud be]
 */
-firstInArrayWithProperty(array, property, value, index=false) {
+firstInArrayWithProperty: function(array, property, value, index=false) {
 	for (var counter in array)
 		{if (array[counter][property] == value) return (index? parseInt(counter) : array[counter]);}
 	return undefined;
 },
 
+
+firstElementByAttribute: function(items, attribute, value) {
+	for (var i of items)
+		{if (i.getAttribute(attribute) == value) return i;}
+	return undefined;
+},
 
 /* Finds the first element in an array of elements acquired via elemGetterFunction
 with 'attribute' set to 'value'. Used to locate buttons, artwork divs, etc... a lot.
@@ -507,9 +526,7 @@ return: <html element> or <undefined> on fail
 */
 firstElementOfByAttribute: function(parentDocument, getterFunction, getterArgument, attribute, value) {
 	var items = parentDocument[getterFunction](getterArgument);
-	for (var i of items)
-		{if (i.getAttribute(attribute) == value) return i;}
-	return undefined;
+	return bmco.firstElementByAttribute(items, attribute, value);
 },
 
 

@@ -17,6 +17,7 @@ available functions:
 	bmco.xml.nodeTextCreate(xmldoc, elem, text="")
 	bmco.xml.nodeTextWrite(xmldoc, node, text)
 	bmco.xml.nodeTextRead(node, emptyStringOnFail=true)
+	bmco.xml.nodeTextCheck(node)
 	bmco.xml.childTagExists(node, tag)
 	bmco.xml.childTagGetChildren(node, tag)
 	bmco.xml.childTagGetChildrenValues(node, tag)
@@ -171,6 +172,21 @@ nodeTextRead: function(node, emptyStringOnFail=true)
 	}
 	var text = node.childNodes[0].nodeValue;
 	return bmco.HTMLEntitiesDecode(text);
+},
+
+/*  checks if an xml node has text in it
+inputs: node <xml element> [node to read from]
+return: <bool> [has text or not]
+*/
+nodeTextCheck: function(node)
+{
+	if (node.childElementCount != 0)
+		return false;
+	if (node.childNodes.length != 1)
+		return false;
+	if (node.childNodes[0] == undefined)
+		return false;
+	return true;
 },
 
 /*  tries to find the first child tag of a particular name in a parent
