@@ -54,7 +54,10 @@ Artwork: class extends bmco.infra.Item {
 			"about": "about",
 			"filename": "filename",
 			"thumbnail": "thumbnail",
-			"ingroups": "ingroups"
+			"ingroups": "ingroups",
+		};
+		this.multiTagMappings = {
+			"ingroups": "ingroup"
 		};
 		this.guiFilloutBindings = {
 			"id": "inputArtworkId",
@@ -143,10 +146,8 @@ putArtwork(target, aw) {
 
 putGroupButton(target, g) {
 	target.appendChild(myag.generateGroupDiv(g));
-	/*
 	if (myag.isEditor)
-		target.appendChild(myag.generateArtworkPlaceMarker(g));
-	*/
+		target.appendChild(myag.generateGroupPlaceMarker(g));
 },
 
 setArtworksPerRow(wrapperElem) {
@@ -181,23 +182,22 @@ for the XML editor page, unused in the main page itself.
 inputs: group <Group object> - group object to make the group locator after
 returns: <DOM element>
 */
-generateGroupPlaceMarker: function(group)
+generateGroupPlaceMarker: function(g)
 {
-	var locatorWrapper = document.createElement("div");
-	locatorWrapper.classList.add("locatorWrapper", "locatorWrapperGroup");
-	locatorWrapper.setAttribute("gid", group.id);
-
-	var locator = document.createElement("div");
-	locator.classList.add("locator");
-	locator.setAttribute("title", "Move group here")
-	if (group.name == "Add new...")
-		locator.setAttribute("onclick", "myag.ed.putGroupAfter('start')");
+	var marker = document.createElement("div");
+	marker.classList.add("marker", "markerGroup", "invisible");
+	marker.innerHTML = "<p>Move Here</p>"
+	if (!g)
+	{
+		marker.setAttribute("awid", "start");
+		marker.setAttribute("onclick", "myag.ed.place('start')");
+	}
 	else
-		locator.setAttribute("onclick", "myag.ed.putGroupAfter('"+group.id+"')");
-
-	locatorWrapper.appendChild(locator);
-
-	return locatorWrapper;
+	{
+		marker.setAttribute("gid", g.id);
+		marker.setAttribute("onclick", "myag.ed.place('"+g.id+"')");
+	}
+	return marker;
 },
 
 /* Creates an appendable div based on an Artwork instance
@@ -229,6 +229,12 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);
 	}
+	else if (!overlayText)
+	{
+		div.style.backgroundColor = bmco.randomColor(3, 8, 15);
+		if (myag.isEditor)
+			overlayText = aw.name;
+	}
 
 	if (overlayText != undefined)
 	{
@@ -248,11 +254,11 @@ returns: <DOM element>
 generateArtworkPlaceMarker: function(aw=undefined)
 {
 	var marker = document.createElement("div");
-	marker.classList.add("placeMarker", "artworkPlaceMarker", "invisible");
+	marker.classList.add("marker", "markerArtwork", "invisible");
 	marker.innerHTML = "<p>Move Here</p>"
 	if (!aw)
 	{
-		marker.setAttribute("awid", "end");
+		marker.setAttribute("awid", "start");
 		marker.setAttribute("onclick", "myag.ed.place('start')");
 	}
 	else
@@ -298,11 +304,13 @@ startup: function(pagename)
 			myag.Group,
 			{ // xml
 				workingDoc: myag.data.xml,
-				listTag: myag.data.xml.getElementsByTagName("groups")[0]
+				listTag: myag.data.xml.getElementsByTagName("groups")[0],
 			},
 			{ // gui
 				htmlClass:       "groupButton",
+				htmlMarkerClass: "markerGroup",
 				htmlIdAttribute: "gid",
+				htmlNewButtonId: "createNewGroup",
 				xmlTagName:      "group",
 				xmlIdTagName:    "gid",
 				fillout:     "filloutGroup",
@@ -322,7 +330,9 @@ startup: function(pagename)
 			},
 			{ // gui
 				htmlClass:       "artwork",
+				htmlMarkerClass: "markerArtwork",
 				htmlIdAttribute: "awid",
+				htmlNewButtonId: "createNewArtwork",
 				xmlTagName:      "artwork",
 				xmlIdTagName:    "awid",
 				fillout:     "filloutArtwork",

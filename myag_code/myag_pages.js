@@ -87,7 +87,7 @@ pageVisible: function(n)
 			end = myag.data.artworks.items.length;
 	}
 	hideOthers = myag.navigation.mode == "pages";
-	myag.data.artworks.htmlItemsVisible(start, end, hideOthers);
+	myag.data.artworks.htmlItemRangeVisible(start, end, hideOthers);
 },
 
 /* Function to load Nth page for 'pages' style pagination

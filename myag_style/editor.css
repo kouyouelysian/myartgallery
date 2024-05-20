@@ -97,29 +97,19 @@ as is, as far as i can see :'D
 	filter: brightness(90%);
 }
 
-#buttonCreateNewGroup {
+
+#createNewArtwork, #createNewGroup {
 	border-color: var(--col-counterpick);
 	background-color: var(--col-counterpick);
 	color: var(--col-text);
+	filter: none;
+	transition: 0.1s;
 }
 
-#buttonCreateNewGroup:hover {
-	background-color: var(--col-body);
-	color: var(--col-counterpick);
-}
-
-#buttonCreateNewArtwork {
-	background-color: var(--col-counterpick);
-	color: var(--col-text);
-	transition: background-color 0.1s, color 0.1s;
-}
-
-.newArtwork {
-	transition: filter 0.1s;
-}
-
-#buttonCreateNewArtwork:hover {
-	background-color: var(--col-buttonbg);
+#createNewArtwork:hover, #createNewGroup:hover {
+	border-color: var(--col-accent);
+	background-color: var(--col-accent);
+	filter: none;
 }
 
 .artwork p {
@@ -153,32 +143,46 @@ as is, as far as i can see :'D
 	pointer-events: none;
 }
 
-.placeMarker.invisible {
+.marker.invisible {
 	display: none;
 }
 
 
-.artworkPlaceMarker {
+.marker {
 	background-color: var(--col-body);
 	color: var(--col-accent);
 	transition: background-color 0.1s, color 0.1s, border-color 0.1s;
-	width: 72px;
-	margin-right: -80px;
 	margin-left: 0;
 	z-index: 10;
-	left: -52px;
-	padding-top: 72px;
 	border: 4px dashed var(--col-accent);
-	border-radius: var(--page-spacing);
+	border-radius: 14px;
+	position: relative;
+	display: inline-block;
 }
 
-.artworkPlaceMarker:hover {
+.markerArtwork {
+	width: 72px;
+	padding-top: 72px;
+	margin-right: -80px;
+	left: -52px;
+}
+
+.markerGroup {
+	transform: translateY(-50%);
+	width: 57px;
+	height: 57px;
+	margin-right: -65px;
+	left: -44px;
+}
+
+
+.marker:hover {
 	background-color: var(--col-accent);
 	border-color: var(--col-body);
 	color: var(--col-body);
 }
 
-.artworkPlaceMarker > p {
+.marker > p {
 	position: absolute;
 	left: 0;
 	top: 50%;
@@ -192,18 +196,6 @@ as is, as far as i can see :'D
 	color: inherit;
 	font-style: italic;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 #formWrapper input[type="text"], #formWrapper textarea {
 	display: block;
@@ -250,41 +242,6 @@ as is, as far as i can see :'D
   display: none;
 }
 
-.labelledCheckbox {
-	display: inline-block;
-	width: 50%;
-	position: relative;
-	height: calc(var(--font-main-size) + 4px);
-	background-color: var(--col-body);
-	transition: background-color 0.1s;
-	cursor: pointer;
-}
-
-.labelledCheckbox:hover {
-	background-color: var(--col-buttonbg);
-}
-
-.labelledCheckbox label {
-	position: absolute;
-	height: 100%;
-	width: 90%;
-	top: 0%;
-	left: 10%;
-	pointer-events: none;
-	overflow: hidden;
-	
-}
-
-.labelledCheckbox input {
-	position: absolute;
-	height: calc(100% - 8px);
-	width: calc(10% - 8px);
-	margin: 0;
-	top: 4px;
-	left: 4px;
-	pointer-events: none;
-}
-
 #formWrapper .controlButton {
 	margin-bottom: 0;
 	width: calc(50% - var(--page-spacing) / 2);
@@ -294,99 +251,6 @@ as is, as far as i can see :'D
 #formWrapper .controlButton:last-of-type {
 	margin-right: 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-.locatorWrapper {
-	width: var(--page-spacing);
-	height: 0;
-	position: relative;
-	display: none;
-	margin: 0;
-	margin-bottom: var(--page-spacing);
-	vertical-align: top;
-}
-
-.locator {
-	background-color: blue;
-	width: 4px;
-	height: calc(100% - 4px);
-	margin-left: calc(var(--page-spacing) / 2  - 4px);
-	background-color: var(--col-body);
-	position: absolute;
-	top: 0;	
-}
-
-.locatorWrapperArtwork {
-	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));
-	vertical-align: middle;
-}
-
-.locatorWrapperGroup {
-	height: calc(var(--button-height) + var(--border-width) + var(--border-width));
-}
-
-.locatorWrapperArtwork .locator, .locatorWrapperGroup .locator {
-	border: 2px dashed var(--col-counterpick); 
-}
-
-.locatorWrapperArtwork.locatorActive, .locatorWrapperGroup.locatorActive {
-	display: inline-block;
-}
-
-.locatorWrapperArtwork.locatorActive + .artwork, .locatorWrapperGroup.locatorActive + .groupButton {
-	margin-left: 0;
-}
-
-.locatorWrapper.locatorActive:hover .locator {
-	width: calc(100% - var(--page-spacing) - 4px);
-	margin-left: var(--page-spacing);
-	opacity: 1;
-}
-
-.locatorWrapperArtwork.locatorActive:hover {
-	width: calc(100% / var(--artworks-per-row));
-}
-
-.locatorWrapperGroup.locatorActive:hover {
-	width: calc(100% / var(--buttons-per-row));
-}
-
-.locatorWrapperArtwork.locatorActive:hover + .artwork, .locatorWrapperGroup.locatorActive:hover + .groupButton {
-	margin-left: var(--page-spacing);
-}
-
-#currentlyMoved {
-	border: 0;
-	width: 0;
-	opacity: 0;
-}
-
-.locatorWrapperArtwork.locatorActive:hover + #currentlyMoved, .locatorWrapperGroup.locatorActive:hover + #currentlyMoved {
-	display: inline-block;
-	margin-left: var(--page-spacing);
-}
-
-
-
-
-
-#currentlyMovedLocator {
-	display: none;
-}
-
-
-
-
-
 
 #toolsWrapper {
 

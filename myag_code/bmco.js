@@ -13,6 +13,7 @@ available functions:
 	bmco.HTMLEntitiesDecode(arg)
 	bmco.arrayHas(array, item)
 	bmco.arrayRemoveValue(arr, value)
+	bmco.arrayMoveValue(arr, fromIndex, toIndex)
 	bmco.randString(n)
 	bmco.getParamRead(arg)
 	bmco.getParamWrite(param, value)
@@ -73,6 +74,29 @@ httpRequest: async function(fname)
 		xhr.open('GET', fname, true)
 		xhr.send();
 	});
+},
+
+hexDict: [
+	'0','1','2','3',
+	'4','5','6','7',
+	'8','9','A','B',
+	'C','D','E','F'
+],
+
+decToHex: function(dec, lower=false) {
+	if (dec < 0 || dec > 15)
+		return false;
+	return lower? bmco.hexDict[dec].toLowerCase() : bmco.hexDict[dec]; 
+},
+
+hexToDec: function(hex) {
+	var hexLetter = hex[1].toUpperCase(); 
+	if (!bmco.arrayHas(bmco.hexDict, hexLetter))
+		return false;
+	for (var x = 0; x < 16; x++)
+		if (bmco.hexDict[x] == hexLetter) return x;
+	return false;
+
 },
 
 /* Replaces all occurences of target in arg to replace
@@ -701,11 +725,33 @@ bodyAttributeExists: function(attribName) {
 	return bmco.elementAttributeExists(document.body, attribName)	
 },
 
-randomColor: function()
+randomColor: function(steps=2, low=0, high=15)
 {
-	colors = ["f9c", "fc9", "cf9", "c9f", "9fc", "9cf"];
-	var color = colors[Math.floor(Math.random()*colors.length)];
-	return `#${color}`;
+	if (!bmco.decToHex(steps) || !bmco.decToHex(low) || !bmco.decToHex(low))
+		return false;
+	if (steps == 0)
+		return false;
+
+	var range = high - low;
+	var dict = [];
+	counter = low;
+	for (var x = 0; x < steps; x++) {
+		dict.push(bmco.decToHex(counter));
+		counter += Math.round(range/steps);
+	}
+	dict.push(bmco.decToHex(high));
+
+	colors = [];
+
+	for (var x of dict) {
+		for (var y of dict) {
+			for (var z of dict) {
+				colors.push(`#${x}${y}${z}`);
+			}
+		}
+	}
+
+	return colors[Math.floor(Math.random()*colors.length)];
 }
 
 

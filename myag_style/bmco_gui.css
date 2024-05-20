@@ -197,7 +197,6 @@
 	height: calc(var(--font-main-size) + 4px);
 	background-color: var(--col-body);
 	transition: background-color 0.1s;
-	cursor: pointer;
 }
 
 .labelledCheckbox:hover {
@@ -210,19 +209,18 @@
 	width: 90%;
 	top: 0%;
 	left: 10%;
-	pointer-events: none;
 	overflow: hidden;
 	
 }
 
 .labelledCheckbox input {
+	cursor: pointer;
 	position: absolute;
 	height: calc(100% - 8px);
 	width: calc(10% - 8px);
 	margin: 0;
 	top: 4px;
 	left: 4px;
-	pointer-events: none;
 }
 
 .fillout .button {

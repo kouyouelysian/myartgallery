@@ -1,18 +1,15 @@
 
-
-
-/*============================================================================*/
-/*                            GROUP BUTTONS SECTION                           */
-/*============================================================================*/
-
-#groupsWrapper {
-	margin: var(--page-spacing);
-	width: calc(100% - var(--page-spacing));
+.myag_artworksWrapper, .myag_groupsWrapper {
+	width: calc(100% + var(--page-spacing));
 	margin-bottom: 0;
 	margin-right: 0;
 	user-select: none;
 	-webkit-user-select: none;
 }
+
+/*============================================================================*/
+/*                            GROUP BUTTONS SECTION                           */
+/*============================================================================*/
 
 .groupButton {
 	box-shadow: 0px 0px 14px RGBA(0,0,0,0.1);
@@ -69,15 +66,9 @@
 /*                               ARTWORKS PANEL                               */
 /*============================================================================*/
 
-.myag_artworksWrapper {
-	width: calc(100% + var(--page-spacing));
-	margin-bottom: 0;
-	margin-right: 0;
-	user-select: none;
-	-webkit-user-select: none;
-}
 
-.artwork, .artworkPlaceMarker {
+
+.artwork {
 
 	width: calc(100% / var(--artworks-per-row) - var(--page-spacing));
 	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));
@@ -93,7 +84,7 @@
 	cursor: pointer;
 }
 
-.artwork.invisible {
+.invisible {
 	display: none;
 }
 

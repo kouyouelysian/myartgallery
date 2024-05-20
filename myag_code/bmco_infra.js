@@ -28,8 +28,9 @@ Item: class {
 		this.xmlFieldMappings = {
 			"id": "id",
 			"name": "name",
-			"about": "about"
+			"about": "about",
 		};
+		this.xmlMultiTagMappings = {};
 		this.guiFilloutBindings = {
 			"id": "filloutId",
 			"name": "filloutName",
@@ -61,19 +62,28 @@ Item: class {
 	}
 
 	toXml(xmldoc) {
-		var tag = xmldoc.createElement(this.xmlTagName);
+		var itemTag = xmldoc.createElement(this.xmlTagName);
 		for (var m in this.xmlFieldMappings)
 		{
-			if (typeof(this[m]) == "string")
-				tag.appendChild(bmco.xml.nodeTextCreate(xmldoc, m, this[m]));
+			
+			if (this[m] === null)
+				itemTag.appendChild(xmldoc.createElement(m));
+			else if (typeof(this[m]) == "string")
+				itemTag.appendChild(bmco.xml.nodeTextCreate(xmldoc, m, this[m]));
 			else if (this[m].constructor === Array)
 			{
-
+				var multiTag = xmldoc.createElement(m);
+				var childTagName = this.multiTagMappings[m];
+				for (var val of this[m])
+				{
+					var childTag = bmco.xml.nodeTextCreate(xmldoc, childTagName, val)
+					multiTag.appendChild(childTag);
+				}
+				itemTag.appendChild(multiTag);
 			}
-			else if (this[m] === null)
-				tag.appendChild(xmldoc.createElement(m));
+			
 		}
-		return tag;
+		return itemTag;
 	}
 
 	filloutWrite() {
@@ -94,10 +104,7 @@ Item: class {
 			
 			}
 			else
-			{
-				console.log(prop, target);
 				this.filloutFieldWrite(target, this[prop]);
-			}
 		}
 	}
 
@@ -113,7 +120,36 @@ Item: class {
 	}
 
 	filloutRead() {
+		for (var prop in this.guiFilloutBindings)
+		{
+			target = document.getElementById(this.guiFilloutBindings[prop]);
+			if (!target)
+				continue;
+			if (target.nodeName.toLowerCase() == "div")
+			{	// multi-input -read all into an array
+				for (var i of target.getElementsByTagName("input"))
+				{
+					var val = this.filloutFieldRead(i);
+					if (!val)
+						continue;
+					this[prop].push(val);			
+				}
+			}
+			else
+				this[prop] = this.filloutFieldRead(target);
 
+		}
+	}
+
+	filloutFieldRead(target) {
+		if (!target)
+			return null;
+		else if (bmco.arrayHas(["input", "textarea"], target.nodeName.toLowerCase()))
+		{
+			if (target.getAttribute("type") == "checkbox")
+				return target.checked? target.name : null;
+			return target.value; 
+		}
 	}
 
 },
@@ -123,7 +159,7 @@ ItemList: class {
 	constructor(itemClass, xml=undefined, gui=undefined) {
 		this.items = [];
 		this.itemClass = itemClass;
-		this.addToEnd = true;
+		this.putNewItemsToStart = true;
 		this.xml = xml;
 		this.gui = gui; 
 
@@ -135,10 +171,12 @@ ItemList: class {
 
 		{ // gui example
 			htmlClass:       "artwork",
+			htmlMarkerClass: "moveMarkerArtwork",
+			htmlNewButtonId: "createNewArtwork",
 			htmlIdAttribute: "awid",
 			xmlTagName:      "artwork",
 			xmlIdTagName:    "awid",
-			filloutShow:     "filloutShowArtwork",
+			fillout:     "filloutArtwork",
 			generator:    myag.createArtwork,
 			targetClass: "myag_artworksWrapper",
 			filter: {
@@ -202,29 +240,23 @@ ItemList: class {
 		return false;
 	}
 
-	addFromXml(xmlTag, opts = {xml: true, gui: true}) {
+	addNew() {
+
 		var i = new this.itemClass();
-		i.fromXml(xmlTag);
-		this.add(i, opts);
-	}
+		i.filloutRead();
+		this.items.push(i);
 
-	add(instance, opts = {xml: true, gui: true}) {
-
-		this.addToEnd? this.items.push(instance) : this.items.unshift(instance);
-
-		if (this.xml && opts.xml) {
-			if (this.addToEnd)
-				this.listTag.appendChild(instance.toXml());
-			else
-				this.listTag.prepend(instance.toXml());
+		if (this.xml)
+			this.xml.listTag.appendChild(i.toXml(this.xml.workingDoc));
+		
+		if (this.gui) {
+			bmco.gui.filloutHide(this.gui.fillout);
+			var target = document.getElementsByClassName(this.gui.targetClass)[0];
+			this.gui.generator(target, i);
 		}
-		if (this.gui && opts.gui) {
-			var target = document.getElementsByClassName(this.targetClass)[0];
-			if (this.addToEnd)
-				target.appendChild(this.gui.generator(target, instance));
-			else
-				target.prepend(this.gui.generator(target, instance));
-		}
+
+		if (this.putNewItemsToStart)
+			this.moveById(i.id, "start");
 	}
 
 	remove(item) {
@@ -255,12 +287,32 @@ ItemList: class {
 		this.remove(this.itemById(id));
 	}
 
-	move(from, to) {
+	moveById(idMoved, idAfter) {
 
+		bmco.arrayMoveValue(this.items, this.indexById(idMoved), this.indexById(idAfter));
+		
+		if (this.xml) {
+
+		}
+		if (this.gui) {
+			var moved = this.htmlById(idMoved);
+			var movedMarker = this.htmlById(idMoved, true);
+			var target;
+			if (idAfter == "start")
+				var target = document.getElementById(this.gui.htmlNewButtonId).nextElementSibling.nextElementSibling;
+			else
+				var target = this.htmlById(idAfter).nextElementSibling.nextElementSibling;
+			var wrapper = document.getElementsByClassName(this.gui.targetClass)[0];
+			wrapper.insertBefore(moved, target);
+			wrapper.insertBefore(movedMarker, target); 
+		}
 	}
 
-	moveById(from, to) {
-
+	moveByIndex(indexMoved, indexAfter) {
+		this.moveById(
+			this.items[indexMoved].id, 
+			indexAfter=="start"? "start" : this.items[indexAfter].id
+		);
 	}
 
 	indexById(id) {
@@ -271,18 +323,30 @@ ItemList: class {
 		return bmco.firstInArrayWithProperty(this.items, "id", id);
 	}
 
-	htmlById(id) {
-		return bmco.firstElementOfClassByAttribute(this.gui.htmlClass, this.gui.htmlIdAttribute, id)	
+	htmlById(id, marker=false) {
+		var hc = marker? this.gui.htmlMarkerClass : this.gui.htmlClass;
+		return bmco.firstElementOfClassByAttribute(hc, this.gui.htmlIdAttribute, id)	
 	}
 
-	htmlItemsVisible(start=0, end=this.items.length - 1, hideOthers=true) {
+	htmlItemVisible(id, visible, affectMarker=true) {
+		var item = this.htmlById(id);
+		if (item)
+			visible? item.classList.remove("invisible") : item.classList.add("invisible");
+		if (!this.gui.htmlMarkerClass || !affectMarker)
+			return;
+		var item = this.htmlById(id, true);
+		if (item)
+			visible? item.classList.remove("invisible") : item.classList.add("invisible");
+	}
+
+	htmlItemRangeVisible(start=0, end=this.items.length - 1, hideOthers=false) {
 		for (var i of this.items)
 		{
 			var index = this.indexById(i.id);
 			if (index >= start && index < end)
-				this.htmlById(i.id).classList.remove("invisible");
+				this.htmlItemVisible(i.id, true, false);
 			else if (hideOthers)
-				this.htmlById(i.id).classList.add("invisible");
+				this.htmlItemVisible(i.id, false, false);
 		}
 	}
 
@@ -290,8 +354,12 @@ ItemList: class {
 		active? bmco.ofClassRemoveClass(this.htmlClass, "inactive") : bmco.ofClassAddClass(this.htmlClass, "inactive");
 	}
 
-	filloutShow(item) {
-
+	reverse() {
+		var counter = 0;
+		for (var x = this.items.length-1; x >= 0; x--)
+		{
+			this.moveByIndex(0, x);
+		}
 	}
 
 },

@@ -42,42 +42,6 @@ getItemList(arg) {
 		return myag.data.groups;
 },
 
-filloutGroupRead: function() {
-	fieldData = {
-		"name": document.getElementById("inputName").value,
-		"filename": document.getElementById("inputFilename").value,
-		"about": document.getElementById("inputAbout").value,
-		"ingroups": myag.data.xml.createElement("ingroups"),
-		"awid": id
-	};
-	for (var chb in document.getElementById("filloutArtworkGroupCheckboxes").getElementsByTagName("input"))
-	{
-		if (!chb.checked)
-			continue;
-		var ig = myag.data.xml.createElement("ingroup");
-		bmco.xml.childTagWrite(myag.data.xml, ig, chb.getAttribute("name"));
-		fieldData.ingroups.appendChild(ig);
-	}
-},
-
-filloutArtworkRead: function() {
-	fieldData = {
-		"name": document.getElementById("inputName").value,
-		"filename": document.getElementById("inputFilename").value,
-		"about": document.getElementById("inputAbout").value,
-		"ingroups": myag.data.xml.createElement("ingroups"),
-		"awid": id
-	};
-	for (var chb in document.getElementById("filloutArtworkGroupCheckboxes").getElementsByTagName("input"))
-	{
-		if (!chb.checked)
-			continue;
-		var ig = myag.data.xml.createElement("ingroup");
-		bmco.xml.childTagWrite(myag.data.xml, ig, chb.getAttribute("name"));
-		fieldData.ingroups.appendChild(ig);
-	}
-},
-
 new: function(type) {
 	var ic = myag.ed.getItemList(type).itemClass;
 	var i = new ic();
@@ -86,9 +50,8 @@ new: function(type) {
 	bmco.gui.filloutShow(myag.ed.getItemList(type).gui.fillout);
 },
 
-add: function(id, update=false) {
-
-	
+add: function(type, update=false) {
+	myag.ed.getItemList(type).addNew();
 },
 
 edit: function(id) {
@@ -104,43 +67,24 @@ update: function(id) {
 pick: function(id) {
 	bmco.gui.actionMenuDelete();
 	myag.ed.guiBottomMenuSetMode("move");
-	myag.ed.getItemList(id).htmlItemsActive(false);
-	bmco.ofClassRemoveClass("placeMarker", "invisible");
+	var il = myag.ed.getItemList(id);
+	il.htmlItemsActive(false);
+	il.htmlItemVisible(id, false);
+	bmco.ofClassRemoveClass("marker", "invisible");
 	myag.ed.pickedEntityId = id;	
 },
 
 place: function(targetId=null) {
 	myag.ed.guiBottomMenuSetMode("default");
 	myag.ed.getItemList(myag.ed.pickedEntityId).htmlItemsActive(true);
-	bmco.ofClassAddClass("placeMarker", "invisible");
-	myag.ed.getItemList(myag.ed.pickedEntityId).putAfter(myag.ed.pickedEntityId, targetId);
-	myag.ed.pickedEntityId = null;	
-	/*
-	var params = myag.ed.paramsGenerate(myag.ed.pickedEntityId);
-	bmco.ofClassAddClass("placeMarker", "invisible");
-	bmco.ofClassRemoveClass(params.htmlClass, "inactive");
-	myag.ed.guiElementById(myag.ed.pickedEntityId).removeAttribute("style");
-	bmco.firstElementOfClassByAttribute("placeMarker", params.htmlIdAttribute, myag.ed.pickedEntityId).removeAttribute("style");
+	bmco.ofClassAddClass("marker", "invisible");
+	var il = myag.ed.getItemList(myag.ed.pickedEntityId);
+	il.htmlItemsActive(true);
+	il.htmlItemVisible(myag.ed.pickedEntityId, true, false);
 	if (!targetId) // no id provided = "cancel moving". just restore the moved entity to be visible
-		return 
-	
-	var movedObjIndex = bmco.firstInArrayWithProperty(params.objArray, params.objIdProperty, myag.ed.pickedEntityId, true);
-	var targetIndex = 0;
-	if (targetId != "start")
-		targetIndex = bmco.firstInArrayWithProperty(params.objArray, params.objIdProperty, targetId, true);
-
-	bmco.arrayMoveValue(params.objArray, movedObjIndex, targetIndex);
-	document.getElementsByClassName(params.guiWrapperClass)[0].insertBefore(
-		bmco.firstElementOfClassByAttribute(params.htmlClass, params.htmlIdAttribute, myag.ed.pickedEntityId),
-		bmco.firstElementOfClassByAttribute(params.htmlClass, params.htmlIdAttribute, targetId).nextElementSibling.nextElementSibling
-	);
-	document.getElementsByClassName(params.guiWrapperClass)[0].insertBefore(
-		bmco.firstElementOfClassByAttribute("placeMarker", params.htmlIdAttribute, myag.ed.pickedEntityId),
-		bmco.firstElementOfClassByAttribute(params.htmlClass, params.htmlIdAttribute, myag.ed.pickedEntityId).nextElementSibling
-	);
-	console.log(movedObjIndex, targetIndex);
-	*/
-
+		return myag.ed.pickedEntityId = null;	
+	il.moveById(myag.ed.pickedEntityId, targetId);
+	myag.ed.pickedEntityId = null;	
 },
 
 delete: function(id) {
@@ -208,18 +152,13 @@ groupCheckboxCreate: function(g, checked=false)
 	i.setAttribute("name", g.id);
 	i.setAttribute("type", "checkbox");
 	i.checked = checked;
-
-	console.log(g);
-
 	var l = document.createElement("label");
 	l.setAttribute("for", g.id);
 	l.innerHTML = g.name
-	
 	var d = document.createElement("div");
 	d.appendChild(i);
 	d.appendChild(l);
 	d.classList.add("labelledCheckbox");
-	d.setAttribute("onclick", "bmco.gui.filloutCheckboxToggle('checkbox_"+g.id+"')");
 
 	return d;
 },
@@ -234,10 +173,7 @@ guiBottomMenuSetMode: function(mode)
 	if (mode == "default")
 	{	
 		if (document.body.getAttribute("isOffline") == "isOffline")
-		{
 			nameFnTuples.push(["Update channel", "myag.ed.neomanagerUpdate()"]);	
-
-		}
 		else
 		{
 			nameFnTuples.push(["Update XML", "myag.ed.openWebXmlEditor()"]);	
@@ -269,12 +205,12 @@ loadTools: function()
 		{
 			name: "Reverse artworks",
 			about: "Completely inverts the order of the artworks",
-			function: "myag.ed.reverseArtworks()"
+			function: "myag.data.artworks.reverse()"
 		},
 		{
 			name: "Reverse groups",
 			about: "Completely inverts the order of the groups",
-			function: "myag.ed.reverseGroups()"
+			function: "myag.data.groups.reverse()"
 		}
 	];
 	if (bmco.bodyAttributeExists("isOffline"))
@@ -396,7 +332,7 @@ startup: function()
 	
 	window.addEventListener("artworksLoaded", (event) => {
 		var newArtworkButton = myag.generateArtworkDiv(new myag.Artwork(), "myag.ed.new('artwork')", "Add new...");
-		newArtworkButton.id = "buttonCreateNewArtwork";
+		newArtworkButton.id = "createNewArtwork";
 		document.getElementsByClassName("myag_artworksWrapper")[0].prepend(myag.generateArtworkPlaceMarker());
 		document.getElementsByClassName("myag_artworksWrapper")[0].prepend(newArtworkButton);	
 		
@@ -404,8 +340,10 @@ startup: function()
 
 	window.addEventListener("groupsLoaded", (event) => {
 		var newGroupButton = myag.generateGroupDiv(new myag.Group("start", "Add new...", ""), "myag.ed.new('group')", "Add new...");
-		newGroupButton.id = "buttonCreateNewGroup";
-		document.getElementsByClassName("myag_groupsWrapper")[0].prepend(newGroupButton);
+		newGroupButton.id = "createNewGroup";
+		document.getElementsByClassName("myag_groupsWrapper")[0].prepend(myag.generateGroupPlaceMarker());
+		document.getElementsByClassName("myag_groupsWrapper")[0].prepend(newGroupButton);	
+
 		var checkboxesWrapper = document.getElementById("inputArtworkIngroups");
 		for (var g of myag.data.groups.items)
 			checkboxesWrapper.appendChild(myag.ed.groupCheckboxCreate(g));
