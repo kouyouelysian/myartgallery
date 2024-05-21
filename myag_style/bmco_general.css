@@ -20,7 +20,7 @@ body {
 	--col-text: #222;
 	--col-accent: #fab;
 	--col-counterpick: #1fc;
-	--col-shadow: #bbc;
+	--col-shadow: rgba(0,0,0,0.1);
 
 	--font-big: 'arial';
 	--font-big-size: 32px;
@@ -38,18 +38,22 @@ body {
 
 body {
 	background: var(--col-background);
+	font-family: var(--font-main);
+	font-size: var(--font-main-size);
+	padding-top: 10%;
 }
 
 main {
 	position: relative;
 	display: block;
-	width: 80%;
+	width: calc(80% - var(--page-spacing) * 2);
 	margin: auto;
-	padding-top: 10%;
-	padding-bottom: 10%;
+	margin-bottom: 10%;
 	color: var(--col-text);
-	font-family: var(--font-main);
-	font-size: var(--font-main-size);
+	
+	padding: var(--page-spacing);
+	background-color: var(--col-body);
+	box-shadow: var(--shadow);
 	
 }
 
@@ -57,7 +61,6 @@ h1 {
 	font-family: var(--font-big);
 	font-size: var(--font-big-size);
 	margin: 0;
-	padding-bottom: var(--page-spacing);
 	font-weight: bold;
 	font-style: italic;
 	text-decoration: underline dotted var(--col-accent);
@@ -83,16 +86,26 @@ a:hover {
 }
 
 section {
-	padding: var(--page-spacing);
 	margin: 0;
-	background-color: var(--col-body);
-	box-shadow: var(--shadow);
+	position: relative;
+	margin-bottom: var(--page-spacing);
 }
 
 section p {
 	margin: 0;
-	margin-bottom: var(--page-spacing);
 	width: 100%;
+}
+
+section:last-child {
+	margin-bottom: 0;
+}
+
+section > p, section > h1 {
+	margin-bottom: var(--page-spacing);
+}
+
+section > p:last-child, section > h1:last-child {
+	margin-bottom: 0;
 }
 
 section.alert {
@@ -116,10 +129,6 @@ section.alert p.success {
 	background-color: #7bffa2;
 }
 
-form {
-	margin-top: var(--page-spacing);
-}
-
 form input, form .button, form select {
 	margin-bottom: var(--page-spacing);
 }
@@ -130,5 +139,18 @@ form label {
 
 form input, form label, form select {
 	display: block;
+}
+
+
+.inactive {
+	pointer-events: none;
+}
+
+.invisible {
+	display: none;
+}
+
+.translucent {
+	opacity: 0.35;
 }
 

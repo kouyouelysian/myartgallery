@@ -169,7 +169,7 @@ arrayHas: function(array, item) {
 inputs: arr <array>, value <any>
 return: <array> [arr without value occurences]
 */
-arrayRemoveValue: function(arr, value)
+arrayValueRemove: function(arr, value)
 { 
 	// thanks Chris Love
 	// https://love2dev.com/blog/javascript-remove-from-array/
@@ -179,7 +179,7 @@ arrayRemoveValue: function(arr, value)
 },
 
 
-arrayMoveValue: function(arr, fromIndex, toIndex) {
+arrayValueMove: function(arr, fromIndex, toIndex) {
 	// thank you https://stackoverflow.com/users/802435/steak-overflow
 	if (fromIndex < 0 || toIndex < 0)
 		return false;
@@ -188,6 +188,20 @@ arrayMoveValue: function(arr, fromIndex, toIndex) {
     var element = arr[fromIndex];
     arr.splice(fromIndex, 1);
     arr.splice(toIndex, 0, element);
+},
+
+arrayValuePutAfter: function(arr, index, afterIndex) {
+	// thank you https://stackoverflow.com/users/802435/steak-overflow
+	if (index < 0 || afterIndex < 0)
+		return false;
+	if (index > arr.length-1 || afterIndex > arr.length-1)
+		return false;
+	var element = arr[index];
+	arr.splice(index, 1);
+	var toIndex = afterIndex + 1;
+	if (toIndex == arr.length)
+		toIndex -= 1;
+	arr.splice(toIndex, 0, element);
 },
 
 
@@ -725,7 +739,7 @@ bodyAttributeExists: function(attribName) {
 	return bmco.elementAttributeExists(document.body, attribName)	
 },
 
-randomColor: function(steps=2, low=0, high=15)
+randomColor: function(steps=2, low=0, high=15, opts={})
 {
 	if (!bmco.decToHex(steps) || !bmco.decToHex(low) || !bmco.decToHex(low))
 		return false;
@@ -746,12 +760,18 @@ randomColor: function(steps=2, low=0, high=15)
 	for (var x of dict) {
 		for (var y of dict) {
 			for (var z of dict) {
+				if (opts.noGrayscale && x==y && y==z)
+					continue;
 				colors.push(`#${x}${y}${z}`);
 			}
 		}
 	}
 
-	return colors[Math.floor(Math.random()*colors.length)];
+	if (opts.noWhite && !opts.noGrayscale)
+		colors.splice(colors.length-1, 1);
+	var color = colors[Math.floor(Math.random()*colors.length)];
+	console.log(color);
+	return color;
 }
 
 

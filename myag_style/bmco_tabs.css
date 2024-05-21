@@ -3,13 +3,17 @@ body {
 	--navbar-drag-length: 10px;
 }
 
+section {
+	margin-bottom: 0;
+}
 
 nav {
 	height: var(--navbar-height);
+	left: 10%;
+	position: relative;
 	box-shadow: var(--shadow);
 	width: fit-content;
 	font-size: 0;
-
 }
 
 nav p {
@@ -28,7 +32,6 @@ nav p {
 	user-select: none;
 	cursor: pointer;
 	transition: height 0.2s, margin-top 0.2s;
-
 }
 
 nav p.tabNavOptionActive {
@@ -46,8 +49,6 @@ nav p.tabNavOptionActive:hover {
 	height: 100%;
 	margin-top: 0;
 }
-
-
 
 section {
 	display: none;

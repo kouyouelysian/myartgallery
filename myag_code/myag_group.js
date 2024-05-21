@@ -14,7 +14,7 @@ myag.group = {
 //==========================================================================//
 
 setupWrapperAttribute: function() {
-	var wrapper = document.getElementsByClassName("myag_artworksWrapper")[0];
+	var wrapper = document.getElementsByClassName("artworksWrapper")[0];
 	var group = bmco.getParamRead("g");
 	if (!group)
 		return bmco.urlOpen("./index.html", false);

@@ -45,8 +45,6 @@ as is, as far as i can see :'D
 	bottom: 32px;
 	width: 50%;
 	left: 25%;
-	height: 60px;
-	z-index: 100;
 	text-align: center;
 	display: table;
 	box-shadow: 0px 0px 10px RGBA(0,0,0,0.3);
@@ -104,6 +102,8 @@ as is, as far as i can see :'D
 	color: var(--col-text);
 	filter: none;
 	transition: 0.1s;
+	font-style: italic;
+	font-weight: bold;
 }
 
 #createNewArtwork:hover, #createNewGroup:hover {
@@ -133,21 +133,6 @@ as is, as far as i can see :'D
 
 
 
-
-
-
-
-
-
-.inactive {
-	pointer-events: none;
-}
-
-.marker.invisible {
-	display: none;
-}
-
-
 .marker {
 	background-color: var(--col-body);
 	color: var(--col-accent);
@@ -158,6 +143,10 @@ as is, as far as i can see :'D
 	border-radius: 14px;
 	position: relative;
 	display: inline-block;
+}
+
+.marker.invisible {
+	display: none;
 }
 
 .markerArtwork {
@@ -257,22 +246,17 @@ as is, as far as i can see :'D
 }
 
 .toolDiv {
-	padding-top: calc(var(--page-spacing) / 2);
-	padding-bottom: calc(var(--page-spacing) / 2);
-	border-top: 1px dotted var(--col-accent);
-}
-
-.toolDiv:first-child {
-	padding-top: 0;
-	border-top: none;
+	padding-top: var(--page-spacing);
+	padding-bottom: var(--page-spacing);
+	border-top: 2px dotted var(--col-counterpick);
 }
 
 .toolDiv:last-child {
 	padding-bottom: 0;
 }
 
-.section .toolDiv p {
+.toolDiv p {
 	display: inline-block;
-	margin-top: calc(var(--page-spacing) / 2);
+	margin-top: var(--page-spacing);
 	margin-bottom: 0;
 }

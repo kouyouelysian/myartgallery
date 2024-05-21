@@ -63,17 +63,17 @@ Item: class {
 
 	toXml(xmldoc) {
 		var itemTag = xmldoc.createElement(this.xmlTagName);
+
 		for (var m in this.xmlFieldMappings)
-		{
-			
+		{	
 			if (this[m] === null)
-				itemTag.appendChild(xmldoc.createElement(m));
+				itemTag.appendChild(xmldoc.createElement(this.xmlFieldMappings[m]));
 			else if (typeof(this[m]) == "string")
-				itemTag.appendChild(bmco.xml.nodeTextCreate(xmldoc, m, this[m]));
+				itemTag.appendChild(bmco.xml.nodeTextCreate(xmldoc, this.xmlFieldMappings[m], this[m]));
 			else if (this[m].constructor === Array)
 			{
-				var multiTag = xmldoc.createElement(m);
-				var childTagName = this.multiTagMappings[m];
+				var multiTag = xmldoc.createElement(this.xmlFieldMappings[m]);
+				var childTagName = this.multiTagMappings[this.xmlFieldMappings[m]];
 				for (var val of this[m])
 				{
 					var childTag = bmco.xml.nodeTextCreate(xmldoc, childTagName, val)
@@ -209,11 +209,10 @@ ItemList: class {
 		}
 	}
 
-
-	putItemsToHtml(target) {
+	putItemsToHtml(target, forceFirstItem=false) {
 		for (var i of this.items)
 		{
-			if (this.checkAgainstFilter(target, i))
+			if (this.checkAgainstFilter(target, i) || (forceFirstItem && this.indexById(i.id) == 0))
 				this.gui.generator(target, i);
 		}
 	}
@@ -240,12 +239,14 @@ ItemList: class {
 		return false;
 	}
 
-	addNew() {
-
-		var i = new this.itemClass();
-		i.filloutRead();
+	addNew(item = undefined) {
+		var i = item;
+		if (!i)
+		{
+			var i = new this.itemClass();
+			i.filloutRead();
+		}
 		this.items.push(i);
-
 		if (this.xml)
 			this.xml.listTag.appendChild(i.toXml(this.xml.workingDoc));
 		
@@ -289,9 +290,42 @@ ItemList: class {
 
 	moveById(idMoved, idAfter) {
 
-		bmco.arrayMoveValue(this.items, this.indexById(idMoved), this.indexById(idAfter));
+		console.log(
+this.xml.workingDoc,
+					this.xml.itemTagName,
+					this.xml.idTagName,
+					idMoved,
+
+			bmco.xml.nodeGetByChildTagValue(
+					this.xml.workingDoc,
+					this.xml.itemTagName,
+					this.xml.idTagName,
+					idMoved
+				)
+		);
+
+		bmco.arrayValuePutAfter(
+			this.items, 
+			this.indexById(idMoved), 
+			idAfter=="start"? 0 : this.indexById(idAfter)
+		);
 		
 		if (this.xml) {
+			this.xml.listTag.insertBefore(
+				bmco.xml.nodeGetByChildTagValue(
+					this.xml.workingDoc,
+					this.xml.itemTagName,
+					this.xml.idTagName,
+					idMoved
+				),
+				idAfter == "start"? this.xml.listTag.firstElementChild :
+				bmco.xml.nodeGetByChildTagValue(
+					this.xml.workingDoc,
+					this.xml.itemTagName,
+					this.xml.idTagName,
+					idAfter
+				).nextElementSibling
+			);
 
 		}
 		if (this.gui) {
@@ -299,7 +333,13 @@ ItemList: class {
 			var movedMarker = this.htmlById(idMoved, true);
 			var target;
 			if (idAfter == "start")
-				var target = document.getElementById(this.gui.htmlNewButtonId).nextElementSibling.nextElementSibling;
+			{
+				var newInstanceButton = document.getElementById(this.gui.htmlNewButtonId);
+				if (!newInstanceButton)
+					target = document.getElementsByClassName(this.gui.targetClass)[0].children[0];
+				else
+					target = newInstanceButton.nextElementSibling.nextElementSibling;
+			}
 			else
 				var target = this.htmlById(idAfter).nextElementSibling.nextElementSibling;
 			var wrapper = document.getElementsByClassName(this.gui.targetClass)[0];
@@ -309,6 +349,7 @@ ItemList: class {
 	}
 
 	moveByIndex(indexMoved, indexAfter) {
+
 		this.moveById(
 			this.items[indexMoved].id, 
 			indexAfter=="start"? "start" : this.items[indexAfter].id
@@ -328,15 +369,19 @@ ItemList: class {
 		return bmco.firstElementOfClassByAttribute(hc, this.gui.htmlIdAttribute, id)	
 	}
 
-	htmlItemVisible(id, visible, affectMarker=true) {
+	htmlItemVisible(id, visible, opts={visibilityClass:["invisible", "invisible"]}) {
 		var item = this.htmlById(id);
 		if (item)
-			visible? item.classList.remove("invisible") : item.classList.add("invisible");
-		if (!this.gui.htmlMarkerClass || !affectMarker)
+			visible? item.classList.remove(opts.visibilityClass[0]) : item.classList.add(opts.visibilityClass[0]);
+		if (!this.gui.htmlMarkerClass || !opts.affectMarker)
 			return;
-		var item = this.htmlById(id, true);
-		if (item)
-			visible? item.classList.remove("invisible") : item.classList.add("invisible");
+		item = this.htmlById(id, true);
+		if (!item) return;
+		visible? item.classList.remove(opts.visibilityClass[1]) : item.classList.add(opts.visibilityClass[1]);
+		if (!opts.affectPreviousMarker) return;
+		item = this.htmlById(this.items[this.indexById(id)-1].id, true);
+		if (!item) return;
+		visible? item.classList.remove(opts.visibilityClass[1]) : item.classList.add(opts.visibilityClass[1]);
 	}
 
 	htmlItemRangeVisible(start=0, end=this.items.length - 1, hideOthers=false) {
@@ -344,22 +389,19 @@ ItemList: class {
 		{
 			var index = this.indexById(i.id);
 			if (index >= start && index < end)
-				this.htmlItemVisible(i.id, true, false);
+				this.htmlItemVisible(i.id, true);
 			else if (hideOthers)
-				this.htmlItemVisible(i.id, false, false);
+				this.htmlItemVisible(i.id, false);
 		}
 	}
 
 	htmlItemsActive(active) {
-		active? bmco.ofClassRemoveClass(this.htmlClass, "inactive") : bmco.ofClassAddClass(this.htmlClass, "inactive");
+		active? bmco.ofClassRemoveClass(this.gui.htmlClass, "inactive") : bmco.ofClassAddClass(this.gui.htmlClass, "inactive");
 	}
 
 	reverse() {
-		var counter = 0;
-		for (var x = this.items.length-1; x >= 0; x--)
-		{
-			this.moveByIndex(0, x);
-		}
+		for (var x = 0; x < this.items.length-2; x++)
+			this.moveByIndex(this.items.length - 1, x);
 	}
 
 },
@@ -409,6 +451,34 @@ return: <bool> attribute exists or not
 bodyAttributeExists: function(name)
 {
 	return bmco.arrayHas(document.body.getAttributeNames(), name.toLowerCase());
+},
+
+
+metaTagUpdate: function(xmldoc)
+{
+	var uc = xmldoc.getElementsByTagName("updateCount")[0];
+	var uts = xmldoc.getElementsByTagName("updateTimestamp")[0];
+	if (!uc || !uts)
+		return;
+	if (isNaN(bmco.xml.nodeTextRead(uc)))
+		return;
+	var v = parseInt(bmco.xml.nodeTextRead(uc)) + 1;
+	bmco.xml.nodeTextWrite(xmldoc, uc, v.toString());
+	bmco.xml.nodeTextWrite(xmldoc, uts, bmco.timestamp());
+
+},
+
+metaTagRead: function(xmldoc)
+{
+	var uc = xmldoc.getElementsByTagName("updateCount")[0];
+	var uts = xmldoc.getElementsByTagName("updateTimestamp")[0];
+	if (!uc || !uts)
+		return [-1, -1];
+	var uc = bmco.xml.nodeTextRead(uc);
+	var uts = bmco.xml.nodeTextRead(uts);
+	if (isNaN(uc) || isNaN(uts) || !uc || !uts)
+		return [-1, -1];
+	return [parseInt(uc), parseInt(uts)]
 }
 
 //==========================================================================//

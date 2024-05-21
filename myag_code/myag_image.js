@@ -22,7 +22,6 @@ artworkObject : undefined, // and should become an Artwork instance
 returnUrl   : undefined, // url for the 'back' page.
 linkTimeout : undefined,
 
-
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
@@ -130,9 +129,4 @@ startup: function()
 
 };
 
-
-
 window.addEventListener("artworksLoaded", (event) => { myag.image.startup(); });
-
-
-

@@ -3,44 +3,25 @@
 <head>
 	<!-- change this to what you want to display at the browser top -->
 	<title>My Art Gallery</title>
-	<link rel="stylesheet" type="text/css" href="./myag_user/style.css">
-	<link rel="stylesheet" type="text/css" href="./myag_style/main.css">
-	<link rel="stylesheet" type="text/css" href="./myag_style/panel.css">
-	<link rel="stylesheet" type="text/css" href="./myag_user/overrides.css">
+	<link rel="stylesheet" type="text/css" href="myag_style/bmco_general.css" />
+	<link rel="stylesheet" type="text/css" href="myag_style/bmco_gui.css" />
+	<link rel="stylesheet" type="text/css" href="myag_style/panel.css">
+	<link rel="stylesheet" type="text/css" href="myag_style/viewer.css">
+	<link rel="stylesheet" type="text/css" href="myag_user/style.css">
+	<link rel="stylesheet" type="text/css" href="myag_user/overrides.css">
 </head>
 <body>
 	<div id="artworkViewerWrapper"></div>
-	<div id="mainWrapper">
-
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<div id="header">
-			<div id="userpic" title="click to enter editor" onclick="myag_ind_newtabEditor();">
-			</div><div id="shortInfo">
-				<p id="username">Your Name</p>
-				<p id="userinfo">Short info, bio, anything short and instant you'd like to tell.</p>
-			</div>
-		</div>
+	<main id="mainWrapper">
+		<section>
+			<h1>My Art Gallery</h1>
+			<p>All the abouts and stuff go here. This is just a &lt;p&gt; that you can write some text into, but you may as well make your own HTML inside of it with images etc - the degree of customisation is totally up to you!</p>
+		</section>
 		<hr>
-
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WELCOME TEXT ETC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<p class="para">
-			All the abouts and stuff go here. This is just a &lt;div&gt; that you can write some text into, but you may as well make your own HTML inside of it with images etc - the degree of customisation is totally up to you!
-		</p>
+		<section class="groupsWrapper"></section>
 		<hr>
-
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ GROUP BUTTONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<div class="myag_groupsWrapper"></div>
-		<hr>
-
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL ARTWORKS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<div class="myag_artworksWrapper"></div>
-
-
-		<hr>
-
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FOOTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<p id="footer">made using MyArtGallery by <a href="https://astrossoundhell.neocities.org/" target="_blank">Aubery 'ASTRO' Lis</a></p>
-	</div>
+		<section class="artworksWrapper"></section>
+	</main>
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<!--scripts start-->

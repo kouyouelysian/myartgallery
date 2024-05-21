@@ -408,10 +408,92 @@ nodePutAtEnd: function(xmldoc, nodeTag, childTag, movedValue)
 },
 
 //==========================================================================//
+//================================ PLUG-INS ================================//
+//==========================================================================//
+
+/*
+* THIS IS A MODIFIED VERSION OF THE ORIGINAL CODE, STRIPPED DOWN TO ONLY THE STUFF I NEEDED! -Aubery
+* vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
+* Copyright (c) 2012 Vadim Kiryukhin
+* vkiryukhin @ gmail.com
+* http://www.eslinstructor.net/vkbeautify/
+* Dual licensed under the MIT and GPL licenses:
+*/
+
+createShiftArr: function(step) {
+	var space = '    ';
+	if ( isNaN(parseInt(step)) )  // argument is string
+		space = step;
+	else 
+	{ // argument is integer
+		space = '';
+		for (var x = 0; x < step; x++)
+			space += ' ';
+	}
+	var shift = ['\n']; // array of shifts
+	for (ix = 0; ix < 100; ix++)
+		shift.push(shift[ix]+space); 
+	return shift;
+},
+
+beautify: function(text, step="\t") {
+
+	var ar = text.replace(/>\s{0,}</g,"><")
+				 .replace(/</g,"~::~<")
+				 .replace(/\s*xmlns\:/g,"~::~xmlns:")
+				 .replace(/\s*xmlns\=/g,"~::~xmlns=")
+				 .split('~::~'),
+		len = ar.length,
+		inComment = false,
+		deep = 0,
+		str = '',
+		ix = 0,
+		shift = bmco.xml.createShiftArr(step)
+		for(ix=0;ix<len;ix++) {
+			if(ar[ix].search(/<!/) > -1) { // start comment or <![CDATA[...]]> or <!DOCTYPE //
+				str += shift[deep]+ar[ix];
+				inComment = true; 
+				// end comment  or <![CDATA[...]]> //
+				if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1 || ar[ix].search(/!DOCTYPE/) > -1 ) { 
+					inComment = false; 
+				}
+			} 
+			else if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1) { 
+				str += ar[ix]; // end comment  or <![CDATA[...]]> //
+				inComment = false; 
+			} 
+			else if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) && // <elm></elm> //
+				/^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) { 
+				str += ar[ix];
+				if(!inComment) deep--;
+			}
+			else if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) == -1 && ar[ix].search(/\/>/) == -1 )
+				str = !inComment ? str += shift[deep++]+ar[ix] : str += ar[ix];  // <elm> //
+			else if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) > -1) // <elm>...</elm> //
+				str = !inComment ? str += shift[deep]+ar[ix] : str += ar[ix];
+			else if(ar[ix].search(/<\//) > -1) // </elm> //
+				str = !inComment ? str += shift[--deep]+ar[ix] : str += ar[ix];
+			else if(ar[ix].search(/\/>/) > -1 ) // <elm/> //
+				str = !inComment ? str += shift[deep]+ar[ix] : str += ar[ix];
+			else if(ar[ix].search(/<\?/) > -1) // <? xml ... ?> //
+				str += shift[deep]+ar[ix];
+			else if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1)
+					str += shift[deep]+ar[ix]; // xmlns //
+			else
+				str += ar[ix];
+		}
+	return  (str[0] == '\n') ? str.slice(1) : str;
+},
+
+minify: function(text, preserveComments) {
+	var str = preserveComments ? text
+							   : text.replace(/\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>/g,"")
+									 .replace(/[ \r\n\t]{1,}xmlns/g, ' xmlns');
+	return  str.replace(/>\s{0,}</g,"><"); 
+}
+
+//==========================================================================//
 //=============================== LIBRARY END ==============================//
 //==========================================================================//
 
 };
-
-
-

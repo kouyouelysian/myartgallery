@@ -2,13 +2,13 @@
 <html>
 <head>
 	<!-- change this to what you want to display at the browser top -->
-	<title>My Art Gallery</title>
+	<title>MyArtGallery / Editor</title>
 	<!--*chunk styles*-->
-	<link rel="stylesheet" type="text/css" href="myag_style/panel.css">
-	<link rel="stylesheet" type="text/css" href="myag_style/editor.css">
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_general.css" />
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_tabs.css" />
 	<link rel="stylesheet" type="text/css" href="myag_style/bmco_gui.css" />
+	<link rel="stylesheet" type="text/css" href="myag_style/panel.css">
+	<link rel="stylesheet" type="text/css" href="myag_style/editor.css">
 	<!--*endchunk*-->
 </head>
 
@@ -16,23 +16,35 @@
 <body isEditor="isEditor">
 <!--*endchunk*-->
 	
+	<nav class="tabNav">
+		<p onclick="tab.switchTo(this)" tab="artworks">Artworks</p>
+		<p onclick="tab.switchTo(this)" tab="groups">Groups</p>
+		<p onclick="tab.switchTo(this)" tab="tools">Tools</p>
+		<p onclick="tab.switchTo(this)" tab="settings">Settings</p>
+	</nav>
+
 	<main>
-
-		<nav class="tabNav">
-			<p onclick="tab.switchTo(this)" tab="artworks">Artworks</p>
-			<p onclick="tab.switchTo(this)" tab="groups">Groups</p>
-			<p onclick="tab.switchTo(this)" tab="tools">Tools</p>
-			<p onclick="tab.switchTo(this)" tab="settings">Settings</p>
-		</nav>
-
+		
 		<section id="artworks">
+
 			<h1>Manage artworks</h1>
-			<div class="myag_artworksWrapper"></div>
+
+			<form class="miniform">
+				<p>Filter by group:</p>
+				<select name="groupFilter" id="groupFilterSelect">
+					<option name="any" value="any">Any</option>
+				</select>
+				<input type="button" value="Filter" onclick="myag.ed.groupFilterRun()">
+				<input type="button" value="Reset" onclick="myag.ed.groupFilterReset()">
+			</form>
+
+			<hr>
+			<div class="artworksWrapper"></div>
 		</section>
 
 		<section id="groups">
 			<h1>Manage groups</h1>
-			<div class="myag_groupsWrapper"></div>
+			<div class="groupsWrapper"></div>
 		</section>
 
 		<section id="tools">
@@ -50,19 +62,13 @@
 
 
 	<form class="fillout" id="filloutArtwork">
-
-		<h1 id="filloutArtworkTitle"></h1>
-
 		<label for="inputArtworkName">Name</label>
 		<input type="text" name="inputArtworkName" id="inputArtworkName">
-
-		<p>Description (optional)</p>
+		<label for="inputArtworkAbout">Description (optional)</label>
 		<textarea id="inputArtworkAbout"></textarea>
-		
-		<label for="inputArtworkFilename">Filename (automatic, usually left as is)</label>
+		<label for="inputArtworkFilename">Filename (with extension)</label>
 		<input type="text" name="inputArtworkFilename" id="inputArtworkFilename">
-
-		<label for="inputFileUpload">New file:</label>
+		<label for="inputFileUpload">Image file:</label>
 		<input type="file" name="inputFileUpload" id="inputFileUpload">
 		<hr>
 		<div id="inputArtworkIngroups">
@@ -74,15 +80,10 @@
 	</form>
 
 	<form class="fillout" id="filloutGroup">
-
-		<h1 id="filloutGroupTitle"></h1>
-
 		<label for="inputGroupName">Name</label>
 		<input type="text" name="inputGroupName" id="inputGroupName">
-
-		<p>Description (optional)</p>
+		<label for="inputGroupAbout">Description (optional)</label>
 		<textarea id="inputGroupAbout"></textarea>
-		
 		<input type="hidden" name="inputGroupId" id="inputGroupId">
 		<hr>
 		<div class="bottombar" id="filloutGroupBottomBar"></div>
@@ -101,8 +102,6 @@
 	<script type="text/javascript" src="myag_code/myag_main.js"></script>
 	<script type="text/javascript" src="myag_user/settings.js"></script>
 	<script type="text/javascript" src="myag_code/myag_pages.js"></script>
-	<script type="text/javascript" src="myag_code/myag_index.js"></script>
-	<script type="text/javascript" src="myag_code/plugin_vkbeautify.js"></script>
 	<script type="text/javascript" src="myag_code/myag_editor.js"></script>
 	<script type="text/javascript">
 		myag.navigation.mode = "append";

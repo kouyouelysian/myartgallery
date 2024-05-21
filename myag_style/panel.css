@@ -1,10 +1,14 @@
 
-.myag_artworksWrapper, .myag_groupsWrapper {
+.artworksWrapper, .groupsWrapper {
 	width: calc(100% + var(--page-spacing));
 	margin-bottom: 0;
 	margin-right: 0;
 	user-select: none;
 	-webkit-user-select: none;
+}
+
+.artwork, .groupButton {
+	font-size: var(--font-big-size);
 }
 
 /*============================================================================*/
@@ -18,8 +22,6 @@
 	border-color: var(--col-accent);
 	border-width: var(--border-width);
 	border-style: solid;
-	border-radius: var(--corner-radius);
-
 	width: calc(100% / var(--buttons-per-row) - var(--page-spacing) - var(--border-width) - var(--border-width));
 	height: var(--button-height);
 	position: relative;
@@ -84,10 +86,6 @@
 	cursor: pointer;
 }
 
-.invisible {
-	display: none;
-}
-
 .artwork img {
 	max-width: 100%;
 	max-height: 100%;
@@ -105,21 +103,12 @@
 	filter: brightness(90%);
 }
 
+.artwork.inactive:hover {
+	filter: none;
+}
+
 .artwork:active {
 	filter: brightness(80%);
-}
-
-
-
-a {
-	color: inherit;
-	text-decoration: underline;
-	filter: brightness(100%);
-	transition: filter 0.1s;
-}
-
-a:hover {
-	filter: brightness(70%);
 }
 
 
@@ -132,9 +121,10 @@ a:hover {
 
 .paginationPageLink, .paginationArrow {
 	display: inline-block;
+	margin: 0;
 	margin-left: 4px;
 	margin-right: 4px;
-	color: var(--col-highlight);
+	color: var(--col-accent);
 	text-decoration: none;
 	transition: text-decoration 0.3s;
 	cursor: pointer;
@@ -142,6 +132,7 @@ a:hover {
 
 .paginationPageLink:hover, .paginationArrow:hover {
 	text-decoration: underline;
+	color: var(--col-counterpick);
 }
 
 .paginationPageSelected {

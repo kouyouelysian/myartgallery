@@ -21,7 +21,7 @@ settings: {
 	maxLengthName: 64,
 	maxLengthFilename: 64,
 },
-newArtworksSpawned: 0,
+filterGroup: undefined,
 isMoving: "none", // "none", "group" or "artwork"
 uploads: [],
 deletes: [],
@@ -35,10 +35,18 @@ pickedEntityId: undefined,
 //=============================== GUI STUFF ================================//
 //==========================================================================//
 
+getItemType(id) {
+	if (id.substr(0,3) == "aw_")
+		return "artwork";
+	else if (id.substr(0,2) == "g_")
+		return "group";
+	return null;
+},
+
 getItemList(arg) {
-	if (myag.isAwid(arg) || arg == "artwork")
+	if (arg.substr(0,3) == "aw_" || arg == "artwork")
 		return myag.data.artworks;
-	else if (myag.isGid(arg) || arg == "group")
+	else if (arg.substr(0,2) == "g_" || arg == "group")
 		return myag.data.groups;
 },
 
@@ -47,6 +55,9 @@ new: function(type) {
 	var i = new ic();
 	i.name = `New ${type}`;
 	i.filloutWrite();
+	if (type == "artwork" && myag.ed.filterGroup)
+		document.getElementById(`chb_${myag.ed.filterGroup}`).checked = true;
+	myag.ed.guiFormMenuSetMode("new", type);
 	bmco.gui.filloutShow(myag.ed.getItemList(type).gui.fillout);
 },
 
@@ -57,6 +68,7 @@ add: function(type, update=false) {
 edit: function(id) {
 	bmco.gui.actionMenuDelete();
 	myag.ed.getItemList(id).itemById(id).filloutWrite();
+	myag.ed.guiFormMenuSetMode("edit", myag.ed.getItemType(id));
 	bmco.gui.filloutShow(myag.ed.getItemList(id).gui.fillout);
 },
 
@@ -64,23 +76,29 @@ update: function(id) {
 	return myag.ed.add(id, true);
 },
 
+cancel: function() {
+	bmco.gui.filloutHide();
+},
+
 pick: function(id) {
 	bmco.gui.actionMenuDelete();
 	myag.ed.guiBottomMenuSetMode("move");
 	var il = myag.ed.getItemList(id);
 	il.htmlItemsActive(false);
-	il.htmlItemVisible(id, false);
 	bmco.ofClassRemoveClass("marker", "invisible");
-	myag.ed.pickedEntityId = id;	
+	il.htmlItemVisible(id, false, {affectMarker:true, affectPreviousMarker:true, visibilityClass:["translucent", "invisible"]});
+	myag.ed.pickedEntityId = id;
 },
 
 place: function(targetId=null) {
+	if (!myag.ed.pickedEntityId)
+		return false;
 	myag.ed.guiBottomMenuSetMode("default");
-	myag.ed.getItemList(myag.ed.pickedEntityId).htmlItemsActive(true);
-	bmco.ofClassAddClass("marker", "invisible");
 	var il = myag.ed.getItemList(myag.ed.pickedEntityId);
 	il.htmlItemsActive(true);
-	il.htmlItemVisible(myag.ed.pickedEntityId, true, false);
+	il.htmlItemVisible(myag.ed.pickedEntityId, true, {visibilityClass:["translucent", "invisible"]});
+	bmco.ofClassAddClass("marker", "invisible");
+	
 	if (!targetId) // no id provided = "cancel moving". just restore the moved entity to be visible
 		return myag.ed.pickedEntityId = null;	
 	il.moveById(myag.ed.pickedEntityId, targetId);
@@ -88,8 +106,13 @@ place: function(targetId=null) {
 },
 
 delete: function(id) {
-	myag.ed.getItemList(id).removeById(id);
 	bmco.gui.actionMenuDelete();
+	var name = myag.ed.getItemList(id).itemById(id).name;
+	name? name = `'${name}'` : name = "this artwork";
+	bmco.gui.popupConfirm(
+		`Really delete ${name}?`, 
+		`myag.ed.getItemList('${id}').removeById('${id}');`
+		);
 },
 
 
@@ -101,7 +124,7 @@ return: none
 */
 showItemMenu: function(id, event)
 {
-	if (myag.ed.isMoving != "none")
+	if (myag.ed.pickedEntityId)
 		return;
 
 	var buttons = {
@@ -109,7 +132,7 @@ showItemMenu: function(id, event)
 		"Move":     `myag.ed.pick('${id}')`,
 		"Delete": `myag.ed.delete('${id}')`
 	};
-	bmco.gui.actionMenuAppend(buttons, event.clientX, event.clientY);	
+	bmco.gui.actionMenuAppend(buttons, event);	
 },
 
 /* This clusterfuck switches the layout between move group, more artwork and
@@ -124,8 +147,7 @@ guiSetMovingMode: function(mode="none")
 {
 	if (!bmco.arrayHas(["none", "artwork", "group"], mode))
 		return;
-	
-	myag.ed.isMoving = mode;
+
 	if (mode == "none")
 	{
 		bmco.ofClassRemoveClass("locatorWrapperArtwork", "locatorActive");
@@ -150,6 +172,7 @@ groupCheckboxCreate: function(g, checked=false)
 {
 	var i = document.createElement("input");
 	i.setAttribute("name", g.id);
+	i.id = `chb_${g.id}`;
 	i.setAttribute("type", "checkbox");
 	i.checked = checked;
 	var l = document.createElement("label");
@@ -158,9 +181,30 @@ groupCheckboxCreate: function(g, checked=false)
 	var d = document.createElement("div");
 	d.appendChild(i);
 	d.appendChild(l);
+	d.setAttribute("onclick", `myag.ed.groupCheckboxToggle('${g.id}')`);
 	d.classList.add("labelledCheckbox");
 
 	return d;
+},
+
+groupCheckboxToggle: function(gid)
+{
+	var chb = document.getElementById(`chb_${gid}`);
+	if (!chb)
+		return;
+	chb.checked = !chb.checked;
+},
+
+guiFormMenuSetMode: function(mode, type)
+{
+	var nameFnTuples = [];
+	if (mode == "new")
+		nameFnTuples.push(["Create", `myag.ed.add('${type}')`]);	
+	else if (mode == "edit")
+		nameFnTuples.push(["Update", "myag.ed.update()"]);
+	nameFnTuples.push(["Cancel", "myag.ed.cancel()"]);
+	var targetId = type=="artwork"? "filloutArtworkBottomBar" : "filloutGroupBottomBar";
+	bmco.gui.bottomBarPopulate(nameFnTuples, targetId);
 },
 
 /* Sets up the bottom buttons menu with necessary buttons.
@@ -169,7 +213,7 @@ return: none
 */
 guiBottomMenuSetMode: function(mode)
 {
-	nameFnTuples = [];
+	var nameFnTuples = [];
 	if (mode == "default")
 	{	
 		if (document.body.getAttribute("isOffline") == "isOffline")
@@ -189,11 +233,39 @@ guiBottomMenuSetMode: function(mode)
 	bmco.gui.bottomBarPopulate(nameFnTuples, "bottomButtonWrapper");
 },
 
+groupFilterReset: function()
+{
+	myag.ed.groupFilterRun(true);
+},
 
+groupFilterRun: function(reset=false)
+{
+	var option = document.getElementById("groupFilterSelect").value;
+	var target = document.getElementsByClassName("artworksWrapper")[0];
+	if (reset || option == "any")
+	{
+		myag.ed.filterGroup = undefined;
+		target.removeAttribute("group");
+	}
+	else
+	{
+		for (var g of myag.data.groups.items)
+		{
+			if (g.id == option)
+			{
+				myag.ed.filterGroup = g.id;
+				target.setAttribute("group", option);
+			}
+		} 
+				
+	}
 
-//==========================================================================//
-//================== BUTTON ACTIONS, MASTER FUNCTIONS, ETC =================//
-//==========================================================================//
+	target.innerHTML = "";
+	myag.data.artworks.putItemsToHtml(target, true);
+	window.dispatchEvent(myag.events.artworksLoaded);
+	
+},
+
 
 /* Loads a menu of macro tools to the tools tab.
 inputs: none
@@ -260,22 +332,9 @@ return: <string> [prettified XML text]
 */
 prepareXml: function()
 {
-	var x = myag.data.xml;
-
-	var v = bmco.xml.childTagRead(x.getElementsByTagName("meta")[0], "updateCount");
-	if (isNaN(v))
-	{
-		myag.ed.guiPopupThrowAlert("Could not read the update counter as a number. Tell this\
-			to <a href='astrossoundhell.neocities.org/data/links/'>Aubery</a> please.");
-		return;
-	}
-	v = parseInt(v) + 1;
-	bmco.xml.childTagWrite(x, x.getElementsByTagName("meta")[0], "updateCount", String(v));
-	bmco.xml.childTagWrite(x, x.getElementsByTagName("meta")[0], "updateTimestamp", bmco.timestamp());
-	myag.ed.xmlUpdateLoadedData(x);
-
-	var xmlText = myag.ed.loadedData;
-	return vkbeautify.xml(xmlText, 5);
+	bmco.infra.metaTagUpdate(myag.data.xml);
+	var text = bmco.xml.xmldocToString(myag.data.xml);
+	return bmco.xml.beautify(text);
 },
 
 /* Opens up the neocities editor to the XML file, puts the XML text to user's clipboard, so they
@@ -285,14 +344,8 @@ return: none
 */
 openWebXmlEditor: function()
 {
-	var xml = myag.ed.prepareXml();
-
-	navigator.clipboard.writeText(xml).then(() => {
-    	window.open(myag.settings.neocitiesXmlFileEditLink, target="_blank");
-	})
-	.catch(err => {
-		myag.ed.guiPopupThrowAlert('Could not copy, tell Aubery about this ASAP: ' + err);
-	});
+	myag.ed.copyXml(false);
+    window.open(myag.settings.neocitiesXmlFileEditLink, target="_blank");
 },
 
 /* Opens up the neocities file browser to the image files location so that the user can
@@ -309,14 +362,14 @@ openWebFileUpload: function()
 inputs: none
 outputs: none
 */
-copyXml: function()
+copyXml: function(doGui=true)
 {
 	var xml = myag.ed.prepareXml();
 	navigator.clipboard.writeText(xml).then(() => {
-    	myag.ed.guiPopupThrowAlert('raw XML copied');
+		if (doGui) bmco.gui.popupAlert('raw XML copied');
 	})
 	.catch(err => {
-		myag.ed.guiPopupThrowAlert('Could not copy, tell Aubery about this ASAP: ' + err);
+		if (doGui) bmco.gui.popupAlert('Could not copy, tell Aubery about this ASAP: ' + err);
 	});
 },
 
@@ -326,42 +379,37 @@ return: none
 */
 startup: function()
 {
-	bmco.setTitle(myag.settings.title + " / editor");
 	myag.ed.guiBottomMenuSetMode("default");
 
-	
 	window.addEventListener("artworksLoaded", (event) => {
-		var newArtworkButton = myag.generateArtworkDiv(new myag.Artwork(), "myag.ed.new('artwork')", "Add new...");
-		newArtworkButton.id = "createNewArtwork";
-		document.getElementsByClassName("myag_artworksWrapper")[0].prepend(myag.generateArtworkPlaceMarker());
-		document.getElementsByClassName("myag_artworksWrapper")[0].prepend(newArtworkButton);	
-		
+		var t = document.getElementsByClassName("artwork")[0];
+		t.id = "createNewArtwork";
+		t.removeAttribute("style");
+		t.setAttribute("onclick", "myag.ed.new('artwork')");
 	});
 
 	window.addEventListener("groupsLoaded", (event) => {
-		var newGroupButton = myag.generateGroupDiv(new myag.Group("start", "Add new...", ""), "myag.ed.new('group')", "Add new...");
-		newGroupButton.id = "createNewGroup";
-		document.getElementsByClassName("myag_groupsWrapper")[0].prepend(myag.generateGroupPlaceMarker());
-		document.getElementsByClassName("myag_groupsWrapper")[0].prepend(newGroupButton);	
-
+		t = document.getElementsByClassName("groupButton")[0];
+		t.id = "createNewGroup";
+		t.setAttribute("onclick", "myag.ed.new('group')");
 		var checkboxesWrapper = document.getElementById("inputArtworkIngroups");
+		var groupFilterSelect = document.getElementById("groupFilterSelect");
 		for (var g of myag.data.groups.items)
-			checkboxesWrapper.appendChild(myag.ed.groupCheckboxCreate(g));
-	});
-	/*
-	window.addEventListener("xmlFileLoaded", (event) => {
-		check = myag.ed.xmlCheckAndFix(myag.data.xml);
-		if (check != "ok")
 		{
-			var text = "Looks like your XML file is out of date or damaged. The automatic repair/update routine prepared a \
-			fixed version for you - please, update your XML contents, then force-refresh this page.";
-			myag.ed.guiPopupThrowAlert(text, "Update", "myag.ed.openWebXmlEditor()")
+			if (g.id != "start")
+			{
+				checkboxesWrapper.appendChild(myag.ed.groupCheckboxCreate(g));
+				var groupOption = document.createElement("option");
+				groupOption.name = g.name;
+				groupOption.value = g.id; 
+				groupOption.innerHTML = g.name;
+				groupFilterSelect.appendChild(groupOption);
+			
+			}
 		}
 	});
-	*/
 
 	myag.ed.loadTools();
-
 	
 	if (bmco.bodyAttributeExists("isoffline"))
 	{
@@ -383,7 +431,6 @@ startup: function()
 //================================ STARTUP =================================//
 //==========================================================================//
 };
-
 
 window.addEventListener("xmlLoaded", (event) => {
 	if (!bmco.bodyAttributeExists('isOffline'))

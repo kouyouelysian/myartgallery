@@ -29,7 +29,7 @@ addPagination: function(targetElem)
 	{
 		case "none": return;
 		case "pages": return myag.pages.makePaginationPages(targetElem);
-		case "append": return myag.pages.makePaginationAppend(targetElem);
+		case "append": myag.pages.makePaginationAppend(targetElem);
 	}	
 },
 
@@ -75,7 +75,7 @@ makePaginationPages: function(parent)
 	return myag.pages.pageJump(0, generateGetParam=false);
 },
 
-pageVisible: function(n)
+pageVisible: function(n, hideOthers = (myag.navigation.mode == "pages"))
 {
 	var start = 0;
 	var end = myag.data.artworks.items.length;
@@ -86,7 +86,6 @@ pageVisible: function(n)
 		if (end > myag.data.artworks.items.length)
 			end = myag.data.artworks.items.length;
 	}
-	hideOthers = myag.navigation.mode == "pages";
 	myag.data.artworks.htmlItemRangeVisible(start, end, hideOthers);
 },
 
@@ -159,10 +158,8 @@ makePaginationAppend: function(parent)
 {
 	showMoreMarker = document.createElement("div");
 	showMoreMarker.id = "paginationMoreTrigger";
-	parent.parentNode.insertBefore(showMoreMarker, parent.nextSibling);
-
-	myag.pages.pageVisible(0);
-
+	parent.parentElement.insertBefore(showMoreMarker, parent.nextSibling);
+	myag.pages.pageVisible(0, true);
 	document.addEventListener('scroll', myag.pages.loadMore);
 	const t = setTimeout(myag.pages.loadMore, 100); // prevents a "screen with one row stuck forever" cornercase
 												 // a bit crutchy... i will figure a better way someday

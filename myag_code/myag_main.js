@@ -17,6 +17,7 @@ var myag = {
 
 debug: true,
 isEditor: bmco.bodyAttributeExists("isEditor"),
+isOffline: bmco.bodyAttributeExists("isOffline"),
 workingFile: "myag_files/data.xml",
 artworksFolder: "myag_artworks/",
 data: {
@@ -97,45 +98,11 @@ Group: class extends bmco.infra.Item {
 //================================ FUNCTIONS ===============================//
 //==========================================================================//
 
-/* tells if the provided string is a valid awid
-inputs: awid <string> [string to test]
-output: <bool> [if it is a valid artwork id]
-*/
-isAwid: function(awid)
-{
-	var header = awid.substr(0,3);
-	var base = awid.substr(3);
-	if (header != "aw_")
-		return false;
-	if (!bmco.infra.isIdBase(base))
-		return false;
-	return true;
-},
-
-/* tells if the provided string is a valid gid
-inputs: gid <string> [string to test]
-output: <bool> [if it is a valid group id]
-*/
-isGid: function(gid)
-{
-	var header = gid.substr(0,2);
-	var base = gid.substr(2);
-	if (header != "g_")
-		return false;
-	if (!bmco.infra.isIdBase(base))
-		return false;
-	return true;
-},
-
-/*
-My super secret (and (forreal) absolutely harmless) function to check
-if the user has gone through my scary javascript! delete if spotted.
-inputs: none
-output: none
-*/
-auberysSuperSecretBackdoor: function()
-{
-	alert("this user didn't go through the page's javascript!");
+setArtworksPerRow(wrapperElem) {
+	var artworksPerRow = parseInt(wrapperElem.getAttribute("artworksPerRow"));
+	if (isNaN(artworksPerRow))
+		artworksPerRow = myag.settings.artworksPerRow;
+	wrapperElem.setAttribute("style", `--artworks-per-row: ${artworksPerRow}`);
 },
 
 putArtwork(target, aw) {
@@ -150,11 +117,15 @@ putGroupButton(target, g) {
 		target.appendChild(myag.generateGroupPlaceMarker(g));
 },
 
-setArtworksPerRow(wrapperElem) {
-	var artworksPerRow = parseInt(wrapperElem.getAttribute("artworksPerRow"));
-	if (isNaN(artworksPerRow))
-		artworksPerRow = myag.settings.artworksPerRow;
-	wrapperElem.setAttribute("style", `--artworks-per-row: ${artworksPerRow}`);
+/*
+My super secret (and (forreal) absolutely harmless) function to check
+if the user has gone through my scary javascript! delete if spotted.
+inputs: none
+output: none
+*/
+auberysSuperSecretBackdoor: function()
+{
+	alert("this user didn't go through the page's javascript!");
 },
 
 /* creates an html element for one group button.
@@ -231,7 +202,7 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 	}
 	else if (!overlayText)
 	{
-		div.style.backgroundColor = bmco.randomColor(3, 8, 15);
+		div.style.backgroundColor = bmco.randomColor(2, 8, 15, {noGrayscale:true});
 		if (myag.isEditor)
 			overlayText = aw.name;
 	}
@@ -255,7 +226,7 @@ generateArtworkPlaceMarker: function(aw=undefined)
 {
 	var marker = document.createElement("div");
 	marker.classList.add("marker", "markerArtwork", "invisible");
-	marker.innerHTML = "<p>Move Here</p>"
+	marker.innerHTML = `<p>move here</p>`;
 	if (!aw)
 	{
 		marker.setAttribute("awid", "start");
@@ -305,20 +276,27 @@ startup: function(pagename)
 			{ // xml
 				workingDoc: myag.data.xml,
 				listTag: myag.data.xml.getElementsByTagName("groups")[0],
+				itemTagName: "group",
+				idTagName: "gid"
 			},
 			{ // gui
 				htmlClass:       "groupButton",
 				htmlMarkerClass: "markerGroup",
 				htmlIdAttribute: "gid",
 				htmlNewButtonId: "createNewGroup",
-				xmlTagName:      "group",
-				xmlIdTagName:    "gid",
 				fillout:     "filloutGroup",
 				generator:    myag.putGroupButton,
-				targetClass: "myag_groupsWrapper",
+				targetClass: "groupsWrapper",
 				filter: null
 			}
 		);
+		if (myag.isEditor)
+		{
+			var g = new myag.Group();
+			g.id = "start";
+			g.name = "Add New...";
+			myag.data.groups.items.push(g);
+		}
 		myag.data.groups.startup();
 		window.dispatchEvent(myag.events.groupsLoaded);
 
@@ -326,18 +304,18 @@ startup: function(pagename)
 			myag.Artwork,
 			{ // xml
 				workingDoc: myag.data.xml,
-				listTag: myag.data.xml.getElementsByTagName("artworks")[0]
+				listTag: myag.data.xml.getElementsByTagName("artworks")[0],
+				itemTagName: "artwork",
+				idTagName: "awid"
 			},
 			{ // gui
 				htmlClass:       "artwork",
 				htmlMarkerClass: "markerArtwork",
 				htmlIdAttribute: "awid",
 				htmlNewButtonId: "createNewArtwork",
-				xmlTagName:      "artwork",
-				xmlIdTagName:    "awid",
 				fillout:     "filloutArtwork",
 				generator:    myag.putArtwork,
-				targetClass: "myag_artworksWrapper",
+				targetClass: "artworksWrapper",
 				filter: {
 					htmlAttribute: "group",
 					objProperty: "ingroups",
@@ -345,10 +323,17 @@ startup: function(pagename)
 				}
 			}
 		);
+		if (myag.isEditor)
+		{
+			var aw = new myag.Artwork();
+			aw.id = "start";
+			aw.name = "Add New...";
+			myag.data.artworks.items.push(aw);
+		}
 		myag.data.artworks.startup();
 		window.dispatchEvent(myag.events.artworksLoaded);
 
-		for (var w of document.getElementsByClassName("myag_artworksWrapper"))
+		for (var w of document.getElementsByClassName("artworksWrapper"))
 		{
 			myag.setArtworksPerRow(w);
 			myag.pages.addPagination(w);

@@ -84,7 +84,7 @@ backdropRemove: function(backdropId="guiBackdrop")
 
 /*  Creates HTML for a standard clickable button
 inputs: text <string> [text to be displayed in the button, e.g. "OK"],
-		fn <string> [to be put into button's onclick event, e.g. "alert: function(1)"]
+		fn <string> [to be put into button's onclick event, e.g. "alert(1)"]
 return: <HTML element> [ready-to-append button]
 */
 buttonCreate: function(text, fn)
@@ -160,7 +160,7 @@ inputs: message <string> [alert message text]
 		fn <string, optional> [function to be executed on button press, closes the popup by default]
 return: <html element> [created popup div]
 */
-popupAlert(message, fn="bmco.gui.popupClose: function()", text="OK")
+popupAlert(message, fn="bmco.gui.popupClose()", text="OK")
 {
 	bmco.gui.backdropCreate("bmco.gui.popupClose()");
 	var alertDiv = bmco.gui.popupCreatePopupBody(message, "popupAlert");
@@ -180,7 +180,7 @@ inputs: message <string> [select prompt text],
 								  so that the menu closes on its own]
 return: <html element> [created popup div]
 */
-popupConfirm(message, fn1, text1="YES", fn2="bmco.gui.popupClose: function()", text2="NO", addAutoClose=true)
+popupConfirm(message, fn1, text1="YES", fn2="bmco.gui.popupClose()", text2="NO", addAutoClose=true)
 {
 	bmco.gui.backdropCreate("bmco.gui.popupClose()");
 	if (addAutoClose)
@@ -277,33 +277,27 @@ inputs: buttonDescriptions <obj> [object with buttonName: buttonAction pairs],
 		mouseY <int> [Y position of the mouse at the moment of call]
 return: none
 */
-actionMenuAppend: function(buttonDescriptions, mouseX, mouseY)
+actionMenuAppend: function(buttonDescriptions, event)
 {
 	/*
 	buttDescrs = {
 		"Edit":   `myag.ed.editArtwork('${arg}')`,
 		"Move":   `myag.ed.moveArtwork('${arg}')`,
 		"Delete": `myag.ed.deleteArtwork('${arg}')`,
-	}; // for artwork context menu
-
-	buttDescrs = {
-		"Edit":   `myag.ed.editGroup('${arg}')`,
-		"Move":   `myag.ed.moveGroup('${arg}')`,
-		"Delete": `myag.ed.deleteGroup('${arg}')`,
-	}; // for group context menu
+	}; // example
 	*/
-
-	if (target == undefined)
-		return;
 
 	ce = [];
 	for (var buttonName in buttonDescriptions)
 		ce.push(bmco.gui.buttonCreate(buttonName, buttonDescriptions[buttonName]));
 
+	var offs = 35;
+	var x = event.clientX - offs;
+	var y = window.scrollY  + event.clientY - offs;
+
 	var menu = bmco.gui.arrayOfElementsToDiv(ce, "actionMenu");
-	var offset = 40;
-	menu.style.left = Math.min(mouseX - offset, (window.innerWidth - 300))+"px";
-	menu.style.top = (mouseY+window.scrollY - offset)+"px";
+	menu.style.left = Math.min(x, (window.innerWidth - 300)) + "px";
+	menu.style.top = y + "px";
 	document.body.prepend(menu);
 
 	bmco.gui.backdropCreate("bmco.gui.actionMenuDelete()", "guiBackdrop", opacity = 0);
