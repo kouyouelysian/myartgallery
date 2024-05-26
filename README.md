@@ -4,12 +4,13 @@
 
 - [Overview](#Overview)
 - [Step-by-step rollout guide](#Step-by-step-rollout-guide)
+- [Update guide](#Update-guide)
 - [Editor tutorial](#Editor-tutorial)
 - [Customisation](#Customisation)
 
 ## Overview
 
-MyArtGallery is an instant-deployment image gallery package for [neocities.org](https://neocities.org) - a free, nice and non-corporate place for hosting and editing your own website. Its joy and demise is that it has no backend whatsoever; you cannot use php or backend JS or anything like that, making it hard to develop any kind of dynamically updated systems with login forms or anything like that. This is likely to both remove a lot of security risks and prevent resource-heavy and profit-driven services from emerging. But what if i, as a visual artist, want to host my art gallery on neocities, *and* not edit the HTML each time i want to publish a new artwork?
+MyArtGallery is an instant-deployment image gallery package for [neocities.org](https://neocities.org) - a free, nice and non-corporate place for hosting and editing your own website. Its joy and demise is that it has no backend whatsoever; you cannot use php, real database software, etc, making it hard to develop any kind of dynamically updated systems with login forms, admin panels, or anything like that. This is likely to both remove a lot of security risks and prevent resource-heavy and profit-driven services from emerging. But what if i, as a visual artist, want to host my art gallery on neocities, *and* not edit the HTML each time i want to publish a new artwork?
 
 This is where MyArtGallery comes into play. I made this package so that one could easily roll out and manage such an artwork gallery on their own - no coding skills required whatsoever. MyAG comes copmlete with a default set of pages that can be deployed, and gradually customized as your web-development skills grow. For more advanced users, MyAG is easily integrated into existing pages by importing some scripts and specifying target containers.
 
@@ -95,7 +96,7 @@ Refresh your gallery's index.html! Your new stuff should now be at the top of th
 ### 9. Not working?
 If it doesn't work: my bad, probably :D contact me and we will see what's wrong. This is a one person project and all sorts of stuff may happen, so [tell me what went wrong](https://auberylis.moe/data/links/)
 
-## Updating MyArtGallery
+## Update guide
 
 Assuming you're running this on neocities.org as intended, you just have to download the [freshest version](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip). Inside your neocities MyAG instance directory, upload the following items from the extracted MyAG zip archive:
 
