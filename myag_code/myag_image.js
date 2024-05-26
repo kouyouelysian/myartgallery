@@ -106,15 +106,22 @@ startup: function()
 	
 	var img = document.getElementById('fullViewImage');
 	img.style.backgroundImage = `url('${myag.artworksFolder}${myag.image.artworkObject.filename}')`;
-	document.getElementById('fullViewTextName').innerHTML = myag.image.artworkObject.name;
-	document.getElementById('fullViewTextAbout').innerHTML = myag.image.artworkObject.about;
 
-	if (myag.image.artworkObject.about == "")
+	if (myag.image.artworkObject.about)
+		document.getElementById('about').innerHTML = myag.image.artworkObject.about;
+	else
 	{
-		document.getElementById('fullViewTextAboutWrapper').remove();
-		document.getElementById('postAboutHr').remove();
-	}
+		document.getElementById('about').remove();
+		document.getElementById('hrAbout').remove();
+	}		
 
+	if (myag.image.artworkObject.name)
+		document.getElementById('name').innerHTML = myag.image.artworkObject.name;
+	else
+	{
+		document.getElementById('name').remove();
+		document.getElementById('hrName').remove();
+	}
 
 	if(document.referrer.split('/')[2]!=location.hostname)
 		myag.image.returnUrl = "./index.html";

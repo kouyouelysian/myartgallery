@@ -2,61 +2,70 @@
  /*                            FULL IMAGE VIEW                                */
 /*============================================================================*/
 
-#fullViewImageArea, #fullViewSidebar {
+html, body {
+	height: 100%;
+	padding-top: 0;
+	overflow: hidden;
+}
+
+main, aside {
 	position: relative;
 	display: block;
 	height: 100%;
 	float: left;
 }
 
-#fullViewImageArea {
+main {
 	width: 70%;
-	background-image: url('../files/imagebg.png');
+	background-image: url('../myag_files/imagebg.png');
+	background-size: 20px;
 	background-position: center;
+	margin: 0;
+	padding: 0;
 }
 
-#fullViewImage {
+main div {
 	position: absolute;
-	width: 96%;
-	height: 96%;
-	margin: 2%;
+	width: 90%;
+	height: 90%;
+	margin: 5%;
 	
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
 }
 
-#fullViewSidebar {
-	width: 30%;
+aside {
+	width: calc(30% - var(--page-spacing) * 2);
+	height: calc(100% - var(--page-spacing) * 2);
 	background-color: var(--col-body);
+	padding: var(--page-spacing);
 }
 
-#fullViewSidebar h1 {
+aside h2 {
+	margin: 0;
+	margin-bottom: var(--page-spacing);
 	max-height: 20%;
+	overflow-y: hidden;
 }
 
-#fullViewTextAboutWrapper {
+
+aside > p {
 	width: 100%;
-	max-height: 50%;
+	max-height: calc(80% - var(--page-spacing) * 3 - 150px);
 	overflow-y: scroll;
 	scrollbar-width: none;
-
-}
-
-#fullViewTextAbout {
 	text-align: justify;
 }
 
-#fullViewSidebarButtonsWrapper {
+nav {
 	position: absolute;
-	width: 100%;
+	width: calc(100% - var(--page-spacing) * 2);
 	bottom: 0;
 }
 
-#fullViewSidebarButtonsWrapper .groupButton {
-	width: calc(80% - var(--border-width) - var(--border-width));
-	margin-left: 10%;
-	margin-right: 10%;
+nav .groupButton {
+	width: calc(100% - var(--border-width) * 2);
 	height: 50px;
 	margin-top: 0;
 	margin-bottom: 16px;

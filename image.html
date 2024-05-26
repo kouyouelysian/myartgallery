@@ -2,25 +2,27 @@
 <html>
 <head>
 	<title>My Art Gallery</title>
-	<link rel="stylesheet" type="text/css" href="./myag_style/image.css">
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_general.css">
 	<link rel="stylesheet" type="text/css" href="./myag_style/items.css">
+	<link rel="stylesheet" type="text/css" href="./myag_style/image.css">
 	<link rel="stylesheet" type="text/css" href="./myag_user/style.css">
 </head>
 <body>
 
-	<div id="fullViewImageArea">
+	<main>
 		<div id="fullViewImage"></div>
-	</div>
+	</main>
 
-	<div id="fullViewSidebar">
-		<h1 id="fullViewTextName"></h1>
-		<hr>
-		<div id="fullViewTextAboutWrapper">
-			<p class="para" id="fullViewTextAbout"></p>
-		</div>
-		<hr id="postAboutHr">
+	<aside>
+	
+		<h2 id="name"></h2>
+		<hr id="hrName">
 
-		<div id='fullViewSidebarButtonsWrapper'>
+		<p id="about"></p>
+		<hr id="hrAbout">
+
+
+		<nav>
 			<div class="groupButton" onclick="myag.image.download();">
 				<p>Download</p>
 			</div>
@@ -33,8 +35,9 @@
 				<p>Back</p>
 			</div>
 			<br>
-		</div>
-	</div>
+		</nav>
+
+	</aside>
 
 	<!--scripts start-->
 	<script type="text/javascript" src="./myag_code/bmco.js"></script>
