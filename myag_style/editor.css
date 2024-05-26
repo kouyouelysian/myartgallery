@@ -112,6 +112,12 @@ as is, as far as i can see :'D
 	filter: none;
 }
 
+#createNewArtwork > .marker:hover, #createNewGroup > .marker:hover, {
+	border-color: var(--col-counterpick);
+	background-color: var(--col-counterpick);
+	filter: none;
+}
+
 .artwork p {
 	position: absolute;
 	top: 50%;
@@ -141,29 +147,19 @@ as is, as far as i can see :'D
 	z-index: 10;
 	border: 4px dashed var(--col-accent);
 	border-radius: 14px;
-	position: relative;
+	position: absolute;
 	display: inline-block;
+	top: 50%;
+	left: calc(100% + var(--page-spacing) / 2);
+	transform: translate(-50%, -50%);
+	pointer-events: all;
+	width: 65px;
+	height: 65px;
 }
 
 .marker.invisible {
 	display: none;
 }
-
-.markerArtwork {
-	width: 72px;
-	padding-top: 72px;
-	margin-right: -80px;
-	left: -52px;
-}
-
-.markerGroup {
-	transform: translateY(-50%);
-	width: 57px;
-	height: 57px;
-	margin-right: -65px;
-	left: -44px;
-}
-
 
 .marker:hover {
 	background-color: var(--col-accent);

@@ -24,7 +24,7 @@ available functions:
 	bmco.xml.childTagRead(node, tag)
 	bmco.xml.childTagWrite(xmldoc, node, tag, text)
 	bmco.xml.nodeGetFirstOfTag(xmldoc, nodeTag)
-	bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value)
+	bmco.xml.nodeGetByChildTagValue(xmldoc, nodeTag, childTag, value, index=false)
 	bmco.xml.nodeAndChildrenWithTextConstruct(xmldoc, nodeTag, childTagValuePairs)
 	bmco.xml.nodeDeleteByChildTagText(xmldoc, nodeTag, childTag, value)
 	bmco.xml.nodePutTo(xmldoc, nodeTag, childTag, movedValue, targetValue, position)
@@ -288,13 +288,13 @@ inputs: xmldoc <xml document object> [operational xml object],
 		value <string> [value of childTag to match for]
 return: <xml element> or null if not found
 */
-nodeGetByChildTagValue: function(xmldoc, nodeTag, childTag, value)
+nodeGetByChildTagValue: function(xmldoc, nodeTag, childTag, value, index=false)
 {
 	var tags = xmldoc.getElementsByTagName(nodeTag);
 	for (var t = 0; t < tags.length; t++)
 	{
 		if (bmco.xml.childTagRead(tags[t], childTag) == value)
-			return tags[t];
+			return index? t : tags[t];
 	}
 	return null;
 },

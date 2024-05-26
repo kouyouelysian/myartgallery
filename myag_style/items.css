@@ -1,4 +1,10 @@
 
+body {
+	--artworks-per-row: 4; /* fallback, don't edit */
+	--buttons-per-row: 4; /* edit this one in myag_user/style.css */
+	--border-width: 4px;
+}
+
 .artworksWrapper, .groupsWrapper {
 	width: calc(100% + var(--page-spacing));
 	margin-bottom: 0;

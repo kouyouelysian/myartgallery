@@ -766,12 +766,10 @@ randomColor: function(steps=2, low=0, high=15, opts={})
 			}
 		}
 	}
-
+	
 	if (opts.noWhite && !opts.noGrayscale)
 		colors.splice(colors.length-1, 1);
-	var color = colors[Math.floor(Math.random()*colors.length)];
-	console.log(color);
-	return color;
+	return colors[Math.floor(Math.random()*colors.length)];
 }
 
 

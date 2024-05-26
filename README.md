@@ -1,19 +1,29 @@
 # MyArtGallery (MyAG)
 
-## WHAT, WHY, WHERE
+## Index
 
-MyArtGallery is an instant-deployment image gallery package for [neocities.org](https://neocities.org) - a free, nice and non-corporate place for hosting and editing your own website. Its joy and demise is that it has no backend whatsoever; you cannot use php or backend JS or anything like that, making it hard to develop any kind of dynamically updated systems with login forms or anything like that. This probably is to remove the misuse threat completely, as having no backend means 1. no weak security applications will be deployed and 2. no resource-hungry stuff is made. As a bonus, this adds to the overall static nature of neocities. But what if i want, as a visual artist, to host my art gallery on neocities and not edit HTML or some makeshift JS each time i want to add a new artwork?
+- [Overview](#Overview)
+- [Step-by-step rollout guide](#Step-by-step-rollout-guide)
+- [Editor tutorial](#Editor-tutorial)
+- [Customisation](#Customisation)
 
-This is where MyAG comes into play. I made this solution so that one could easily roll out and manage such an artwork gallery on their own, no coding required. It also comes with a built-in styling system that's very easy to use and requires no programming skills - you just open a style file, in which each parameter has a description and a guide, and change some text. Since this is still neocities, you can go ahead and edit the HTML of the page further than changing the name and about; you can absolutely restyle, reorder and augment the page as you want. Do note that doing advanced modding may make updating harder at this earlier stage of the project.
+## Overview
 
-MyAG uses an .xml file as its data store; i KNOW that .xml is a transport format and not a database. However, with quite slow update rates (3 artworks per day VS thousands of tweets per hour) and access rates (maybe like 400 visits per day vs millions of users at once), it's OK to work around neocities' backendlessness like that. The .xml file stores information about your artworks - name, description, filename and groups (or tags, if you want). All these are editable via the bundled visual editor. You just fill out the fields for your new artwork, provide its filename - and then update the .xml file (just paste some text and save) and upload the artwork to the correct folder. The .xml file editor and upload folder are opened automatically when you're done filling out the deets on your new stuff. Clunkier than putting it on twitter dot com or something, but better than having your stuff erased by moderators or losing your account because you made a joke about some stinky billionaire.
+MyArtGallery is an instant-deployment image gallery package for [neocities.org](https://neocities.org) - a free, nice and non-corporate place for hosting and editing your own website. Its joy and demise is that it has no backend whatsoever; you cannot use php or backend JS or anything like that, making it hard to develop any kind of dynamically updated systems with login forms or anything like that. This is likely to both remove a lot of security risks and prevent resource-heavy and profit-driven services from emerging. But what if i, as a visual artist, want to host my art gallery on neocities, *and* not edit the HTML each time i want to publish a new artwork?
 
-Wanna see MyAG in action? My own kandi museum page runs on MyAG, [check it out](https://astrossoundhell.neocities.org/data/kandi/)! 
+This is where MyArtGallery comes into play. I made this package so that one could easily roll out and manage such an artwork gallery on their own - no coding skills required whatsoever. MyAG comes copmlete with a default set of pages that can be deployed, and gradually customized as your web-development skills grow. For more advanced users, MyAG is easily integrated into existing pages by importing some scripts and specifying target containers.
 
-## STEP BY STEP ROLLOUT GUIDE
+MyAG uses an [XML](https://en.wikipedia.org/wiki/XML) file as its data store, which is OK for small-scale databases. This file stores information about your artworks - names, descriptions, filenames and group markers (more robust version of tags), as well as group names and descriptions. You don't have to edit any XML by hand: the bundled editor webpage takes care of that. Just click the "New Artwork" button, fill out the fields for your future upload, and once you're done - the editor already has all you need prepared for you. 
 
-### 1. load the package contents to neocities.
-[Download the package](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip) from this github page and deploy it to your Neocities. This means extracting the zip file you just got, going to Neocities dashboard view (the thing where you can make and delete files, etc), and drag-n-dropping stuff to the location where you want your gallery to be. All the files and folders from the package must exist in the **same Neocities site folder**. Upload folders one by one, **DO NOT GROUP-LOAD FOLDERS** - neocities has a bug with that. Uploading all the *files* at once is OK though! You have to upload the following:
+Neocities does not have a back-end, so when running autonomously, MyAG still requires some manual actions to finalize your uploads. Once you're done, you will need to update the .xml file (= paste some text and press "save") and upload the artwork files to the correct folder. The .xml file editor and upload folder are opened automatically when you're done working with editor. A desktop application is being developed to take advantage of Neocities' API to allow automatic file uploads.
+
+Wanna see MyAG in action? My own kandi museum page runs on MyAG, [check it out](https://auberylis.moe/data/kandi/)! 
+
+## Step-by-step rollout guide
+
+### 1. Upload the package contents to your Neocities website.
+[Download](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip) the package from this github page and deploy it to your Neocities. This means extracting the zip archive you just got, going to your Neocities dashboard view (the thing where you can make and delete files, etc), and drag-n-dropping stuff to the location where you want your gallery to be. All the files and folders from the package must exist in the **same Neocities site folder**. Creating a gallery in the website root is possible, but making a subfolder and deploying to it is advised. Items with an asterisk may be omitted if you are an experienced user and are going to roll your own HTML.
+
 - folders (drag and drop one by one to load a folder with all its contents):
     - myag_artworks
     - myag_code
@@ -21,98 +31,129 @@ Wanna see MyAG in action? My own kandi museum page runs on MyAG, [check it out](
     - myag_style
     - myag_user
 - files (basically, upload all .html files from the package):
-    - editor.html
-    - group.html
-    - image.html
-    - index.html
-    - settingsChecker.html
+    - editor.html 
+    - group.html *
+    - image.html 
+    - index.html *
 
-Click on "index.html" - a page pops up in a new tab. If it displays some test images in a grid - well done, you deployed MyAG!
+After everything's done uploading, click on "index.html" - a page pops up in a new tab. If it displays some test images in a grid - well done, you deployed MyAG! Otherwise, feel free to [contact me](https://auberylis.moe/links/) and help me improve MyAG by telling what went wrong.
 
-### 2. open two needed pages in new tabs
-In neocities dashboard view (with the folders and all) where you just uploaded the stuff, you have to open (right click + open in new tab for most browsers) two folders in new tabs : 'files' and 'artworks'. On the tab with the 'files' one, click on 'data.xml' - an editor will pop up. you don't have to edit anything; just keep it open. Don't do anything with the 'artworks' folder tab. Keeping these two tabs open, go back to the initial tab with the dashboard view.
+### 2. Open thes two pages in new tabs (you'll need them later)
+Next is setting up the simplified update process. In Neocities dashboard view (with the html files, directories and all), in the directory where you just deployed the package, you have to open in new tabs (right click + open in new tab for most browsers) the following two directories: 'myag_files' and 'myag_artworks'. The former stores the database and other working files, the latter is for your images. In 'myag_files', click "edit" on the line showing "data.xml" (the database) - an editor will pop up. You don't have to edit anything; just keep it open. Keep the tab with the 'myag_artworks' directory view open. Now, go back to the initial tab with the dashboard view of your MyAG deployment directory.
 
-### 3. edit myag_user/settings.js
-This is the hardest thing you have to do here - this will enable the gallery editor to redirect you automatically. navigate to the "user" folder, then press "edit" at the line showing "settings.js". there are two text lines that you have to edit:
+### 3. Edit these two lines in myag_user/settings.js
+This is the hardest thing you have to do here: this will enable the gallery editor to redirect you automatically, simplifying the update/upload process. Navigate to the "myag_user" folder, then press "edit" at the line showing "settings.js". there are two text lines that you have to edit:
 
-SETTING_neocitiesXmlFileEditLink = "pastelinkhere";
+`myag.settings.neocitiesXmlFileEditLink = "pasteXmlEditorLinkHere"`
 
-SETTING_neocitiesArtworksFolderLink = "pastelinkhere";
+`myag.settings.neocitiesArtworksFolderLink = "pasteArtworksFolderDashboardLinkHere"`
 
-The **pastelinkhere**s have to be replaced with actual links. The first one, SETTING_neocitiesXmlFileEditLink, should get the link to the data.xml file editor tab. Just copy the link from the tab that you opened before, and paste it to the setting.js line. The second one, SETTING_neocitiesArtworksFolderLink, is the same story but with the artworks folder. Don't forget to keep the double quotes! The two lines should look something like this at the end:
+The stuff inside double-quotes has to be replaced with actual links. The first one, `neocitiesXmlFileEditLink`, should become the link to the data.xml file editor tab. Just go to the browser tab with the data.xml editor open, copy the link from the address bar, and paste it instead of `pasteXmlEditorLinkHere`. The second one, `neocitiesArtworksFolderLink`, is same story, but with the artworks folder. Don't forget to keep the double quotes!
 
-SETTING_neocitiesXmlFileEditLink = "https://neocities.org/site_files/files/data.xml";
+The two lines should look something like this at the end:
 
-SETTING_neocitiesArtworksFolderLink = "https://neocities.org/dashboard?dir=Fartworks";
+`myag.settings.neocitiesXmlFileEditLink = "https://neocities.org/site_files/myag_files/data.xml";`
 
-Save the file (ctrl/cmd + S or click the red "save" button) and return to the dashboard view by pressing 'dashboard' at top left corner. Now the bundled gallery editor that helps you edit the image names, infos and groups, will be able to easily redirect you to the artwork upload page and XML update page upon clicking a button.
+`myag.settings.neocitiesArtworksFolderLink = "https://neocities.org/site_files/text_editor?filename=Fmyag_files%2Fdata.xml";`
 
-### 4. customize!
-The fun part is that you customize the website look! All the "easy" customization files are located in the "myag_user" folder. You will not have to edit anything else to change things up. Open the file "style.css" in the "user" folder. There are some assignable variables that you can change, with guidance next to them. Feel free to rewrite the default values with custom ones - just be sure to follow the same format that i used and noted in the guide comments if you're not familiar with css! You can open your gallery's index and refresh it to see the results of your customizations. If it doesn't go through, try [force-refreshing](https://www.howtogeek.com/672607/how-to-hard-refresh-your-web-browser-to-bypass-your-cache/) the page.
+Save the changes you made to *settings.js* file (ctrl/cmd + S or click the red "save" button) and return to the gallery directory overview by pressing its name at the top left corner. After you did these edits, the bundled editor will be able to easily redirect you to the XML editor page and the artwork file upload view upon finishing the editing.
 
-You can load your user picture to the "myag_files" folder. No size constraints but i suggest resizing to 400x400px. put the filename to the --userpic-file in myag_user/style.css - otherwise it will keep pointing to the question mark image!  
+### 4. Customize!
+The fun part is that you customize the website look! All the "easy" customization files are located in the "myag_user" folder. You will not have to edit anything else to change things up lightly. Open the file "style.css" in the "myag_user" folder. There are some assignable variables that you can change, with guidance next to them. Feel free to rewrite the default values with custom ones. You can open your gallery's index and refresh it to see the results of your customizations. If it doesn't go through, try [force-refreshing](https://www.howtogeek.com/672607/how-to-hard-refresh-your-web-browser-to-bypass-your-cache/) the page. The index page has some dummy text in the `<p>` element - you may want to rewrite the text with something about you, like a welcoming message, or some information on your digital display.
 
-All the pages generate text automatically, except for the landing (index) page. the index page has info that is presented when someone first reaches your webpage! edit "index.html" and put your info instead of the stock text. Done, you're marvelous!
+All deeper customisations require at least basic HTML/CSS knowledge, and shall be done by hand by you; i *highly* encourage you to try and do that, because that's the most fun part of the user-made web. 
 
-## GALLERY MANAGEMENT TUTORIAL
+## Editor tutorial
 
 ### 1. Make sure you're logged in to neocities.org
-as stupid as it sounds, are you logged in? Log in if not. Security of your XML "database" relies on the security of your neocities.org session. 
+As stupid as it sounds, are you logged in? Log in if not. Security of your XML "database" relies on the security of your neocities.org session. 
 
 ### 2. Access editor
-neocities doesn't allow writing to files in any way but manually, by accessing the file editor through the dashboard. however, we facilitate this process by reaching a user interface for facilitating the upload of new images. Go to your main page and click on your user picture to have the editor open up in new tab, or access "editor.html" in your gallery's folder manually.
+MyAG facilitates managing your uploads by providing a graphic user interface. The bundled editor is "editor.html" in your gallery's deployment folder. For example: if your gallery is located at "yoursite.neocities.com/gallery/", the editor is at "yoursite.neocities.com/gallery/editor". Anyone can access your editor and poke around, but only you can *actually* update the database and upload new images. Think about it as 'imagining' your changes with the editor (accessible to anybody), and 'making them real' by updating the XML file and uploading new artworks (only for you). If you have security concerns anyways, rename "editor" to 64 random characters, and bookmark it in your browser for convenience.
 
-### 3. Add artwork information
-Press square "Add new..." button in the framework grid. A little info card comes up for you to fill out. Put the exact filename WITH extention (e.g. *coolartwork.png* or *sanic.jpg*), to the file name field. Do not try to drag and drop the file on this field! this is **not** a file upload window - you will upload the actual image manually in a second! Only the filename is required. If you wish, add more info on this new picture in the "title" and "about" fields.
+### 3. Add a new artwork
+Navigate to the *Artworks* tab and press the "Add new..." button in the grid's top left. A little info card comes up for you to fill out. Put the exact filename WITH extention (e.g. `coolartwork.png`, `sanic.jpg`), to the file name field. *Do not try to drag and drop the file on this field!* this is **not** a file upload window; you will upload the actual image manually in just a second. Only the filename is required. If you wish, add more info on this new picture in the other fields. Press "Create". The artwork should be added to the grid now, displaying as a coloured rectangle with the name you provided, or its ID string if you didn't.
 
-### 4. Add group
-This is not mandatory, but having grouping is nice. Add a group by pressing the rectangular "Add new..." button in the groups (upper) grid. The site will prompt you to enter a group name (64 symbols max - try the current year for starters). If you wish, you can add some info about this group, or leave the about field empty. Hit "create" - your group is now added to the groups grid!
+### 4. Add a new group
+Groups are like tags, but more structured and robust. Add a group by navigating to the *Groups* tab and pressing the "Add new..." button in the grid's top left. Another fillout pops up. Fill it out and hit "Create": your group is now added to the groups grid!
 
-### 5. Assign artwork to group
-Note how after you created a group, you can assign an artwork to it. Click on an artwork that you wish to edit, and select "edit". Now you can add this artwork to the group you just created by ticking the corresponding checkbox. You can add one artwork to as many groups as you want, or to none at all.
+### 5. Assign your new artwork to your new group
+Now that you created a group, you can assign an artwork to it. Click on the artwork you created in step 3, and select "edit" in the context menu. Now you can add this artwork to the group you just created by ticking the corresponding checkbox. You can add one artwork to as many groups as you want, or to none at all.
 
 ### 6. Delete stock groups and artworks
-The package comes with some pre-packed test images and info. You can go ahead and remove that! Simply click on an artwork that you'd like to remove and hit "delete". The editor will prompt you if you really want to delete that artwork - press "yes". Now, just do this with all the stock artworks and groups! Keep in mind that you are only deleting the record of an image in the database; the actual image file should be deleted manually.
+The package comes with some pre-packed test images and groups. You can go ahead and remove them! Simply click on an artwork or group that you'd like to remove, and hit "delete". The editor will prompt you if you really want to delete that item: if so, press "yes". Now, just do this with all the stock artworks and groups! Keep in mind that you are only deleting the *record of an image in the database*; the actual test image *files* should be deleted manually from the myag_artworks folder.
 
 ### 7. Update XML
-Press the "update xml" button. A new tab will pop up, with an open text editor of "data.xml". The gallery editor already put the updated XML text to your clipboard, so you just have to replace the old one with it. By doing this, you're replacing your old "database" with an updated version. Select everything in the editor (right click on the editing window, 'select all' - or the ctrl-A/cmd-A keyboard shortcut) and delete it with the backspace. Then paste the new text (right click + paste or ctrl-V/cmd-V). Save the file by pressing 'save' on top right or using ctrl-S/cmd-S. Done, you updated your website's "database"!
-
-*Note: generally it's a bad idea to use XML as a database, but for such low access and update rates and lack of backend, it will do.*
+Press the "update xml" button at the editor's bottom bar. A new tab will pop up, with an open text editor of "data.xml". The editor already put the updated XML database as text to your clipboard, so you only have to replace the old one with it. Select everything in the editor (right click on the editing window, 'select all' - or the ctrl-A/cmd-A keyboard shortcut) and delete it with the backspace. Then paste the new text (right click + paste or ctrl-V/cmd-V). Save the file by pressing 'save' on top right or using ctrl-S/cmd-S. And just like that, the changes you just made are now recorded into the database and will display to you and your visitors.
 
 ### 8. Upload the artwork file
-Close the XML file tab, return to the editor page, press the "upload files" button. A new tab pops up, in your /artworks folder. Drag-n-drop your new artwork files to it! Although you did describe the artwork to the database, the actual file isn't on your website just yet, so you have to put it there manually. Same applies for deletion: although you delete an artwork using the editor, you still need to delete the file itself manually.
+Close the XML file tab and press the "upload files" button in the editor. Another tab pops up, serving your /myag_artworks directory. This is where your uploaded images live. Although you did describe the artwork to the database, the *actual file* isn't on your website just yet: drag-n-drop your new artwork file to the directory to upload. Same applies for deletion: although you delete an artwork using the editor, you still need to delete the file itself manually.
 
 ### 8. Verify!
-Check your website! Your new stuff should now be at the top of the index page, and the newly created groups should now show as buttons. If you messed up and didn't paste the XML, in case you didn't close the editor page yet - use the "raw xml" button; it will put the XML text to your clipboard so that you can try to paste it again.
+Refresh your gallery's index.html! Your new stuff should now be at the top of the index page, and the newly created groups should now show as buttons. If you forgot to paste the XML, and didn't close the editor page yet - use the "raw xml" button; it will put the XML text to your clipboard so that you can try to paste it again.
 
-If it doesn't work: my bad, probably :D contact me and we will see what's wrong. This is a one person project and all sorts of stuff may happen. --> [tell me what went wrong](https://astrossoundhell.neocities.org/data/links/)
+### 9. Not working?
+If it doesn't work: my bad, probably :D contact me and we will see what's wrong. This is a one person project and all sorts of stuff may happen, so [tell me what went wrong](https://auberylis.moe/data/links/)
 
-## CUSTOMIZATION
+## Updating MyArtGallery
+
+Assuming you're running this on neocities.org as intended, you just have to download the [freshest version](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip). Inside your neocities MyAG instance directory, upload the following items from the extracted MyAG zip archive:
+
+- folders (drag and drop one by one to load a folder with all its contents):
+    - myag_code
+    - myag_style
+- files (basically, upload all .html files from the package):
+    - editor.html 
+    - image.html 
+
+The new uploads will automatically replace the old files, so the code and default styling will all get updated. Pay attention and **do not** upload *myag_user*, *myag_files*, or anything else that is not listed, as this may break your customizations, or even reset your database or artworks folder!
+
+In case you did deep mods of MyAG, like tweaking the code - you know what you're doing, so you will have to handle figuring out what of your mods are in stuff subject to be updated, and applying your hacks on the new code on your own. I heavily advise you to do as much as possible with custom CSS.
+
+## Customisation
 
 ### Basic
 
-All the user-friendly stuff that changes the look and feel of MyAG is in the ./user folder. "style.css" has some variables that are used throughout the actual stylesheet (./style/main.css) that you can edit! Next to each variable is a little guide of what to do with it. In this file, you can change the fonts and font sizes, borders/corners, colour schemes, etc. The other file, "settings.js", has a few settings that govern how MyAG behaves (and the two mandatory fields that you filled out when deploying the thing). Each setting comes with a guide also. In this file, you can decide what type of page navigation you want, if you want to display the fullsize view button on the big view overlay, etc. Basically, that's about it! These are mere text files, and no coding skill is required to alter them.
+Basic customizations are described in *MyArtGallery step-by-step rollout guide*, point 4. They are guaranteed to not hinder the update cycle.
 
 ### Intermediate
 
-If you need more funky and specific CSS rules -- e.g. you want a border on THIS ONE SPECIFIC element, but not others, you can do so in the ./user/overrides.css file. This is already raw CSS coding, not preset variables in the styles.css file, so i do not guarantee anything at all lmao. All the CSS rules you put here will get loaded *after* everything else, so if you redefine something, it will override the factory styling, hence the name. You can also put your own class/id styling here, if you are adding custom elements. Bear in mind, that it's necessary to put your custom code here and not to the main stylesheet; otherwise you will have big troubles updating.
+If you need more funky and specific CSS rules -- e.g. you want a rainbow background on THIS ONE SPECIFIC element, but not the others, you add the corresponding styles to the *myag_user/style.css* file. This is something everyone is encouraged to do. All the CSS rules you put here will get loaded *after* everything else, so if you redefine something, it will override the factory styling. You can also put your own class/id styling here, if you are adding your own custom elements. Bear in mind, that it's necessary to put your custom code to *myag_user/style.css* and not to any other stylesheets - otherwise, your mods will vanish upon updating.
 
 ### Advanced
 
-I mean, this is all text after all! If you want to, go ahead and mess around with the pages' HTML. You can add your own stuff like a banner, or a wiki style table with your info, or whatnot -- see above for where to add styling for this stuff. I *do not recommend* deleting any existing div's. I try writing code so that it just goes on if it does not find some element that it wants, but who knows lol. So, if you want a section gone -- say, you don't want the group buttons div -- just add an inline "display:none" style to it, and it will not be shown. Having custom HTML in the basic pages (index, group, image, editor) means the updating may get clunky at some point, as you won't be able to just wipe out the old files and bring in the new files in case major changes occur to those pages (unlikely). If you're doing this, be sure you know what you're doing!
+This section is for people who want to roll their own HTML and integrate MyAG into it on their own. MyAG is engineered to be non-invasive, and barely ever interfere with your own's artistic goals. It's easily integrated into an existing page, and renders its items into specified containers.
 
-## UPDATING
+In your htm's `<head>` tag, you *have* to import the following CSS styles via `<link>`s:
 
-### You only did basic or intermediate customizations
+- myag_style/items.css
+- myag_style/viewer.css
 
-Assuming you're running this on neocities.org as intended, you just have to download the [freshest package zip](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip), in your neocities myag instance - delete the following
-- folders: style, code
-- files: editor.html, group.html, image.html, index.html, settingsChecker.html
-and replace them with the same files/folders from the new package. If all goes right, everything should start working off the bat. If it is wonky, access the settingsChecker.html page and see if your settings.js file is up-to-date. Still sucks? [Tell me what's up](https://astrossoundhell.neocities.org/data/links/).
+At the bottom of your page, before the closing `</body>` tag, hook up the following scripts using `<script>` elements:
 
-### You did advanced customizations
+- myag_code/bmco.js
+- myag_code/bmco_xml.js
+- myag_code/bmco_infra.js
+- myag_code/myag_main.js
+- myag_user/settings.js
+- myag_code/myag_pages.js
+- myag_code/myag_viewer.js
 
-Basically, same story as above, but you back up your customized .html pages, and then roll your custom stuff over to the new pages. Good luck :D  
+If confused, refer to the bundled *index.html* for a reference; bear in mind that it imports some default styles, too.
+
+Now you connected all the bits and bobs that make MyAG run. It automatically detects targets (like `<div>`s) by class and renders items into them as HTML structures. In order to have MyAG render *artworks* into a container (`<div`>, `<section`>, `<content`>, ...) - set its class to `artworksWrapper`. If you want MyAG to render group buttons to a container, its classlist has to contain `groupsWrapper`. Obviously, you can add many classes to an element: the clas you're using in your own page's styling can be next to the class MyAG is targetting.
+
+An `artworksWrapper` container can be customized with HTML attributes, e.g. `<div class="artworksWrapper" attribute="value">`:
+
+- artworksPerRow: number, overrides the general artworks per row setting just for this container
+- group: string, group's *id* (**not** the group's name). Group's ID can be found in editor by selecting 'Copy ID' in the context menu. The container will only display artworks from the target group. Displays all groups if not set.
+
+If no wrappers are found for groups/artworks, no errors are thrown, and they are simply not loaded. You can use this to your advantage, e.g. omit artwork containers to have the gallery index be a list of groups for user to narrow into, or vice versa - display each group in a separate `artworksWrapper` with its *group* attribute set accordingly, while not displaying the group buttons at all.
+
+
+
+
+
 
 
 

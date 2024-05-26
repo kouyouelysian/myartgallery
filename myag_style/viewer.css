@@ -2,13 +2,18 @@
 /*                               ARTWORK VIEWER                               */
 /*============================================================================*/
 
+body {
+	--viewer-overlay-opacity: 0.5;
+	--viewer-overlay-rgb: 0,0,0;
+}
+
 #artworkViewerWrapper {
 	position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,var(--overlay-opacity));
+    background-color: rgba(var(--viewer-overlay-rgb), var(--viewer-overlay-opacity));
     z-index: 10;
     transition: opacity 0.3s;
     background-size: cover;

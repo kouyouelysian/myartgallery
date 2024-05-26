@@ -4,11 +4,12 @@
 	<!-- change this to what you want to display at the browser top -->
 	<title>MyArtGallery / Editor</title>
 	<!--*chunk styles*-->
-	<link rel="stylesheet" type="text/css" href="myag_style/bmco_general.css" />
-	<link rel="stylesheet" type="text/css" href="myag_style/bmco_tabs.css" />
-	<link rel="stylesheet" type="text/css" href="myag_style/bmco_gui.css" />
-	<link rel="stylesheet" type="text/css" href="myag_style/panel.css">
-	<link rel="stylesheet" type="text/css" href="myag_style/editor.css">
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_general.css" />
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_tabs.css" />
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_gui.css" />
+	<link rel="stylesheet" type="text/css" href="./myag_style/items.css">
+	<link rel="stylesheet" type="text/css" href="./myag_style/editor.css">
+	<link rel="stylesheet" type="text/css" href="./myag_user/style.css">
 	<!--*endchunk*-->
 </head>
 
@@ -105,7 +106,11 @@
 	<script type="text/javascript" src="myag_code/myag_editor.js"></script>
 	<script type="text/javascript">
 		myag.navigation.mode = "append";
-		var tab = new bmco.tabs.TabHandler({ firstTabId: "artworks", mode: "semantic", inNeomanager:true });
+		var tab = new bmco.tabs.TabHandler({
+			firstTabId: "artworks",
+			mode: "semantic", 
+			inNeomanager:true });
+		tab.functionsOnSwitch = [myag.ed.cancel, myag.ed.place];
 	</script>
 
 	<!--*endchunk*-->

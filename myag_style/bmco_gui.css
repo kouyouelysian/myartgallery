@@ -6,7 +6,6 @@
 
 /*========================================================*/
 
-
 .backdrop {
 	position: fixed;
 	top: 0;
@@ -239,7 +238,6 @@
 	margin: 0;
 	margin-right: 10px;
 	display: inline-block;
-	height: 30px;
 	border-radius: 0;
 	vertical-align: middle;
 }

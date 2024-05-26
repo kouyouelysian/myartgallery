@@ -201,5 +201,6 @@ startup: function(){
 
 }
 
-myag.viewer.startup();
-
+window.addEventListener("artworksLoaded", (event) => {
+	myag.viewer.startup();
+});

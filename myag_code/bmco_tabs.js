@@ -47,7 +47,7 @@ TabHandler: class
 		if (getParamTab)
 			return this.switchTo(getParamTab, "id");
 		if (this.firstTabId)
-			return this.switchTo(this.firstTabId, "id");
+			return this.switchTo(this.firstTabId, "id", false);
 
 	}
 

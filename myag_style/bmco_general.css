@@ -28,11 +28,8 @@ body {
 	--font-main-size: 18px;
 
 	--shadow: -4px 4px var(--col-shadow);
+	--button-height: 64px;
 
-	--border-width: 4px;
-	--buttons-height: 64px;
-
-	/* always display the scrollbar because the width-flickering annoys me to hell and back */
 	overflow-y: scroll;
 }
 

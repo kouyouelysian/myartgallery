@@ -37,6 +37,21 @@ events: {
 	artworksLoaded: new Event("artworksLoaded"),
 },
 
+/* EDIT THESE TO CHANGE THE BASIC ENGINE SETTINGS */
+
+settings: {
+	neocitiesXmlFileEditLink: undefined,
+	neocitiesArtworksFolderLink: undefined,
+	fullButton: true, 
+	viewerSideInfo: true,
+	pagingIndex: "pages",
+	pagingGroup: "none",
+	artworksPerRow: 4,
+	rowsPerPage: 4, 
+	nextPageOnWrap: true,
+	remoteImageHost: null,
+},
+
 //==========================================================================//
 //=============================== CLASSES ==================================//
 //==========================================================================//
@@ -106,15 +121,15 @@ setArtworksPerRow(wrapperElem) {
 },
 
 putArtwork(target, aw) {
-	target.appendChild(myag.generateArtworkDiv(aw));
+	var awHtml = target.appendChild(myag.generateArtworkDiv(aw));
 	if (myag.isEditor)
-		target.appendChild(myag.generateArtworkPlaceMarker(aw));
+		awHtml.appendChild(myag.generateArtworkPlaceMarker(aw));
 },
 
 putGroupButton(target, g) {
-	target.appendChild(myag.generateGroupDiv(g));
+	var gHtml = target.appendChild(myag.generateGroupDiv(g));
 	if (myag.isEditor)
-		target.appendChild(myag.generateGroupPlaceMarker(g));
+		gHtml.appendChild(myag.generateGroupPlaceMarker(g));
 },
 
 /*
@@ -237,6 +252,7 @@ generateArtworkPlaceMarker: function(aw=undefined)
 		marker.setAttribute("awid", aw.id);
 		marker.setAttribute("onclick", "myag.ed.place('"+aw.id+"')");
 	}
+	marker.setAttribute("onmouseover", "event.stopPropagation()");
 	return marker;
 },
 

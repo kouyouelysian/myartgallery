@@ -167,6 +167,8 @@ ItemList: class {
 		{ // xml example
 			workingDoc: myag.data.xml,
 			listTag: myag.data.xml.getElementsByTagName("artworks")[0]
+			itemTagName: "artwork",
+			idTagName: "awid",
 		}
 
 		{ // gui example
@@ -174,8 +176,6 @@ ItemList: class {
 			htmlMarkerClass: "moveMarkerArtwork",
 			htmlNewButtonId: "createNewArtwork",
 			htmlIdAttribute: "awid",
-			xmlTagName:      "artwork",
-			xmlIdTagName:    "awid",
 			fillout:     "filloutArtwork",
 			generator:    myag.createArtwork,
 			targetClass: "myag_artworksWrapper",
@@ -239,7 +239,7 @@ ItemList: class {
 		return false;
 	}
 
-	addNew(item = undefined) {
+	addNew(item = undefined, leaveAtEnd=false) {
 		var i = item;
 		if (!i)
 		{
@@ -251,19 +251,33 @@ ItemList: class {
 			this.xml.listTag.appendChild(i.toXml(this.xml.workingDoc));
 		
 		if (this.gui) {
-			bmco.gui.filloutHide(this.gui.fillout);
 			var target = document.getElementsByClassName(this.gui.targetClass)[0];
 			this.gui.generator(target, i);
 		}
 
-		if (this.putNewItemsToStart)
+		if (this.putNewItemsToStart && !leaveAtEnd)
 			this.moveById(i.id, "start");
+	}
+
+	updateExisting(item = undefined) {
+
+		var updatedItem = item;
+		if (!updatedItem) 
+		{
+			var updatedItem = new this.itemClass();
+			updatedItem.filloutRead();
+		} // updatedItem's id is same as the old item being edited
+		var itemIndex = this.indexById(updatedItem.id);
+		this.remove(updatedItem); // again, id's the same, doesn't matter
+		this.addNew(updatedItem, true); // adds item with same id, but updated props
+		if (itemIndex != this.items.length-1)
+			this.moveByIndex(this.items.length-1, itemIndex-1);
+
 	}
 
 	remove(item) {
 		this.items.splice(this.indexById(item.id), 1);
 		if (this.xml) {
-
 			var tag = bmco.xml.nodeGetByChildTagValue(
 				this.xml.workingDoc,
 				item.xmlTagName,
@@ -288,68 +302,54 @@ ItemList: class {
 		this.remove(this.itemById(id));
 	}
 
-	moveById(idMoved, idAfter) {
-
-		console.log(
-this.xml.workingDoc,
-					this.xml.itemTagName,
-					this.xml.idTagName,
-					idMoved,
-
-			bmco.xml.nodeGetByChildTagValue(
-					this.xml.workingDoc,
-					this.xml.itemTagName,
-					this.xml.idTagName,
-					idMoved
-				)
-		);
-
-		bmco.arrayValuePutAfter(
-			this.items, 
-			this.indexById(idMoved), 
-			idAfter=="start"? 0 : this.indexById(idAfter)
-		);
+	moveById(idMoved, idTo) {
 		
 		if (this.xml) {
-			this.xml.listTag.insertBefore(
-				bmco.xml.nodeGetByChildTagValue(
+
+			var movedXml = bmco.xml.nodeGetByChildTagValue(
 					this.xml.workingDoc,
 					this.xml.itemTagName,
 					this.xml.idTagName,
 					idMoved
-				),
-				idAfter == "start"? this.xml.listTag.firstElementChild :
-				bmco.xml.nodeGetByChildTagValue(
-					this.xml.workingDoc,
-					this.xml.itemTagName,
-					this.xml.idTagName,
-					idAfter
-				).nextElementSibling
 			);
-
+			movedXml.remove();
+			if (this.indexById(idTo) == this.items.length - 1)
+				this.xml.listTag.appendChild(movedXml);
+			else if (idTo == "start")
+				this.xml.listTag.insertBefore(
+					movedXml,
+					this.xml.listTag.firstChild
+				);
+			else
+				this.xml.listTag.insertBefore(
+					movedXml,
+					bmco.xml.nodeGetByChildTagValue(
+						this.xml.workingDoc,
+						this.xml.itemTagName,
+						this.xml.idTagName,
+						idTo
+					).nextElementSibling
+				);
 		}
+
 		if (this.gui) {
 			var moved = this.htmlById(idMoved);
-			var movedMarker = this.htmlById(idMoved, true);
-			var target;
-			if (idAfter == "start")
-			{
-				var newInstanceButton = document.getElementById(this.gui.htmlNewButtonId);
-				if (!newInstanceButton)
-					target = document.getElementsByClassName(this.gui.targetClass)[0].children[0];
-				else
-					target = newInstanceButton.nextElementSibling.nextElementSibling;
-			}
-			else
-				var target = this.htmlById(idAfter).nextElementSibling.nextElementSibling;
+			var target = this.htmlById(idTo).nextElementSibling;
 			var wrapper = document.getElementsByClassName(this.gui.targetClass)[0];
 			wrapper.insertBefore(moved, target);
-			wrapper.insertBefore(movedMarker, target); 
 		}
+
+		if (idTo == "start")
+			idTo = this.items[1].id;
+
+		bmco.arrayValueMove(
+			this.items, 
+			this.indexById(idMoved), 
+			this.indexById(idTo)
+		);
 	}
 
 	moveByIndex(indexMoved, indexAfter) {
-
 		this.moveById(
 			this.items[indexMoved].id, 
 			indexAfter=="start"? "start" : this.items[indexAfter].id
@@ -398,7 +398,7 @@ this.xml.workingDoc,
 	htmlItemsActive(active) {
 		active? bmco.ofClassRemoveClass(this.gui.htmlClass, "inactive") : bmco.ofClassAddClass(this.gui.htmlClass, "inactive");
 	}
-
+	
 	reverse() {
 		for (var x = 0; x < this.items.length-2; x++)
 			this.moveByIndex(this.items.length - 1, x);

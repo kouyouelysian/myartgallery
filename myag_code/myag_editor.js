@@ -61,8 +61,9 @@ new: function(type) {
 	bmco.gui.filloutShow(myag.ed.getItemList(type).gui.fillout);
 },
 
-add: function(type, update=false) {
+add: function(type) {
 	myag.ed.getItemList(type).addNew();
+	bmco.gui.filloutHide();
 },
 
 edit: function(id) {
@@ -72,8 +73,9 @@ edit: function(id) {
 	bmco.gui.filloutShow(myag.ed.getItemList(id).gui.fillout);
 },
 
-update: function(id) {
-	return myag.ed.add(id, true);
+update: function(type) {
+	myag.ed.getItemList(type).updateExisting();
+	bmco.gui.filloutHide();
 },
 
 cancel: function() {
@@ -91,6 +93,7 @@ pick: function(id) {
 },
 
 place: function(targetId=null) {
+	event.stopPropagation();
 	if (!myag.ed.pickedEntityId)
 		return false;
 	myag.ed.guiBottomMenuSetMode("default");
@@ -115,6 +118,11 @@ delete: function(id) {
 		);
 },
 
+idToCLipboard: function(id) {
+
+	bmco.gui.actionMenuDelete();
+	myag.ed.textToClipboard(id, 'ID copied to clipboard');
+},
 
 /* This function is put to every artwork and group's onclick and it calls the action menu
 to the mouse pointer location.
@@ -130,7 +138,8 @@ showItemMenu: function(id, event)
 	var buttons = {
 		"Edit":     `myag.ed.edit('${id}')`,
 		"Move":     `myag.ed.pick('${id}')`,
-		"Delete": `myag.ed.delete('${id}')`
+		"Delete": `myag.ed.delete('${id}')`,
+		"Copy ID": `myag.ed.idToCLipboard('${id}')`
 	};
 	bmco.gui.actionMenuAppend(buttons, event);	
 },
@@ -201,7 +210,7 @@ guiFormMenuSetMode: function(mode, type)
 	if (mode == "new")
 		nameFnTuples.push(["Create", `myag.ed.add('${type}')`]);	
 	else if (mode == "edit")
-		nameFnTuples.push(["Update", "myag.ed.update()"]);
+		nameFnTuples.push(["Update", `myag.ed.update('${type}')`]);
 	nameFnTuples.push(["Cancel", "myag.ed.cancel()"]);
 	var targetId = type=="artwork"? "filloutArtworkBottomBar" : "filloutGroupBottomBar";
 	bmco.gui.bottomBarPopulate(nameFnTuples, targetId);
@@ -364,12 +373,19 @@ outputs: none
 */
 copyXml: function(doGui=true)
 {
-	var xml = myag.ed.prepareXml();
-	navigator.clipboard.writeText(xml).then(() => {
-		if (doGui) bmco.gui.popupAlert('raw XML copied');
+	return myag.ed.textToClipboard(
+		myag.ed.prepareXml(),
+		doGui? 'raw XML copied' : undefined
+	);
+},
+
+textToClipboard: function(text, message=undefined)
+{
+	navigator.clipboard.writeText(text).then(() => {
+		if (message) bmco.gui.popupAlert(message);
 	})
 	.catch(err => {
-		if (doGui) bmco.gui.popupAlert('Could not copy, tell Aubery about this ASAP: ' + err);
+		if (message) bmco.gui.popupAlert('Could not copy to clipboard, tell <a href="https://auberylis.moe>">Aubery</a> about this ASAP: ' + err);
 	});
 },
 
