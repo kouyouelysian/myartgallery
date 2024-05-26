@@ -162,6 +162,7 @@ ItemList: class {
 		this.putNewItemsToStart = true;
 		this.xml = xml;
 		this.gui = gui; 
+		this.startupComplete = false;
 
 		/*
 		{ // xml example
@@ -191,11 +192,10 @@ ItemList: class {
 	startup() {
 		if (!this.xml || !this.gui)
 			return;
-
 		this.extractItemsFromXml();
-
 		for (var target of document.getElementsByClassName(this.gui.targetClass))
 			this.putItemsToHtml(target);
+		this.startupComplete = true;
 	}
 
 	extractItemsFromXml() {
@@ -240,6 +240,13 @@ ItemList: class {
 	}
 
 	addNew(item = undefined, leaveAtEnd=false) {
+
+		if (!document.getElementById(this.gui.fillout).checkValidity())
+		{
+			document.getElementById(this.gui.fillout).reportValidity();
+			return false;
+		}
+
 		var i = item;
 		if (!i)
 		{
@@ -272,7 +279,6 @@ ItemList: class {
 		this.addNew(updatedItem, true); // adds item with same id, but updated props
 		if (itemIndex != this.items.length-1)
 			this.moveByIndex(this.items.length-1, itemIndex-1);
-
 	}
 
 	remove(item) {

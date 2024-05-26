@@ -23,9 +23,10 @@ settings: {
 },
 filterGroup: undefined,
 isMoving: "none", // "none", "group" or "artwork"
-uploads: [],
-deletes: [],
+uploads: [], // filenames to be uploaded - neomanager only
+deletes: [], // filenames to be deleted - neomanager only
 pickedEntityId: undefined,
+
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
@@ -62,7 +63,9 @@ new: function(type) {
 },
 
 add: function(type) {
-	myag.ed.getItemList(type).addNew();
+	var res = myag.ed.getItemList(type).addNew();
+	if (res === false)
+		return;
 	bmco.gui.filloutHide();
 	if (type == "group")
 		myag.ed.groupCheckboxBuildAll();
@@ -406,6 +409,8 @@ startup: function()
 		t.id = "createNewArtwork";
 		t.removeAttribute("style");
 		t.setAttribute("onclick", "myag.ed.new('artwork')");
+		for (var a of myag.data.artworks.items) 
+			myag.data.initialAwids.push(a.id);
 	});
 
 	window.addEventListener("groupsLoaded", (event) => {
