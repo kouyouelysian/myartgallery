@@ -7,6 +7,7 @@
 - [Update guide](#Update-guide)
 - [Editor tutorial](#Editor-tutorial)
 - [Customisation](#Customisation)
+- [Acknowledgements](#Acknowledgements)
 
 ## Overview
 
@@ -151,7 +152,9 @@ An `artworksWrapper` container can be customized with HTML attributes, e.g. `<di
 
 If no wrappers are found for groups/artworks, no errors are thrown, and they are simply not loaded. You can use this to your advantage, e.g. omit artwork containers to have the gallery index be a list of groups for user to narrow into, or vice versa - display each group in a separate `artworksWrapper` with its *group* attribute set accordingly, while not displaying the group buttons at all.
 
+## Acknowledgements
 
+MyAG uses a modified version of *vkbeautify* by *Vadim Kiryukhin* (GNU-GPL / MIT) to pretty-print XML
 
 
 

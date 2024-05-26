@@ -126,11 +126,11 @@ as is, as far as i can see :'D
 	left: 0;
 	transform: translateY(-50%);
 	font-family: var(--font-big);
-	font-size: var(--font-btn-size);
+	font-size: var(--font-big-size);
+	word-break: break-word;
 	margin: 0;
 	padding: 0;
 	user-select: none;
-	-webkit-user-select: none;
 }
 
 #artworksWrapper, #groupsWrapper {

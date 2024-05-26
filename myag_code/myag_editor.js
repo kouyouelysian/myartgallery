@@ -23,9 +23,10 @@ settings: {
 },
 filterGroup: undefined,
 isMoving: "none", // "none", "group" or "artwork"
-uploads: [],
-deletes: [],
+uploads: [], // filenames to be uploaded - neomanager only
+deletes: [], // filenames to be deleted - neomanager only
 pickedEntityId: undefined,
+
 
 //==========================================================================//
 //================================ FUNCTIONS ===============================//
@@ -62,8 +63,12 @@ new: function(type) {
 },
 
 add: function(type) {
-	myag.ed.getItemList(type).addNew();
+	var res = myag.ed.getItemList(type).addNew();
+	if (res === false)
+		return;
 	bmco.gui.filloutHide();
+	if (type == "group")
+		myag.ed.groupCheckboxBuildAll();
 },
 
 edit: function(id) {
@@ -96,6 +101,7 @@ place: function(targetId=null) {
 	event.stopPropagation();
 	if (!myag.ed.pickedEntityId)
 		return false;
+
 	myag.ed.guiBottomMenuSetMode("default");
 	var il = myag.ed.getItemList(myag.ed.pickedEntityId);
 	il.htmlItemsActive(true);
@@ -106,15 +112,26 @@ place: function(targetId=null) {
 		return myag.ed.pickedEntityId = null;	
 	il.moveById(myag.ed.pickedEntityId, targetId);
 	myag.ed.pickedEntityId = null;	
+
+	if (targetId.substr(0,2) == "g_")
+		myag.ed.groupCheckboxBuildAll();
 },
 
-delete: function(id) {
+delete: function(id, confirmed=false) {
+
+	if (confirmed)
+	{
+		myag.ed.getItemList(id).removeById(id);
+		myag.ed.groupCheckboxBuildAll();
+		return;
+	}
+
 	bmco.gui.actionMenuDelete();
 	var name = myag.ed.getItemList(id).itemById(id).name;
 	name? name = `'${name}'` : name = "this artwork";
 	bmco.gui.popupConfirm(
 		`Really delete ${name}?`, 
-		`myag.ed.getItemList('${id}').removeById('${id}');`
+		`myag.ed.delete('${id}', true)`
 		);
 },
 
@@ -144,40 +161,13 @@ showItemMenu: function(id, event)
 	bmco.gui.actionMenuAppend(buttons, event);	
 },
 
-/* This clusterfuck switches the layout between move group, more artwork and
-not move anything modes. I did it so it works purely with CSS, so that any artworks
-that suddenly got scrolled into view need no event listeners or whatever. In return,
-there's this bunch of crap down there. :) It's used when you choose "move" in the menu.
-it probably can be done more neatly, but... it works.
-inputs: mode <string = "none", "artwork" or "group"> [operation mode selection] 
-returns: none
-*/
-guiSetMovingMode: function(mode="none")
-{
-	if (!bmco.arrayHas(["none", "artwork", "group"], mode))
-		return;
-
-	if (mode == "none")
-	{
-		bmco.ofClassRemoveClass("locatorWrapperArtwork", "locatorActive");
-		bmco.ofClassRemoveClass("locatorWrapperGroup", "locatorActive");
-	}
-	else
-	{
-		if (mode == "artwork")
-			bmco.ofClassAddClass("locatorWrapperArtwork", "locatorActive");
-		else if (mode == "group")
-			bmco.ofClassAddClass("locatorWrapperGroup", "locatorActive");
-	} 
-},
-
 /* Creates a checkbox + label thing. Only used in group selection section
 in the artwork edit menu.
 inputs: g <Group instance> [checkbox represents this group],
 		checked <bool> [initial checkbox state]
 return: <html element> [div with checkbox input and label p inside]
 */
-groupCheckboxCreate: function(g, checked=false)
+groupCheckboxGenerate: function(g, checked=false)
 {
 	var i = document.createElement("input");
 	i.setAttribute("name", g.id);
@@ -192,7 +182,7 @@ groupCheckboxCreate: function(g, checked=false)
 	d.appendChild(l);
 	d.setAttribute("onclick", `myag.ed.groupCheckboxToggle('${g.id}')`);
 	d.classList.add("labelledCheckbox");
-
+	d.id = `labelledCheckbox_${g.id}`
 	return d;
 },
 
@@ -202,6 +192,26 @@ groupCheckboxToggle: function(gid)
 	if (!chb)
 		return;
 	chb.checked = !chb.checked;
+},
+
+groupCheckboxAdd: function(g, checkboxes, groupfilter, prepend=false)
+{
+	var groupOption = document.createElement("option");
+	groupOption.name = g.name;
+	groupOption.value = g.id; 
+	groupOption.innerHTML = g.name;
+	checkboxes.appendChild(myag.ed.groupCheckboxGenerate(g));
+	groupfilter.appendChild(groupOption);
+},
+
+groupCheckboxBuildAll: function()
+{	
+	var checkboxesWrapper = document.getElementById("inputArtworkIngroups");
+	var groupFilterSelect = document.getElementById("groupFilterSelect");
+	checkboxesWrapper.innerHTML = "";
+	groupFilterSelect.innerHTML = '<option name="any" value="any">Any</option>';
+	for (var g of myag.data.groups.items)
+			if (g.id != "start") {myag.ed.groupCheckboxAdd(g, checkboxesWrapper, groupFilterSelect);}
 },
 
 guiFormMenuSetMode: function(mode, type)
@@ -265,14 +275,11 @@ groupFilterRun: function(reset=false)
 				myag.ed.filterGroup = g.id;
 				target.setAttribute("group", option);
 			}
-		} 
-				
+		} 	
 	}
-
 	target.innerHTML = "";
 	myag.data.artworks.putItemsToHtml(target, true);
 	window.dispatchEvent(myag.events.artworksLoaded);
-	
 },
 
 
@@ -402,27 +409,16 @@ startup: function()
 		t.id = "createNewArtwork";
 		t.removeAttribute("style");
 		t.setAttribute("onclick", "myag.ed.new('artwork')");
+		for (var a of myag.data.artworks.items) 
+			myag.data.initialAwids.push(a.id);
 	});
 
 	window.addEventListener("groupsLoaded", (event) => {
 		t = document.getElementsByClassName("groupButton")[0];
 		t.id = "createNewGroup";
 		t.setAttribute("onclick", "myag.ed.new('group')");
-		var checkboxesWrapper = document.getElementById("inputArtworkIngroups");
-		var groupFilterSelect = document.getElementById("groupFilterSelect");
-		for (var g of myag.data.groups.items)
-		{
-			if (g.id != "start")
-			{
-				checkboxesWrapper.appendChild(myag.ed.groupCheckboxCreate(g));
-				var groupOption = document.createElement("option");
-				groupOption.name = g.name;
-				groupOption.value = g.id; 
-				groupOption.innerHTML = g.name;
-				groupFilterSelect.appendChild(groupOption);
-			
-			}
-		}
+		myag.ed.groupCheckboxBuildAll();
+		
 	});
 
 	myag.ed.loadTools();

@@ -23,7 +23,8 @@ artworksFolder: "myag_artworks/",
 data: {
 	xml: undefined,
 	artworks: undefined,
-	groups: undefined
+	groups: undefined,
+	initialAwids: []
 },
 navigation: {
 	mode: "none",
@@ -204,7 +205,30 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 	var displayFile = aw.thumbnail;
 	if (displayFile == undefined)
 		displayFile = aw.filename;
-	if (displayFile != undefined && displayFile != "")
+
+	console.log(aw, displayFile, overlayText);
+
+	if (!displayFile || displayFile=="" || 
+		(myag.data.artworks.startupComplete && myag.isEditor && !bmco.arrayHas(myag.data.initialAwids, aw.id) ))
+	{
+		if (!overlayText)
+		{
+			div.style.backgroundColor = bmco.randomColor(2, 8, 15, {noGrayscale:true});
+			if (myag.isEditor)
+			{
+				if (aw.name)
+					overlayText = aw.name;
+				else
+					overlayText = `Untitled, ID:<br><span style="font-size: 20px;">${aw.id}</span>`;
+			}
+		}
+		
+		var para = document.createElement("p");
+		para.innerHTML = overlayText;
+		div.appendChild(para);
+	
+	}
+	else
 	{
 		var img = document.createElement("img");
 		if (myag.settings.remoteImageHost == null)
@@ -214,19 +238,6 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 		img.classList.add("artworkImg");
 		//img.setAttribute("onclick", onclick);
 		div.appendChild(img);
-	}
-	else if (!overlayText)
-	{
-		div.style.backgroundColor = bmco.randomColor(2, 8, 15, {noGrayscale:true});
-		if (myag.isEditor)
-			overlayText = aw.name;
-	}
-
-	if (overlayText != undefined)
-	{
-		var para = document.createElement("p");
-		para.innerHTML = overlayText;
-		div.appendChild(para);
 	}
 	
 	return div;
