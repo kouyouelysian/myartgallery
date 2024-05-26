@@ -64,12 +64,13 @@ h1 {
 }
 
 hr {
-	border-top: 0;
+	border: 0;
 	border-bottom: 2px dotted var(--col-background);
 	margin: 0;
 	margin-bottom: var(--page-spacing);
-	width: calc(100% + var(--page-spacing) + var(--page-spacing));
-	margin-left: calc(var(--page-spacing) * -1);
+	width: calc(100% + var(--page-spacing) * 2);
+	left: calc(var(--page-spacing) * -1);
+	position: relative;
 }
 
 a {
