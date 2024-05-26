@@ -2,63 +2,14 @@
 
 body {
 
-	/* color settings. accept hex values e.g. #AAB, #008080, or HTML basic colours e.g. 'red' */
-	--col-backg:              #eee; /* page (behind main content) background color */
-	--col-highlight:          #222; /* highlights (borders, headings, etc) */
-	--col-body:               #fff; /* content body color */
-	--col-text:               #222; /* main text color */
-	--col-text-light:         #666; /* secondary text color */
-	--col-buttonbg:           #fab; /* group button background color */
-	--col-viewer:             #fff; /* image viewer pop-up borders/button text */
-	--col-viewer-text:        #222; /* image viewer bottom description text color */
-	--col-viewer-background:  #fff; /* background color for indiv. image view overlay - can be "none" */
-
-	--col-counterpick: #9fc;
-
-	/* radius of corners of all main elements on the page. 0...N pixels (e.g. 3px, 0px=sharp corners) */
-	--corner-radius:          0px;    
-
-	/* thiccness of borders for all main elements on the page. 0...N pixels (e.g. 3px) */
-	--border-width:           0px;    
-
-	/* font settings. accept default fonts like 'Arial', 'Calibri' or stuff. To use a custom font,
-	put an @font-face rule at the very first line of this file and point it to your custom font.
-	if you're not sure how to do that --> https://www.w3schools.com/cssref/css3_pr_font-face_rule.php */
-	--font-main:             'Courier New'; /* font for usual text */
-	--font-main-size:         22px;
-	--font-big:              'Arial'; /* font for titles etc */
-	--font-big-size:          36px;
-	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
-	--main-text-align:        left;   /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
-
-	/* general page spacing settings */
-	--page-margin:            5%;   /* spacing between screen borders and main wrapper in %. 5-10% rec. */
-	--page-spacing:           32px;   /* master spacing between all the elements on page. 16-48px rec. */
-
-	/* user section settings */
-	--userpic-size:           150px;  /* px (static) or % (dynamically resized along with the page) */
-	--userpic-radius:         50%;    /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
-	--userpic-file:           url('../files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
-	--userpic-border:         solid;  /* options: solid, dashed, none*/
-	--username-align:         left;   /*  options: left, middle or right */
-
-	/* section divider horizontal line settings */
-	--divider-width:          calc(100% - var(--page-spacing) - var(--page-spacing)); /* width, % or calc(% - px). default setting fits itself to page spacing */
-	--divider-size:           3px;    /* thiccness of the divider line, px */
-	--divider-style:          dotted; /* line styling options: solid, dashed, dotted */;
-
 	/* group buttons options */
-	--buttons-per-row:        6;      /* number of group buttons per row, suggested 4-6 */      
+	--buttons-per-row:        4;      /* number of group buttons per row, suggested 4-6 */      
 	--button-height:          80px;   /* height of one group button */
 
 	/* artworks grid options */
-	--artworks-per-row:       6; 	  /* how many artworks to display per row. integer. suggested 3-6 */
 	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
 	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); use the one below if you have lots of weird contoured images */	
 	--artwork-drop-shadow:    none;   /* RAM-hungry: use as alternative for the outlier case above. don't use both. none' or e.g. drop-shadow(0px 0px 8px RGBA(0,0,0,0.1)). */
-
-	/* on-click big image view options */
-	--overlay-opacity:        0.5;    /* opacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */
 
 }
 
@@ -69,22 +20,8 @@ want your editor page to suddenly turn into a piece of crap.. it's barely holdin
 as is, as far as i can see :'D
 */
 
-#mainWrapper {
-	margin-bottom: calc(var(--page-margin) * 2);
-}
-
 #header {
 	height: auto;
-}
-
-#shortInfo {
-	margin-left: 0;
-	position: unset;
-	width: calc(100% - var(--page-spacing) - var(--page-spacing));
-}
-
-#username {
-	margin-bottom: calc(var(--page-spacing) / 2);
 }
 
 #artworkViewer {
@@ -108,7 +45,6 @@ as is, as far as i can see :'D
 	bottom: 32px;
 	width: 50%;
 	left: 25%;
-	height: 60px;
 	text-align: center;
 	display: table;
 	box-shadow: 0px 0px 10px RGBA(0,0,0,0.3);
@@ -159,27 +95,27 @@ as is, as far as i can see :'D
 	filter: brightness(90%);
 }
 
-#buttonCreateNewGroup {
+
+#createNewArtwork, #createNewGroup {
+	border-color: var(--col-counterpick);
 	background-color: var(--col-counterpick);
 	color: var(--col-text);
+	filter: none;
+	transition: 0.1s;
+	font-style: italic;
+	font-weight: bold;
 }
 
-#buttonCreateNewGroup:hover {
-	background-color: var(--col-buttonbg);
+#createNewArtwork:hover, #createNewGroup:hover {
+	border-color: var(--col-accent);
+	background-color: var(--col-accent);
+	filter: none;
 }
 
-#buttonCreateNewArtwork {
+#createNewArtwork > .marker:hover, #createNewGroup > .marker:hover, {
+	border-color: var(--col-counterpick);
 	background-color: var(--col-counterpick);
-	color: var(--col-text);
-	transition: background-color 0.1s, color 0.1s;
-}
-
-.newArtwork {
-	transition: filter 0.1s;
-}
-
-#buttonCreateNewArtwork:hover {
-	background-color: var(--col-buttonbg);
+	filter: none;
 }
 
 .artwork p {
@@ -201,15 +137,49 @@ as is, as far as i can see :'D
 	margin-left: 0;
 }
 
-/* these have to be separate because editor.js modifies these independently */
-.artwork {
-	margin-right: 0;
-	margin-left: var(--page-spacing);
+
+
+.marker {
+	background-color: var(--col-body);
+	color: var(--col-accent);
+	transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+	margin-left: 0;
+	z-index: 10;
+	border: 4px dashed var(--col-accent);
+	border-radius: 14px;
+	position: absolute;
+	display: inline-block;
+	top: 50%;
+	left: calc(100% + var(--page-spacing) / 2);
+	transform: translate(-50%, -50%);
+	pointer-events: all;
+	width: 65px;
+	height: 65px;
 }
 
-.groupButton {
-	margin-right: 0;
-	margin-left: var(--page-spacing);
+.marker.invisible {
+	display: none;
+}
+
+.marker:hover {
+	background-color: var(--col-accent);
+	border-color: var(--col-body);
+	color: var(--col-body);
+}
+
+.marker > p {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 18px;
+	font-family: 'Arial';
+	font-weight: bold;
+	width: 100%;
+	text-align: center;
+	margin: 0;
+	color: inherit;
+	font-style: italic;
 }
 
 #formWrapper input[type="text"], #formWrapper textarea {
@@ -257,41 +227,6 @@ as is, as far as i can see :'D
   display: none;
 }
 
-.labelledCheckbox {
-	display: inline-block;
-	width: 50%;
-	position: relative;
-	height: calc(var(--font-main-size) + 4px);
-	background-color: var(--col-body);
-	transition: background-color 0.1s;
-	cursor: pointer;
-}
-
-.labelledCheckbox:hover {
-	background-color: var(--col-buttonbg);
-}
-
-.labelledCheckbox label {
-	position: absolute;
-	height: 100%;
-	width: 90%;
-	top: 0%;
-	left: 10%;
-	pointer-events: none;
-	overflow: hidden;
-	
-}
-
-.labelledCheckbox input {
-	position: absolute;
-	height: calc(100% - 8px);
-	width: calc(10% - 8px);
-	margin: 0;
-	top: 4px;
-	left: 4px;
-	pointer-events: none;
-}
-
 #formWrapper .controlButton {
 	margin-bottom: 0;
 	width: calc(50% - var(--page-spacing) / 2);
@@ -302,182 +237,22 @@ as is, as far as i can see :'D
 	margin-right: 0;
 }
 
-#actionMenuBackdrop, #popupBackdrop {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 9;
+#toolsWrapper {
+
 }
 
-#popupBackdrop {
-	background-color: RGBA(0,0,0,0.3);
-	user-select: none;
-	-webkit-user-select: none;
-	z-index: 99;
+.toolDiv {
+	padding-top: var(--page-spacing);
+	padding-bottom: var(--page-spacing);
+	border-top: 2px dotted var(--col-counterpick);
 }
 
-.popup {
-	position: fixed;
-	width: 25%;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	border: 2px solid var(--col-buttonbg);
-	z-index: 100;
-	background-color: var(--col-body);
-	box-shadow: 0px 0px 8px RGBA(0,0,0,0.5);
+.toolDiv:last-child {
+	padding-bottom: 0;
 }
 
-.popup .controlButton {
-	margin: calc(var(--page-spacing) / 2);	
-	height: calc(var(--button-height) / 2);
-	margin-top: 0;
-	display: block;
-}
-
-#popupAlert .controlButton {
-	width: 20%;
-	margin-left: 40%;
-	margin-top: 0;
-}
-
-#popupSelect .controlButton {
-	width: calc(50% - var(--page-spacing) + var(--page-spacing) / 4);
-	float: left;
-}
-
-#popupSelect .controlButton:last-child {
-	margin-left: 0;
-}
-
-.popupTextMessage {
-	font-family: var(--font-big);
-	font-size: var(--font-btn-size);
-	text-align: center;
-	width: calc(100% - var(--page-spacing));
-	margin: calc(var(--page-spacing) / 2);
-}
-
-#actionMenu {
-	width: 250px;
-	position: absolute;
-	border: 2px solid var(--col-buttonbg);
-	background-color: var(--col-body);
-	box-shadow: 0px 0px 8px RGBA(0,0,0,0.2);
-	z-index: 10;
-}
-
-#actionMenu .controlButton {
-	width: calc(100% - var(--page-spacing));
-	margin: calc(var(--page-spacing) / 2);
-	margin-bottom: 0;
-	height: calc(var(--button-height) / 2);
-}
-
-#actionMenu .controlButton:last-child {
-	margin-bottom: calc(var(--page-spacing) / 2);
-}
-
-
-
-.artwork:first-child, .groupButton:first-child {
-	margin-left: var(--page-spacing);
-}
-
-.controlButton {
-	height: var(--button-height);
-	background-color: var(--col-buttonbg);
-	color: var(--col-highlight);
+.toolDiv p {
 	display: inline-block;
-	font-family: var(--font-big);
-	font-size: var(--font-btn-size);
-	position: relative;
-	transition: background-color 0.1s, color 0.1s;
-	user-select: none;
-	-webkit-user-select: none;
-	cursor: pointer;
-}
-
-.controlButton:hover {
-	color: var(--col-buttonbg);
-	background-color: var(--col-highlight);
-}
-
-.controlButton:active {
-	filter: brightness(80%);
-}
-
-.controlButton p {
-	position: absolute;
-	width: 100%;
-	text-align: center;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
-	margin: 0;
-}
-
-
-.locatorWrapper {
-	width: var(--page-spacing);
-	height: 0;
-	position: relative;
-	display: none;
-	margin: 0;
-	margin-bottom: var(--page-spacing);
-}
-
-.locator {
-	background-color: blue;
-	width: 4px;
-	height: calc(100% - 4px);
-	margin-left: calc(var(--page-spacing) / 2  - 4px);
-	background-color: var(--col-body);
-	
-	position: absolute;
-	top: 0;	
-}
-
-.locatorWrapperArtwork {
-	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));
-	vertical-align: middle;
-}
-
-.locatorWrapperArtwork .locator {
-	border: 2px dashed var(--col-buttonbg); 
-	border-color: var(--col-buttonbg);
-}
-
-.locatorWrapperGroup .locator {
-	border: 2px dashed;
-	border-color: var(--col-buttonbg); 
-}
-
-.locatorWrapperGroup {
-	height: var(--button-height);
-}
-
-.locatorWrapper:hover {
-	width: calc(100% / var(--artworks-per-row));
-}
-
-.locatorWrapperArtwork:hover + .artwork, .locatorWrapperGroup:hover + .groupButton {
-	margin-left: var(--page-spacing);
-}
-
-.locatorWrapper:hover .locator {
-	width: calc(100% - var(--page-spacing) - 4px);
-	margin-left: var(--page-spacing);
-	opacity: 1;
-}
-
-#currentlyMoved {
-	width: 0;
-	opacity: 0;
-}
-
-#currentlyMovedLocator {
-	display: none;
+	margin-top: var(--page-spacing);
+	margin-bottom: 0;
 }

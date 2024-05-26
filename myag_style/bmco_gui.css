@@ -1,0 +1,357 @@
+/*========================================================*/
+
+/*  this is ADD-ON STYLE to add pop-ups to the project!
+  it requires "bmco_general.css" added BEFORE itself in
+  document's HEAD! Pop-up code -> "bmco_popup.js" */
+
+/*========================================================*/
+
+.backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9;
+	background-color: RGBA(0,0,0,0.3);
+	user-select: none;
+	-webkit-user-select: none;
+	z-index: 99;
+}
+
+/*-------------------------------- button --------------------------------*/
+
+.button {
+	border: 4px solid var(--col-accent);
+	position: relative;
+	background-color: var(--col-accent);
+	color: var(--col-body);
+	transition: background-color 0.2s, color 0.2s;
+	text-align: center;
+	width: fit-content;
+	font-family: var(--font-big);
+	font-size: var(--font-big-size);
+	font-style: italic;
+	padding-left: 16px;
+	padding-right: 16px;
+	user-select: none;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: var(--col-body);
+	color: var(--col-accent);
+}
+
+/*-------------------------------- popup --------------------------------*/
+
+.popup {
+	position: fixed;
+	width: 25%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border: 2px solid var(--col-accent);
+	z-index: 110;
+	background-color: var(--col-body);
+	box-shadow: 0px 0px 8px RGBA(0,0,0,0.5);
+}
+
+.popupTextMessage {
+	font-family: var(--font-main);
+	font-size: var(--font-big-size);
+	text-align: center;
+	width: calc(100% - var(--page-spacing) - var(--page-spacing));
+	margin: var(--page-spacing);
+}
+
+.popupButtonZone {
+	display: flex;
+	width: 100%;
+	margin-bottom: var(--page-spacing);
+}
+
+.popup .button {
+	margin: 0;
+	margin-left: var(--page-spacing);
+	width: inherit;
+	height: unset;
+}
+
+.popup .button:last-child {
+	margin-right: var(--page-spacing);
+}
+
+/*-------------------------------- bottom bar --------------------------------*/
+
+
+
+.bottombar {
+	position: fixed;
+	display: table;
+	table-layout: fixed;
+	bottom: var(--page-spacing);
+	width: 50%;
+	left: 25%;
+	box-shadow: 0px 0px 10px RGBA(0,0,0,0.3);
+	z-index: 90;
+}
+
+.fillout .bottombar {
+	position: relative;
+	width: 100%;
+	table-layout: fixed;
+	text-align: center;
+	display: block;
+	width: min-content;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	box-shadow: 0px 0px 5px RGBA(0,0,0,0.15);
+}
+
+.bottombar .button {
+	background-color: var(--col-body);
+	color: var(--col-accent);
+	border-left-width: 0;
+	display: table-cell;
+	width: auto;
+	height: 60px;
+	vertical-align: middle;
+}
+
+.bottombar .button:hover {
+	background-color: var(--col-accent);
+	color: var(--col-body);
+	border-left-width: 0;
+}
+
+.bottombar .button:first-child {
+	border-left-width: 4px;
+}
+
+
+
+/*-------------------------------- user input form --------------------------------*/
+
+.fillout {
+	position: fixed;
+	display: none;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	max-height: 80vh;
+	width: calc(80%);
+	overflow-y: scroll;
+	background-color: var(--col-body);
+	padding: var(--page-spacing);
+	z-index: 100;
+	scrollbar-width: none;
+}
+
+/*
+.filloutActionBottombar {
+	position: relative;
+	width: 100%;
+	display: table;
+	table-layout: fixed;
+}
+*/
+
+.fillout input[type="text"], .fillout textarea {
+	display: block;
+	margin-bottom: calc(var(--page-spacing) / 2);
+	width: calc(100% - 10px);
+	font-family: var(--font-big);
+	font-size: var(--font-main-size);
+	padding: 4px;
+	border: 1px solid var(--col-accent);
+}
+
+.fillout textarea {
+	height: calc(var(--font-main-size) * 8);
+	overflow-y: scroll;
+	scrollbar-width: none;
+}
+
+.fillout hr {
+	width: 100%;
+	margin: 0;
+	margin-bottom: calc(var(--page-spacing) / 2);
+	margin-top: calc(var(--page-spacing) / 2);
+}
+
+.fillout p, .fillout label {
+	font-family: var(--font-main);
+	font-style: italic;
+	font-size: var(--font-main-size);
+	margin: 0;
+	margin-bottom: 4px;
+}
+
+.labelledCheckbox {
+	display: inline-block;
+	width: 33.3%;
+	position: relative;
+	background-color: var(--col-body);
+	height: 30px;
+	cursor: pointer;
+	transition: 0.1s;
+}
+
+.labelledCheckbox:hover {
+	background-color: var(--col-accent);
+	color: var(--col-body);
+}
+
+.labelledCheckbox label, .labelledCheckbox input {
+	vertical-align: middle;
+	display: inline-block;
+	margin: 0;
+	margin-left: 10px;
+	pointer-events: none;
+	user-select: none;
+}
+
+.fillout .button {
+	margin-bottom: 0;
+	margin-right: var(--page-spacing);
+}
+
+.fillout .button:last-of-type {
+	margin-right: 0;
+}
+
+/*-------------------------------- one line mini-form --------------------------------*/
+
+.miniform {
+	width: 100%;
+	font-size: 0;
+	margin-bottom: var(--page-spacing);
+}
+
+.miniform * {
+	font-family: var(--font-main);
+	font-size: var(--font-main-size);
+	font-style: italic;
+	width: fit-content;
+	margin: 0;
+	margin-right: 10px;
+	display: inline-block;
+	border-radius: 0;
+	vertical-align: middle;
+}
+
+.miniform p {
+	font-style: italic;
+}
+
+/*-------------------------------- on-click action menu --------------------------------*/
+
+#actionMenu {
+	width: 250px;
+	position: absolute;
+	border: 2px solid var(--col-accent);
+	background-color: var(--col-body);
+	box-shadow: 0px 0px 8px RGBA(0,0,0,0.2);
+	z-index: 120;
+}
+
+#actionMenu .button {
+	margin: calc(var(--page-spacing) / 2);
+	margin-bottom: 0;
+	height: calc(var(--button-height) / 2);
+	display: block;
+	width: calc(100% - 8px - var(--page-spacing));
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#actionMenu .button:last-child {
+	margin-bottom: calc(var(--page-spacing) / 2);
+}
+
+.controlButton {
+	height: var(--button-height);
+	background-color: var(--col-accent);
+	color: var(--col-highlight);
+	display: inline-block;
+	font-family: var(--font-big);
+	font-size: var(--font-btn-size);
+	position: relative;
+	transition: background-color 0.1s, color 0.1s;
+	user-select: none;
+	-webkit-user-select: none;
+	cursor: pointer;
+}
+
+.controlButton:hover {
+	color: var(--col-accent);
+	background-color: var(--col-highlight);
+}
+
+.controlButton:active {
+	filter: brightness(80%);
+}
+
+.controlButton p {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
+	margin: 0;
+}
+
+/*-------------------------------- loading spinner --------------------------------*/
+
+#loadingWrapper {
+	width: 130px;
+	height: 130px;
+	border: 4px solid var(--col-body);
+	background-color: var(--col-accent);
+	box-shadow: 0px 0px 8px var(--col-shadow);
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 999;
+	transform: translate(-50%, -50%);
+	border-radius: 4px;
+}
+
+#loadingRing {
+	position: absolute;
+	width: calc(80% - 40px);
+	height: calc(80% - 40px);
+	left: 10%;
+	top: 10%;
+	background-color: transparent;
+	border-radius: 50%;
+	border: 20px solid var(--col-body);
+}
+
+#loadingSpinner {
+	width: 25px;
+	height: 42%;
+	background-color: var(--col-accent);
+	position: absolute;
+	left: 42.5px;
+	top: 10px;
+	transform-origin: 20px 55px;
+	animation-name: spinner;
+	animation-duration: 1.3s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	border-top: 30px solid var(--col-accent);
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-bottom: none;
+	height: 0;
+	background: transparent;
+}
+
+@keyframes spinner {
+  0%   {transform: rotate(0deg)}
+  100% {transform: rotate(360deg)}
+}

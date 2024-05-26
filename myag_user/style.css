@@ -1,62 +1,38 @@
 /* EDIT THESE TO CHANGE THE LOOKS OF YOUR PAGE */
 
-/* for 'px' or '%' united variables, if you're using 0, please, write 0% or 0px! otherwise stuff might suddenly eat pants */
+/*
+These are the available custom properties that the default pages read.
+You can customize your page by editing these. Your custom HTML can also
+go here after the body declaration. This stylesheet is not used by the editor.
+To edit a property, copy it (-- to ;) and paste below the commented-out zone. Then
+you can edit its value.
+*/
 
 body {
+	/*
+	--page-spacing: 24px; general distance between elements
+	--page-timing: 0.15s; transition of most elements' animations on hover, etc
 
-	/* color settings. accept hex values e.g. #AAB, #008080, or HTML basic colours e.g. 'red' */
-	--col-backg:              #77ffff; /* page (behind main content) background color */
-	--col-highlight:          #ff3399; /* highlights (borders, headings, etc) */
-	--col-body:               #FFFFFF; /* content body color */
-	--col-text:               #222222; /* main text color */
-	--col-text-light:         #CCCCCC; /* secondary text color */
-	--col-buttonbg:           #FFFFFF; /* group button background color */
-	--col-viewer:             #FFFFFF; /* image viewer pop-up borders/button text */
-	--col-viewer-text:        #FF88CB; /* image viewer bottom description text color */
-	--col-viewer-background:  rgba(0,0,0,0.15); /* background color for indiv. image view overlay - can be "none" */
+	--col-background: #fab; background color
+	--col-body: #fff; main container color
+	--col-dim: #eee; color for dim borders, etc - "body color but a bit different"
+	--col-text: #222; main text color
+	--col-accent: #fab; accents color, like borders, etc
+	--col-counterpick: #1fc; secondary accetns
+	--col-shadow: rgba(0,0,0,0.1); color for box-shadows, etc
 
-	/* radius of corners of all main elements on the page. 0...N pixels (e.g. 3px, 0px=sharp corners) */
-	--corner-radius:          8px;    
+	--font-big: 'arial'; buttons, headings, etc
+	--font-big-size: 32px;
+	--font-main: 'verdana'; main text
+	--font-main-size: 18px;
 
-	/* thiccness of borders for all main elements on the page. 0...N pixels (e.g. 3px) */
-	--border-width:           3px;    
+	--shadow: -4px 4px 0 var(--col-shadow); set master box-shadow distance/blur here
 
-	/* font settings. accept default fonts like 'Arial', 'Calibri' or stuff. To use a custom font,
-	put an @font-face rule at the very first line of this file and point it to your custom font.
-	if you're not sure how to do that --> https://www.w3schools.com/cssref/css3_pr_font-face_rule.php */
-	--font-main:             'Courier New'; /* font for usual text */
-	--font-main-size:         22px;
-	--font-big:              'Arial'; /* font for titles etc */
-	--font-big-size:          36px;
-	--font-btn-size:          25px;   /* this font size used exclusively on group buttons */
-	--main-text-align:        left;   /* alignment for main texts (paragraphs, descriptions..) suggested: left/justify */
+	--buttons-height: 64px; height of group buttons and other buttons
+	--buttons-per-row: 4; how many buttons per row to display. change artworks in settings.js
+	--viewer-overlay-opacity: 0.5; when you press on an artwork, a viewer pops up. this is
+	--viewer-overlay-rgb: 0,0,0; to set up its backdrop opacity and colour (rgb value triplet)
 
-	/* general page spacing settings */
-	--page-margin:            7.5%;   /* spacing between screen borders and main wrapper in %. 5-10% rec. */
-	--page-spacing:           32px;   /* master spacing between all the elements on page. 16-48px rec. */
-
-	/* user section settings */
-	--userpic-size:           150px;  /* px (static) or % (dynamically resized along with the page) */
-	--userpic-radius:         50%;    /* smoothness of the userpic image cornders in %. 0% = square, 100% = round, 50% = rounded rectangle, and inbetween*/
-	--userpic-file:           url('../myag_files/missing_image.png'), url('./myag_files/missing_image.png'); /* put your userpic to /files/, its filename goes here */
-	--userpic-border:         solid;  /* options: solid, dashed, none*/
-	--username-align:         left;   /*  options: left, middle or right */
-
-	/* section divider horizontal line settings */
-	--divider-width:          calc(100% - var(--page-spacing) - var(--page-spacing)); /* width, % or calc(% - px). default setting fits itself to page spacing */
-	--divider-size:           3px;    /* thiccness of the divider line, px */
-	--divider-style:          dotted; /* line styling options: solid, dashed, dotted */;
-
-	/* group buttons options */
-	--buttons-per-row:        4;      /* number of group buttons per row, suggested 4-6 */      
-	--button-height:          80px;   /* height of one group button */
-
-	/* artworks grid options */
-	--artworks-per-row:       4; 	  /* how many artworks to display per row. integer. suggested 3-6 */
-	--artworks-align:         middle; /* vertical align if the artworks are of different height, they will "magnet" to: top, middle or bottom */
-	--artwork-box-shadow:     none;   /* shadow. none' or e.g. 0px 0px 8px RGBA(0,0,0,0.1); do not use if you have a bunch of strange outter shape transparency images */	
-
-	/* on-click big image view options */
-	--overlay-opacity:        0.5;    /* opacity of the semitransparent backdrop overlay that appears when you click on the artwork for details/bigger view, 0.0 ... 1.0  */
-
+	--border-width: 4px; borders of group buttons
+	*/
 }

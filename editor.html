@@ -2,52 +2,118 @@
 <html>
 <head>
 	<!-- change this to what you want to display at the browser top -->
-	<title>My Art Gallery</title>
-	
-	<link rel="stylesheet" type="text/css" href="./myag_style/main.css">
-	<link rel="stylesheet" type="text/css" href="./myag_user/overrides.css">
+	<title>MyArtGallery / Editor</title>
+	<!--*chunk styles*-->
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_general.css" />
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_tabs.css" />
+	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_gui.css" />
+	<link rel="stylesheet" type="text/css" href="./myag_style/items.css">
 	<link rel="stylesheet" type="text/css" href="./myag_style/editor.css">
+	<link rel="stylesheet" type="text/css" href="./myag_user/style.css">
+	<!--*endchunk*-->
 </head>
-<body>
-	<div id="artworkViewerWrapper"></div>
-	<div id="mainWrapper">
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<h1>MyAG Gallery Editor Page</h1>
-		<p class="para">Use this page to add, edit and remove artworks and groups. Simply click on the artwork image or group button to open the editing menu. Once done, click "update XML" at the bottom of the page and simply delete all the existing text and paste in the one that just got auto-loaded into your copypaste clipboard. Then, click on "upload images" and upload the files that you prepared the information for! If you're not the owner of this MyAG instance, please, leave this page; it serves no use to you, and you will not be able to modify anything.<br><br><span style="color: red">By the way</span>, did you know that you can (and should) check if your settings.js file is up to date using the included <a href="./settingsChecker.html" target="_blank">settings file checker</a>? Now you do!</p>
+<!--*chunk bodytag*-->
+<body isEditor="isEditor">
+<!--*endchunk*-->
+	
+	<nav class="tabNav">
+		<p onclick="tab.switchTo(this)" tab="artworks">Artworks</p>
+		<p onclick="tab.switchTo(this)" tab="groups">Groups</p>
+		<p onclick="tab.switchTo(this)" tab="tools">Tools</p>
+		<p onclick="tab.switchTo(this)" tab="settings">Settings</p>
+	</nav>
 
+	<main>
+		
+		<section id="artworks">
+
+			<h1>Manage artworks</h1>
+
+			<form class="miniform">
+				<p>Filter by group:</p>
+				<select name="groupFilter" id="groupFilterSelect">
+					<option name="any" value="any">Any</option>
+				</select>
+				<input type="button" value="Filter" onclick="myag.ed.groupFilterRun()">
+				<input type="button" value="Reset" onclick="myag.ed.groupFilterReset()">
+			</form>
+
+			<hr>
+			<div class="artworksWrapper"></div>
+		</section>
+
+		<section id="groups">
+			<h1>Manage groups</h1>
+			<div class="groupsWrapper"></div>
+		</section>
+
+		<section id="tools">
+			<h1>Tools</h1>
+			<div id="toolsWrapper">
+			</div>
+		</section>
+
+		<section id="settings">
+			<h1>Settings</h1>
+			<p>No settings so far</p>
+		</section>
+
+	</main>
+
+
+	<form class="fillout" id="filloutArtwork">
+		<label for="inputArtworkName">Name</label>
+		<input type="text" name="inputArtworkName" id="inputArtworkName">
+		<label for="inputArtworkAbout">Description (optional)</label>
+		<textarea id="inputArtworkAbout"></textarea>
+		<label for="inputArtworkFilename">Filename (with extension)</label>
+		<input type="text" name="inputArtworkFilename" id="inputArtworkFilename">
+		<label for="inputFileUpload">Image file:</label>
+		<input type="file" name="inputFileUpload" id="inputFileUpload">
 		<hr>
-
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ GROUP BUTTONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<div id="groupsWrapper"></div>
+		<div id="inputArtworkIngroups">
+			<p>In groups:</p>
+		</div>
+		<input type="hidden" name="inputArtworkId" id="inputArtworkId">
 		<hr>
+		<div class="bottombar" id="filloutArtworkBottomBar"></div>
+	</form>
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALL ARTWORKS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<div id="artworksWrapper"></div>
+	<form class="fillout" id="filloutGroup">
+		<label for="inputGroupName">Name</label>
+		<input type="text" name="inputGroupName" id="inputGroupName">
+		<label for="inputGroupAbout">Description (optional)</label>
+		<textarea id="inputGroupAbout"></textarea>
+		<input type="hidden" name="inputGroupId" id="inputGroupId">
 		<hr>
+		<div class="bottombar" id="filloutGroupBottomBar"></div>
+	</form>
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FOOTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-		<p id="footer">made using MyArtGallery by <a href="https://astrossoundhell.neocities.org/" target="_blank">Aubery 'ASTRO' Lis</a></p>
-	</div>
+	<footer class="bottombar" id="bottomButtonWrapper">
+	</footer>	
 
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STICKY BUTTONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!--*chunk scripts*-->
+	<script type="text/javascript" src="myag_code/bmco.js"></script>
+	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
+	<script type="text/javascript" src="myag_code/bmco_gui.js" ></script>
+	<script type="text/javascript" src="myag_code/bmco_tabs.js" ></script>
+	<script type="text/javascript" src="myag_code/bmco_infra.js"></script>
+	<script type="text/javascript" src="myag_code/myag_main.js"></script>
+	<script type="text/javascript" src="myag_user/settings.js"></script>
+	<script type="text/javascript" src="myag_code/myag_pages.js"></script>
+	<script type="text/javascript" src="myag_code/myag_editor.js"></script>
+	<script type="text/javascript">
+		myag.navigation.mode = "append";
+		var tab = new bmco.tabs.TabHandler({
+			firstTabId: "artworks",
+			mode: "semantic", 
+			inNeomanager:true });
+		tab.functionsOnSwitch = [myag.ed.cancel, myag.ed.place];
+	</script>
 
-	<div id="bottomButtonWrapper">
-	</div>	
+	<!--*endchunk*-->
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!--scripts start-->
-	<script type="text/javascript" src="./myag_user/settings.js"></script>
-	<script type="text/javascript">SETTING_pagingIndex = "append";</script>
-	<script type="text/javascript" src="./myag_code/bmco_general.js"></script>
-	<script type="text/javascript" src="./myag_code/bmco_xml.js"></script>
-	<script type="text/javascript" src="./myag_code/myag_main.js"></script>
-	<script type="text/javascript" src="./myag_code/myag_panel.js"></script>
-	<script type="text/javascript" src="./myag_code/myag_index.js"></script>
-	<script type="text/javascript" src="./myag_code/plugin_vkbeautify.js"></script>
-	<script type="text/javascript" src="./myag_code/myag_viewer.js"></script>
-	<script type="text/javascript" src="./myag_code/myag_editor.js"></script>
-	<!--scripts end-->
 </body>
 </html>

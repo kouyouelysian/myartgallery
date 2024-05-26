@@ -1,0 +1,63 @@
+/*============================================================================*/
+ /*                            FULL IMAGE VIEW                                */
+/*============================================================================*/
+
+#fullViewImageArea, #fullViewSidebar {
+	position: relative;
+	display: block;
+	height: 100%;
+	float: left;
+}
+
+#fullViewImageArea {
+	width: 70%;
+	background-image: url('../files/imagebg.png');
+	background-position: center;
+}
+
+#fullViewImage {
+	position: absolute;
+	width: 96%;
+	height: 96%;
+	margin: 2%;
+	
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+
+#fullViewSidebar {
+	width: 30%;
+	background-color: var(--col-body);
+}
+
+#fullViewSidebar h1 {
+	max-height: 20%;
+}
+
+#fullViewTextAboutWrapper {
+	width: 100%;
+	max-height: 50%;
+	overflow-y: scroll;
+	scrollbar-width: none;
+
+}
+
+#fullViewTextAbout {
+	text-align: justify;
+}
+
+#fullViewSidebarButtonsWrapper {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+}
+
+#fullViewSidebarButtonsWrapper .groupButton {
+	width: calc(80% - var(--border-width) - var(--border-width));
+	margin-left: 10%;
+	margin-right: 10%;
+	height: 50px;
+	margin-top: 0;
+	margin-bottom: 16px;
+}

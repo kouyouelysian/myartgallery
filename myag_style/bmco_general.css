@@ -1,0 +1,153 @@
+html, body {
+	width: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+body {
+	/* vars go here */
+	--page-spacing: 24px;
+	--page-timing: 0.15s;
+
+	--col-background: #fab;
+	--col-body: #fff;
+	--col-dim: #eee;
+	--col-text: #222;
+	--col-accent: #fab;
+	--col-counterpick: #1fc;
+	--col-shadow: rgba(0,0,0,0.1);
+
+	--font-big: 'arial';
+	--font-big-size: 32px;
+	--font-main: 'verdana';
+	--font-main-size: 18px;
+
+	--shadow: -4px 4px var(--col-shadow);
+	--button-height: 64px;
+
+	overflow-y: scroll;
+}
+
+body {
+	background: var(--col-background);
+	font-family: var(--font-main);
+	font-size: var(--font-main-size);
+	padding-top: 10%;
+}
+
+main {
+	position: relative;
+	display: block;
+	width: calc(80% - var(--page-spacing) * 2);
+	margin: auto;
+	margin-bottom: 10%;
+	color: var(--col-text);
+	
+	padding: var(--page-spacing);
+	background-color: var(--col-body);
+	box-shadow: var(--shadow);
+	
+}
+
+h1 {
+	font-family: var(--font-big);
+	font-size: var(--font-big-size);
+	margin: 0;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline dotted var(--col-accent);
+}
+
+hr {
+	border-top: 0;
+	border-bottom: 2px dotted var(--col-background);
+	margin: 0;
+	margin-bottom: var(--page-spacing);
+	width: calc(100% + var(--page-spacing) + var(--page-spacing));
+	margin-left: calc(var(--page-spacing) * -1);
+}
+
+a {
+	text-decoration: underline;
+	text-decoration-style: dotted;
+	color: var(--col-accent);
+}
+
+a:hover {
+	color: var(--col-counterpick);
+}
+
+section {
+	margin: 0;
+	position: relative;
+	margin-bottom: var(--page-spacing);
+}
+
+section p {
+	margin: 0;
+	width: 100%;
+}
+
+section:last-child {
+	margin-bottom: 0;
+}
+
+section > p, section > h1 {
+	margin-bottom: var(--page-spacing);
+}
+
+section > p:last-child, section > h1:last-child {
+	margin-bottom: 0;
+}
+
+section.alert {
+	display: block;
+	padding-bottom: 0;
+}
+
+section.alert p {
+	width: fit-content;
+	padding: 4px;
+	border-radius: 6px;
+	color: #fff;
+	margin: 0;
+}
+
+section.alert p.error {
+	background-color: #fd7d7d;
+}
+
+section.alert p.success {
+	background-color: #7bffa2;
+}
+
+form input, form .button, form select {
+	margin-bottom: var(--page-spacing);
+}
+
+form label {
+	margin-bottom: calc(var(--page-spacing) / 2);
+}
+
+form input, form label, form select {
+	display: block;
+}
+
+
+.inactive {
+	pointer-events: none;
+}
+
+.invisible {
+	display: none;
+}
+
+.translucent {
+	opacity: 0.35;
+}
+

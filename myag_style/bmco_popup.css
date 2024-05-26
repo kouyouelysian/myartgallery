@@ -1,0 +1,57 @@
+/*========================================================*/
+
+/*  this is ADD-ON STYLE to add pop-ups to the project!
+  it requires "bmco_general.css" added BEFORE itself in
+  document's HEAD! Pop-up code -> "bmco_popup.js" */
+
+/*========================================================*/
+
+#popupBackdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9;
+	background-color: RGBA(0,0,0,0.3);
+	user-select: none;
+	-webkit-user-select: none;
+	z-index: 99;
+}
+
+.popup {
+	position: fixed;
+	width: 25%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border: 2px solid var(--col-accent);
+	z-index: 100;
+	background-color: var(--col-body);
+	box-shadow: 0px 0px 8px RGBA(0,0,0,0.5);
+}
+
+.popupTextMessage {
+	font-family: var(--font-main);
+	font-size: var(--font-big-size);
+	text-align: center;
+	width: calc(100% - var(--page-spacing) - var(--page-spacing));
+	margin: var(--page-spacing);
+}
+
+.popupButtonZone {
+	display: flex;
+	width: 100%;
+	margin-bottom: var(--page-spacing);
+}
+
+.popup .button {
+	margin: 0;
+	margin-left: var(--page-spacing);
+	width: inherit;
+	height: unset;
+}
+
+.popup .button:last-child {
+	margin-right: var(--page-spacing);
+}

@@ -1,0 +1,59 @@
+body {
+	--navbar-height: 32px;
+	--navbar-drag-length: 10px;
+}
+
+section {
+	margin-bottom: 0;
+}
+
+nav {
+	height: var(--navbar-height);
+	left: 10%;
+	position: relative;
+	box-shadow: var(--shadow);
+	width: fit-content;
+	font-size: 0;
+}
+
+nav p {
+	font-size: var(--font-main-size);
+	padding-left: 8px;
+	padding-right: 8px;
+	width: max-content;
+	height: 100%;
+	margin: 0;
+	display: inline-block;
+	background-color: var(--col-dim);
+	color: var(--col-accent);
+	box-shadow: inset -2px 0px 2px RGBA(0,0,0,0.05);
+	line-height: var(--navbar-height);
+	vertical-align: top;
+	user-select: none;
+	cursor: pointer;
+	transition: height 0.2s, margin-top 0.2s;
+}
+
+nav p.tabNavOptionActive {
+	background-color: var(--col-body);
+	color: var(--col-text);
+	cursor: default;
+}
+
+nav p:hover {
+	height: calc(100% + var(--navbar-drag-length));
+	margin-top: calc(var(--navbar-drag-length) * -1);
+}
+
+nav p.tabNavOptionActive:hover {
+	height: 100%;
+	margin-top: 0;
+}
+
+section {
+	display: none;
+}
+
+section.tabActive {
+	display: block;
+}

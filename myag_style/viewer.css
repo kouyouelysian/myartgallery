@@ -1,0 +1,151 @@
+/*============================================================================*/
+/*                               ARTWORK VIEWER                               */
+/*============================================================================*/
+
+body {
+	--viewer-overlay-opacity: 0.5;
+	--viewer-overlay-rgb: 0,0,0;
+}
+
+#artworkViewerWrapper {
+	position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(var(--viewer-overlay-rgb), var(--viewer-overlay-opacity));
+    z-index: 10;
+    transition: opacity 0.3s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: none;
+
+}
+
+#artworkViewer, #artworkViewerSidebar1, #artworkViewerSidebar2 {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	position: absolute;
+	
+	top: 0;
+	left: 0;
+}
+
+
+
+.artworkViewerSidebar {
+	height: 100%;
+	width:  30%;
+	z-index: 20;
+	cursor: pointer;
+}
+
+#artworkViewerSidebar2 {
+
+	left: 70%;
+}
+
+
+.artworkViewerSidebar p {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	color: #fff;
+
+	font-family: 'Arial';
+	font-size: 250px;
+	font-weight: bolder;
+	text-align: center;
+
+	top: 50%;
+	transform: translateY(-50%);
+
+	opacity: 0;
+	transition: opacity 0.1s, filter 0.1s;
+
+	user-select: none;
+	-webkit-user-select: none;
+	pointer-events: all;
+	filter: drop-shadow(0px 0px 14px RGBA(0,0,0,0));
+}
+
+.artworkViewerSidebar:hover > p {
+	opacity: 0.7;
+	filter: drop-shadow(0px 0px 14px RGBA(0,0,0,0.5));
+
+}
+
+.artworkViewerSidebar:active > p {
+	opacity: 1;
+	filter: drop-shadow(0px 0px 7px RGBA(0,0,0,0.5));
+}
+
+#artworkViewer {
+	width: 35%; 
+	height: 70vh;
+	margin-top: 15vh;
+	left: 32.5%;
+	user-select: none;
+	-webkit-user-select: none;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	z-index: 15;
+	position: absolute;
+
+	background-color: var(--col-viewer-background);
+
+}
+
+#artworkViewerAbout {
+	position: absolute;
+	background-color: var(--col-body);
+	color: var(--col-text);
+	border-width: 4px;
+	border-color: var(--col-accent);
+	border-style: solid;
+	padding: var(--page-spacing);
+	max-height: calc(70vh - var(--page-spacing) * 2 - 8px);
+	width: calc(26% - var(--page-spacing) * 2 - 8px);
+	overflow-y: scroll;
+	left: 3%;
+	top: 15vh;
+	text-align: var(--main-text-align);
+ 	-ms-overflow-style: none;  
+  	scrollbar-width: none;
+}
+
+#artworkViewerAbout::-webkit-scrollbar {
+  display: none;
+}
+
+#artworkViewerFull {
+	position: absolute;
+	padding: 8px;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 100%;
+	text-align: center;
+	margin: 0;
+	background-color: rgba(0,0,0,0.15);
+	text-decoration: underline;
+	color: var(--col-accent);
+	transition: color 0.2s, background-color 0.2s;
+	margin-top: var(--page-spacing);
+}
+
+#artworkViewerFull:hover {
+	background-color: var(--col-body);
+	color: var(--col-text);
+}
+
+.artworkViewerAboutName {
+  font-weight: bold;
+  font-style: italic;
+  color: var(--col-accent);
+
+}
