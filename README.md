@@ -62,7 +62,22 @@ Save the changes you made to *settings.js* file (ctrl/cmd + S or click the red "
 ### 4. Customize!
 The fun part is that you customize the website look! All the "easy" customization files are located in the "myag_user" folder. You will not have to edit anything else to change things up lightly. Open the file "style.css" in the "myag_user" folder. There are some assignable variables that you can change, with guidance next to them. Feel free to rewrite the default values with custom ones. You can open your gallery's index and refresh it to see the results of your customizations. If it doesn't go through, try [force-refreshing](https://www.howtogeek.com/672607/how-to-hard-refresh-your-web-browser-to-bypass-your-cache/) the page. The index page has some dummy text in the `<p>` element - you may want to rewrite the text with something about you, like a welcoming message, or some information on your digital display.
 
-All deeper customisations require at least basic HTML/CSS knowledge, and shall be done by hand by you; i *highly* encourage you to try and do that, because that's the most fun part of the user-made web. 
+All deeper customisations require at least basic HTML/CSS knowledge, and shall be done by hand by you; i *highly* encourage you to try and do that, because that's the most fun part of the user-made web.
+
+## Update guide
+
+Assuming you're running this on neocities.org as intended, you just have to download the [freshest version](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip). Inside your neocities MyAG instance directory, upload the following items from the extracted MyAG zip archive:
+
+- folders (drag and drop one by one to load a folder with all its contents):
+    - myag_code
+    - myag_style
+- files (basically, upload all .html files from the package):
+    - editor.html 
+    - image.html 
+
+The new uploads will automatically replace the old files, so the code and default styling will all get updated. Pay attention and **do not** upload *myag_user*, *myag_files*, or anything else that is not listed, as this may break your customizations, or even reset your database or artworks folder!
+
+In case you did deep mods of MyAG, like tweaking the code - you know what you're doing, so you will have to handle figuring out what of your mods are in stuff subject to be updated, and applying your hacks on the new code on your own. I heavily advise you to do as much as possible with custom CSS.
 
 ## Editor tutorial
 
@@ -95,21 +110,6 @@ Refresh your gallery's index.html! Your new stuff should now be at the top of th
 
 ### 9. Not working?
 If it doesn't work: my bad, probably :D contact me and we will see what's wrong. This is a one person project and all sorts of stuff may happen, so [tell me what went wrong](https://auberylis.moe/data/links/)
-
-## Update guide
-
-Assuming you're running this on neocities.org as intended, you just have to download the [freshest version](https://github.com/kouyouelysian/myartgallery/archive/refs/heads/main.zip). Inside your neocities MyAG instance directory, upload the following items from the extracted MyAG zip archive:
-
-- folders (drag and drop one by one to load a folder with all its contents):
-    - myag_code
-    - myag_style
-- files (basically, upload all .html files from the package):
-    - editor.html 
-    - image.html 
-
-The new uploads will automatically replace the old files, so the code and default styling will all get updated. Pay attention and **do not** upload *myag_user*, *myag_files*, or anything else that is not listed, as this may break your customizations, or even reset your database or artworks folder!
-
-In case you did deep mods of MyAG, like tweaking the code - you know what you're doing, so you will have to handle figuring out what of your mods are in stuff subject to be updated, and applying your hacks on the new code on your own. I heavily advise you to do as much as possible with custom CSS.
 
 ## Customisation
 
