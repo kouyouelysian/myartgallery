@@ -206,8 +206,6 @@ generateArtworkDiv: function(aw, action=undefined, overlayText=undefined)
 	if (displayFile == undefined)
 		displayFile = aw.filename;
 
-	console.log(aw, displayFile, overlayText);
-
 	if (!displayFile || displayFile=="" || 
 		(myag.data.artworks.startupComplete && myag.isEditor && !bmco.arrayHas(myag.data.initialAwids, aw.id) ))
 	{

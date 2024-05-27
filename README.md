@@ -131,7 +131,9 @@ In your htm's `<head>` tag, you *have* to import the following CSS styles via `<
 - myag_style/bmco_states.css
 - myag_style/viewer.css
 
-Alternatively, copy the contents of bmco_states.css to your running stylesheet - there's not much, and it governs showing/hiding artworks when paginating. At the bottom of your page, before the closing `</body>` tag, hook up the following scripts using `<script>` elements *in precisely this order*:
+For *bmco_states.css*, you can alternatively copy the contents of to your running stylesheet - there's not much, it governs showing/hiding artworks when paginating.
+
+At the bottom of your page, before the closing `</body>` tag, hook up the following scripts using `<script>` elements *in precisely this order*:
 
 - myag_code/bmco.js
 - myag_code/bmco_xml.js
@@ -141,16 +143,16 @@ Alternatively, copy the contents of bmco_states.css to your running stylesheet -
 - myag_code/myag_pages.js
 - myag_code/myag_viewer.js
 
+Now you connected all the bits and bobs that make MyAG run. It automatically detects targets (like `<div>`s) by class and renders items into them as HTML structures. In order to have MyAG render *artworks* into a container (`<div`>, `<section`>, `<content`>, ...) - set its class to `artworksWrapper`. If you want MyAG to render group buttons to a container, its classlist has to contain `groupsWrapper`. Obviously, you can add many classes to an element: the clas you're using in your own page's styling can be next to the class MyAG is targetting. To make the page have the viewer (the thing that appears when you click on an artwork), create a `<div id="artworkViewerWrapper">` *right after* the opening `<body>` tag. It is an absolute-positioned container styled from *myag_style/viewer.css* that will pop up above the entirety of your page.
+
 If confused, refer to the bundled *index.html* for a reference; bear in mind that it imports some other default styles, too.
 
-Now you connected all the bits and bobs that make MyAG run. It automatically detects targets (like `<div>`s) by class and renders items into them as HTML structures. In order to have MyAG render *artworks* into a container (`<div`>, `<section`>, `<content`>, ...) - set its class to `artworksWrapper`. If you want MyAG to render group buttons to a container, its classlist has to contain `groupsWrapper`. Obviously, you can add many classes to an element: the clas you're using in your own page's styling can be next to the class MyAG is targetting.
+An `artworksWrapper`'s behaviour can be customized by providing it with HTML attributes, e.g. `<div class="artworksWrapper" attribute="value">`. The following atttributes are supported, but not expected:
 
-An `artworksWrapper` container can be customized with HTML attributes, e.g. `<div class="artworksWrapper" attribute="value">`:
+- artworksPerRow: number, if set - overrides the general artworks per row setting just for this container
+- group: string, group's *id* (**not** the group's name). Group ID can be found in the editor by clicking on a group and selecting 'Copy ID' in the context menu. The container will only display artworks from the target group if this attribute is set. Displays all if not set.
 
-- artworksPerRow: number, overrides the general artworks per row setting just for this container
-- group: string, group's *id* (**not** the group's name). Group's ID can be found in editor by selecting 'Copy ID' in the context menu. The container will only display artworks from the target group. Displays all groups if not set.
-
-If no wrappers are found for groups/artworks, no errors are thrown, and they are simply not loaded. You can use this to your advantage, e.g. omit artwork containers to have the gallery index be a list of groups for user to narrow into, or vice versa - display each group in a separate `artworksWrapper` with its *group* attribute set accordingly, while not displaying the group buttons at all.
+If no wrappers are found for groups/artworks, no errors are thrown, and they are simply not loaded. You can use this to your advantage, e.g. omit artwork containers to have the gallery index be a list of groups for user to narrow into, or vice versa - display each group in a separate `artworksWrapper` with its *group* attribute set accordingly, while not displaying the group buttons at all. However, this means that MyAG will not report into the developer console that it failed to find any wrappers - so, pay attention to typos and such.
 
 ## Acknowledgements
 
