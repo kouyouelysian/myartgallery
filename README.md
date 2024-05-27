@@ -19,7 +19,7 @@ MyAG uses an [XML](https://en.wikipedia.org/wiki/XML) file as its data store, wh
 
 Neocities does not have a back-end, so when running autonomously, MyAG still requires some manual actions to finalize your uploads. Once you're done, you will need to update the .xml file (= paste some text and press "save") and upload the artwork files to the correct folder. The .xml file editor and upload folder are opened automatically when you're done working with editor. A desktop application is being developed to take advantage of Neocities' API to allow automatic file uploads.
 
-Wanna see MyAG in action? My own kandi museum page runs on MyAG, [check it out](https://auberylis.moe/data/kandi/)! 
+Wanna see MyAG in action? My own kandi museum page runs on MyAG, [check it out](https://auberylis.moe/kandi/)! 
 
 ## Step-by-step rollout guide
 
@@ -128,10 +128,10 @@ This section is for people who want to roll their own HTML and integrate MyAG in
 
 In your htm's `<head>` tag, you *have* to import the following CSS styles via `<link>`s:
 
-- myag_style/items.css
+- myag_style/bmco_states.css
 - myag_style/viewer.css
 
-At the bottom of your page, before the closing `</body>` tag, hook up the following scripts using `<script>` elements:
+Alternatively, copy the contents of bmco_states.css to your running stylesheet - there's not much, and it governs showing/hiding artworks when paginating. At the bottom of your page, before the closing `</body>` tag, hook up the following scripts using `<script>` elements *in precisely this order*:
 
 - myag_code/bmco.js
 - myag_code/bmco_xml.js
@@ -141,7 +141,7 @@ At the bottom of your page, before the closing `</body>` tag, hook up the follow
 - myag_code/myag_pages.js
 - myag_code/myag_viewer.js
 
-If confused, refer to the bundled *index.html* for a reference; bear in mind that it imports some default styles, too.
+If confused, refer to the bundled *index.html* for a reference; bear in mind that it imports some other default styles, too.
 
 Now you connected all the bits and bobs that make MyAG run. It automatically detects targets (like `<div>`s) by class and renders items into them as HTML structures. In order to have MyAG render *artworks* into a container (`<div`>, `<section`>, `<content`>, ...) - set its class to `artworksWrapper`. If you want MyAG to render group buttons to a container, its classlist has to contain `groupsWrapper`. Obviously, you can add many classes to an element: the clas you're using in your own page's styling can be next to the class MyAG is targetting.
 

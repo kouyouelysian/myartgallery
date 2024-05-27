@@ -9,11 +9,11 @@
 			"- myag_py/"
 		],
 		"items_local": [
-			"myag_style/panel.css",
+			"myag_style/items.css",
 			"myag_style/editor.css",
 			"myag_user/",
 			"myag_code/myag_main.js",
-			"myag_code/myag_panel.js",
+			"myag_code/myag_pages.js",
 			"myag_code/myag_editor.js",
 			"myag_py/"
 		],
