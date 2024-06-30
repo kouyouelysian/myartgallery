@@ -1,12 +1,14 @@
+/* styles that are meant to be assigned dynamically to the rendered stuff
+do NOT use these on anything inside HTML. !important is a DANGEROUS TOY!!! */
 
 .inactive {
-	pointer-events: none;
+	pointer-events: none !important;
 }
 
 .invisible {
-	display: none;
+	display: none !important;
 }
 
 .translucent {
-	opacity: 0.35;
+	opacity: 0.35 !important;
 }
