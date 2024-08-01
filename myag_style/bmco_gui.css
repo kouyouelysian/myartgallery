@@ -61,25 +61,25 @@
 	font-family: var(--font-main);
 	font-size: var(--font-big-size);
 	text-align: center;
-	width: calc(100% - var(--page-spacing) - var(--page-spacing));
-	margin: var(--page-spacing);
+	width: calc(100% - var(--sizing) - var(--sizing));
+	margin: var(--sizing);
 }
 
 .popupButtonZone {
 	display: flex;
 	width: 100%;
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 }
 
 .popup .button {
 	margin: 0;
-	margin-left: var(--page-spacing);
+	margin-left: var(--sizing);
 	width: inherit;
 	height: unset;
 }
 
 .popup .button:last-child {
-	margin-right: var(--page-spacing);
+	margin-right: var(--sizing);
 }
 
 /*-------------------------------- bottom bar --------------------------------*/
@@ -90,7 +90,7 @@
 	position: fixed;
 	display: table;
 	table-layout: fixed;
-	bottom: var(--page-spacing);
+	bottom: var(--sizing);
 	width: 50%;
 	left: 25%;
 	box-shadow: 0px 0px 10px RGBA(0,0,0,0.3);
@@ -144,7 +144,7 @@
 	width: calc(80%);
 	overflow-y: scroll;
 	background-color: var(--col-body);
-	padding: var(--page-spacing);
+	padding: var(--sizing);
 	z-index: 100;
 	scrollbar-width: none;
 }
@@ -160,7 +160,7 @@
 
 .fillout input[type="text"], .fillout textarea {
 	display: block;
-	margin-bottom: calc(var(--page-spacing) / 2);
+	margin-bottom: calc(var(--sizing) / 2);
 	width: calc(100% - 10px);
 	font-family: var(--font-big);
 	font-size: var(--font-main-size);
@@ -177,8 +177,8 @@
 .fillout hr {
 	width: 100%;
 	margin: 0;
-	margin-bottom: calc(var(--page-spacing) / 2);
-	margin-top: calc(var(--page-spacing) / 2);
+	margin-bottom: calc(var(--sizing) / 2);
+	margin-top: calc(var(--sizing) / 2);
 }
 
 .fillout p, .fillout label {
@@ -215,7 +215,7 @@
 
 .fillout .button {
 	margin-bottom: 0;
-	margin-right: var(--page-spacing);
+	margin-right: var(--sizing);
 }
 
 .fillout .button:last-of-type {
@@ -227,7 +227,7 @@
 .miniform {
 	width: 100%;
 	font-size: 0;
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 }
 
 .miniform * {
@@ -258,17 +258,17 @@
 }
 
 #actionMenu .button {
-	margin: calc(var(--page-spacing) / 2);
+	margin: calc(var(--sizing) / 2);
 	margin-bottom: 0;
 	height: calc(var(--button-height) / 2);
 	display: block;
-	width: calc(100% - 8px - var(--page-spacing));
+	width: calc(100% - 8px - var(--sizing));
 	padding-left: 0;
 	padding-right: 0;
 }
 
 #actionMenu .button:last-child {
-	margin-bottom: calc(var(--page-spacing) / 2);
+	margin-bottom: calc(var(--sizing) / 2);
 }
 
 .controlButton {

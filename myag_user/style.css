@@ -10,7 +10,7 @@ you can edit its value.
 
 body {
 	/*
-	--page-spacing: 24px; general distance between elements
+	--sizing: 24px; general distance between elements
 	--page-timing: 0.15s; transition of most elements' animations on hover, etc
 
 	--col-background: #fab; background color

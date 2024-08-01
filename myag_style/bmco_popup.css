@@ -35,23 +35,23 @@
 	font-family: var(--font-main);
 	font-size: var(--font-big-size);
 	text-align: center;
-	width: calc(100% - var(--page-spacing) - var(--page-spacing));
-	margin: var(--page-spacing);
+	width: calc(100% - var(--sizing) - var(--sizing));
+	margin: var(--sizing);
 }
 
 .popupButtonZone {
 	display: flex;
 	width: 100%;
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 }
 
 .popup .button {
 	margin: 0;
-	margin-left: var(--page-spacing);
+	margin-left: var(--sizing);
 	width: inherit;
 	height: unset;
 }
 
 .popup .button:last-child {
-	margin-right: var(--page-spacing);
+	margin-right: var(--sizing);
 }

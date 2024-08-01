@@ -6,7 +6,7 @@ body {
 }
 
 .artworksWrapper, .groupsWrapper {
-	width: calc(100% + var(--page-spacing));
+	width: calc(100% + var(--sizing));
 	margin-bottom: 0;
 	margin-right: 0;
 	user-select: none;
@@ -28,11 +28,11 @@ body {
 	border-color: var(--col-accent);
 	border-width: var(--border-width);
 	border-style: solid;
-	width: calc(100% / var(--buttons-per-row) - var(--page-spacing) - var(--border-width) - var(--border-width));
+	width: calc(100% / var(--buttons-per-row) - var(--sizing) - var(--border-width) - var(--border-width));
 	height: var(--button-height);
 	position: relative;
 	display: inline-block;
-	margin: var(--page-spacing);
+	margin: var(--sizing);
 	margin-left: 0;
 	margin-top: 0;
 
@@ -78,12 +78,12 @@ body {
 
 .artwork {
 
-	width: calc(100% / var(--artworks-per-row) - var(--page-spacing));
-	padding-top: calc(100% / var(--artworks-per-row) - var(--page-spacing));
+	width: calc(100% / var(--artworks-per-row) - var(--sizing));
+	padding-top: calc(100% / var(--artworks-per-row) - var(--sizing));
 	height: 0;
 	position: relative;
 	display: inline-block;
-	margin: var(--page-spacing);
+	margin: var(--sizing);
 	margin-left: 0;
 	margin-top: 0;
 	vertical-align: middle;

@@ -14,17 +14,26 @@
 			margin: 0;
 			padding: 0;
 			position: relative;
-			--page-spacing: 24px;
-			width: calc(100% - var(--page-spacing));
+			--sizing: 10px;
+			--button-height: 100px;
+			background-color: grey;
 		}
+
+		main {
+			width: 80%;
+			margin: auto;
+			background-color: white;
+		}
+
 	</style>
 
 </head>
 <body>
-
 	<div id="artworkViewerWrapper"></div>
-	<div class="artworksWrapper"></div>
-
+	<main>
+		<section class="groupsWrapper"></section>
+		<section class="artworksWrapper"></section>
+	</main>
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCRIPTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<!--scripts start-->

@@ -108,9 +108,9 @@ body {
 	border-width: 4px;
 	border-color: var(--col-accent);
 	border-style: solid;
-	padding: var(--page-spacing);
-	max-height: calc(70vh - var(--page-spacing) * 2 - 8px);
-	width: calc(26% - var(--page-spacing) * 2 - 8px);
+	padding: var(--sizing);
+	max-height: calc(70vh - var(--sizing) * 2 - 8px);
+	width: calc(26% - var(--sizing) * 2 - 8px);
 	overflow-y: scroll;
 	left: 3%;
 	top: 15vh;
@@ -135,7 +135,7 @@ body {
 	text-decoration: underline;
 	color: var(--col-accent);
 	transition: color 0.2s, background-color 0.2s;
-	margin-top: var(--page-spacing);
+	margin-top: var(--sizing);
 }
 
 #artworkViewerFull:hover {

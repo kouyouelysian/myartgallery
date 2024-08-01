@@ -32,12 +32,12 @@ as is, as far as i can see :'D
 }
 
 #formWrapper {
-	width: calc(100% - var(--page-spacing) - var(--page-spacing));
-	height: : calc(100% - var(--page-spacing) - var(--page-spacing));
+	width: calc(100% - var(--sizing) - var(--sizing));
+	height: : calc(100% - var(--sizing) - var(--sizing));
 	position: relative;
 	top: 0;
 	left: 0;
-	padding: var(--page-spacing);
+	padding: var(--sizing);
 }
 
 #bottomButtonWrapper {
@@ -150,7 +150,7 @@ as is, as far as i can see :'D
 	position: absolute;
 	display: inline-block;
 	top: 50%;
-	left: calc(100% + var(--page-spacing) / 2);
+	left: calc(100% + var(--sizing) / 2);
 	transform: translate(-50%, -50%);
 	pointer-events: all;
 	width: 65px;
@@ -184,7 +184,7 @@ as is, as far as i can see :'D
 
 #formWrapper input[type="text"], #formWrapper textarea {
 	display: block;
-	margin-bottom: calc(var(--page-spacing) / 2);
+	margin-bottom: calc(var(--sizing) / 2);
 	width: calc(100% - 10px);
 	font-family: var(--font-big);
 	font-size: var(--font-btn-size);
@@ -200,8 +200,8 @@ as is, as far as i can see :'D
 #formWrapper hr {
 	width: 100%;
 	margin: 0;
-	margin-bottom: calc(var(--page-spacing) / 2);
-	margin-top: calc(var(--page-spacing) / 2);
+	margin-bottom: calc(var(--sizing) / 2);
+	margin-top: calc(var(--sizing) / 2);
 }
 
 #formWrapper .guide {
@@ -229,8 +229,8 @@ as is, as far as i can see :'D
 
 #formWrapper .controlButton {
 	margin-bottom: 0;
-	width: calc(50% - var(--page-spacing) / 2);
-	margin-right: var(--page-spacing);
+	width: calc(50% - var(--sizing) / 2);
+	margin-right: var(--sizing);
 }
 
 #formWrapper .controlButton:last-of-type {
@@ -242,8 +242,8 @@ as is, as far as i can see :'D
 }
 
 .toolDiv {
-	padding-top: var(--page-spacing);
-	padding-bottom: var(--page-spacing);
+	padding-top: var(--sizing);
+	padding-bottom: var(--sizing);
 	border-top: 2px dotted var(--col-counterpick);
 }
 
@@ -253,6 +253,6 @@ as is, as far as i can see :'D
 
 .toolDiv p {
 	display: inline-block;
-	margin-top: var(--page-spacing);
+	margin-top: var(--sizing);
 	margin-bottom: 0;
 }

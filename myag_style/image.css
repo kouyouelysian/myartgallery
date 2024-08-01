@@ -36,15 +36,15 @@ main div {
 }
 
 aside {
-	width: calc(30% - var(--page-spacing) * 2);
-	height: calc(100% - var(--page-spacing) * 2);
+	width: calc(30% - var(--sizing) * 2);
+	height: calc(100% - var(--sizing) * 2);
 	background-color: var(--col-body);
-	padding: var(--page-spacing);
+	padding: var(--sizing);
 }
 
 aside h2 {
 	margin: 0;
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 	max-height: 20%;
 	overflow-y: hidden;
 }
@@ -52,7 +52,7 @@ aside h2 {
 
 aside > p {
 	width: 100%;
-	max-height: calc(80% - var(--page-spacing) * 3 - 150px);
+	max-height: calc(80% - var(--sizing) * 3 - 150px);
 	overflow-y: scroll;
 	scrollbar-width: none;
 	text-align: justify;
@@ -60,7 +60,7 @@ aside > p {
 
 nav {
 	position: absolute;
-	width: calc(100% - var(--page-spacing) * 2);
+	width: calc(100% - var(--sizing) * 2);
 	bottom: 0;
 }
 

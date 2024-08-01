@@ -11,7 +11,7 @@ html, body {
 
 body {
 	/* vars go here */
-	--page-spacing: 24px;
+	--sizing: 24px;
 	--page-timing: 0.15s;
 
 	--col-background: #fab;
@@ -43,12 +43,12 @@ body {
 main {
 	position: relative;
 	display: block;
-	width: calc(80% - var(--page-spacing) * 2);
+	width: calc(80% - var(--sizing) * 2);
 	margin: auto;
 	margin-bottom: 10%;
 	color: var(--col-text);
 	
-	padding: var(--page-spacing);
+	padding: var(--sizing);
 	background-color: var(--col-body);
 	box-shadow: var(--shadow);
 	
@@ -67,9 +67,9 @@ hr {
 	border: 0;
 	border-bottom: 2px dotted var(--col-background);
 	margin: 0;
-	margin-bottom: var(--page-spacing);
-	width: calc(100% + var(--page-spacing) * 2);
-	left: calc(var(--page-spacing) * -1);
+	margin-bottom: var(--sizing);
+	width: calc(100% + var(--sizing) * 2);
+	left: calc(var(--sizing) * -1);
 	position: relative;
 }
 
@@ -86,7 +86,7 @@ a:hover {
 section {
 	margin: 0;
 	position: relative;
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 }
 
 section p {
@@ -99,7 +99,7 @@ section:last-child {
 }
 
 section > p, section > h1 {
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 }
 
 section > p:last-child, section > h1:last-child {
@@ -128,11 +128,11 @@ section.alert p.success {
 }
 
 form input, form .button, form select {
-	margin-bottom: var(--page-spacing);
+	margin-bottom: var(--sizing);
 }
 
 form label {
-	margin-bottom: calc(var(--page-spacing) / 2);
+	margin-bottom: calc(var(--sizing) / 2);
 }
 
 form input, form label, form select {
