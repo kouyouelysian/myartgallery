@@ -210,11 +210,15 @@ ItemList: class {
 	}
 
 	putItemsToHtml(target, forceFirstItem=false) {
-		for (var i of this.items)
+		for (var counter in this.items)
 		{
+			var i = this.items[counter];
 			if (this.checkAgainstFilter(target, i) || (forceFirstItem && this.indexById(i.id) == 0))
 				this.gui.generator(target, i);
+			else
+				delete this.items[counter];
 		}
+		this.items = this.items.filter(Object);
 	}
 
 
