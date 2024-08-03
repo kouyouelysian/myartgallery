@@ -15,7 +15,6 @@ myag.viewer = {
 //==========================================================================//
 
 displayedArtwork: undefined,
-
 wrapperObject: undefined,
 state:  false,
 toggleTimeout: undefined,
@@ -131,14 +130,35 @@ showViewer: function(aw_id)
 
 jump: function(dir)
 {
+
 	var index = myag.data.artworks.indexById(myag.viewer.displayedArtwork);
+
+
+	var nextAwid = undefined;
+	counter = 0;
+	while (counter <= myag.data.artworks.items.length)
+	{
+		index = myag.viewer.indexStep(index, dir);
+		nextAwid = myag.data.artworks.items[index].id;
+		if (myag.group && bmco.arrayHas(myag.data.artworks.items[index].ingroups, myag.group.gid))
+			break
+		if (!myag.group)
+			break;
+		counter+=1;
+	}
+	
+	myag.viewer.putToViewer(nextAwid);
+	
+},
+
+indexStep(index, dir)
+{
 	dir? index++ : index--;
 	if (index < 0)
 		index = myag.data.artworks.items.length - 1;
 	else if (index == myag.data.artworks.items.length)
 		index = 0;
-	myag.viewer.putToViewer(myag.data.artworks.items[index].id);
-	
+	return index;
 },
 
 /*
