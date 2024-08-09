@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<!-- change this to what you want to display at the browser top -->
 	<title>MyArtGallery / Editor</title>
-	<!--*chunk styles*-->
+	<!--*chunk bmcodependencies*-->
 	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_general.css">
 	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_tabs.css">
 	<link rel="stylesheet" type="text/css" href="./myag_style/bmco_gui.css">
@@ -11,6 +10,11 @@
 	<link rel="stylesheet" type="text/css" href="./myag_style/items.css">
 	<link rel="stylesheet" type="text/css" href="./myag_style/editor.css">
 	<link rel="stylesheet" type="text/css" href="./myag_user/style.css">
+	<script type="text/javascript" src="myag_code/bmco.js"></script>
+	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
+	<script type="text/javascript" src="myag_code/bmco_gui.js" ></script>
+	<script type="text/javascript" src="myag_code/bmco_tabs.js" ></script>
+	<script type="text/javascript" src="myag_code/bmco_infra.js"></script>
 	<!--*endchunk*-->
 </head>
 
@@ -96,11 +100,6 @@
 
 
 	<!--*chunk scripts*-->
-	<script type="text/javascript" src="myag_code/bmco.js"></script>
-	<script type="text/javascript" src="myag_code/bmco_xml.js"></script>
-	<script type="text/javascript" src="myag_code/bmco_gui.js" ></script>
-	<script type="text/javascript" src="myag_code/bmco_tabs.js" ></script>
-	<script type="text/javascript" src="myag_code/bmco_infra.js"></script>
 	<script type="text/javascript" src="myag_code/myag_main.js"></script>
 	<script type="text/javascript" src="myag_user/settings.js"></script>
 	<script type="text/javascript" src="myag_code/myag_pages.js"></script>
@@ -113,7 +112,6 @@
 			inNeomanager:true });
 		tab.functionsOnSwitch = [myag.ed.cancel, myag.ed.place];
 	</script>
-
 	<!--*endchunk*-->
 
 </body>
